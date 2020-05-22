@@ -1,0 +1,2 @@
+setCssToHead([".",[1],"rich-text{ padding: ",[0,30],"; -webkit-box-sizing: border-box; box-sizing: border-box; font-size: 14px; }\n",],undefined,{path:"./pages/news/newsRich.wxss"})();
+document.dispatchEvent(new CustomEvent("generateFuncReady", { detail: { generateFunc: $gwx('./pages/news/newsRich.wxml') } }));

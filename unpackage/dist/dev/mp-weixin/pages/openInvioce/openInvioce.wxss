@@ -1,0 +1,203 @@
+.open-invioce {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  padding: 0 30rpx;
+  padding-bottom: 120rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.open-invioce .open-header .header-total-price {
+  padding-top: 40rpx;
+  padding-bottom: 20rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  font-family: PingFangSC-Semibold;
+  font-size: 17px;
+  font-weight: bold;
+  color: #09023E;
+  letter-spacing: -0.41px;
+}
+.open-invioce .open-header .header-price {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.open-invioce .open-header .header-price view {
+  font-family: PingFangSC-Semibold;
+  font-size: 24px;
+  color: #5468FF;
+  letter-spacing: -0.58px;
+}
+.open-invioce .open-header .header-price input {
+  font-family: PingFangSC-Semibold;
+  font-size: 24px;
+  color: #5468FF;
+  letter-spacing: -0.58px;
+}
+.open-invioce .open-middle {
+  margin-top: 50rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.open-invioce .open-middle .middle-title {
+  padding-bottom: 20rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  font-family: PingFangSC-Semibold;
+  font-size: 17px;
+  font-weight: bold;
+  color: #09023E;
+  letter-spacing: -0.41px;
+}
+.open-invioce .open-middle .middle-button {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+}
+.open-invioce .open-middle .middle-button .button-left {
+  width: 190rpx;
+  height: 70rpx;
+  margin-right: 40rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: 1px solid rgba(9, 2, 62, 0.3);
+  border-radius: 2px;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: rgba(9, 2, 62, 0.3);
+  letter-spacing: -0.34px;
+  text-align: center;
+  line-height: 70rpx;
+}
+.open-invioce .open-middle .middle-button .button-right {
+  width: 190rpx;
+  height: 70rpx;
+  border: 1px solid rgba(9, 2, 62, 0.3);
+  border-radius: 2px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: rgba(9, 2, 62, 0.3);
+  letter-spacing: -0.34px;
+  text-align: center;
+  line-height: 70rpx;
+}
+.open-invioce .open-middle .middle-button .active {
+  background: #5468FF;
+  border-radius: 2px;
+  color: #FFFFFF;
+}
+.open-invioce .left-bottom {
+  margin-top: 50rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.open-invioce .left-bottom .left-header {
+  font-family: PingFangSC-Semibold;
+  font-size: 17px;
+  font-weight: bold;
+  color: #09023E;
+  letter-spacing: -0.41px;
+}
+.open-invioce .left-bottom .header-input-box {
+  width: 690rpx;
+  height: 100rpx;
+  line-height: 100rpx;
+  background: #F7F7FA;
+  border-radius: 2px;
+  margin-top: 20rpx;
+  padding: 0 30rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: black;
+  letter-spacing: -0.34px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.open-invioce .left-bottom .email-title {
+  padding-top: 50rpx;
+  padding-bottom: 20rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  font-family: PingFangSC-Semibold;
+  font-size: 17px;
+  font-weight: bold;
+  color: #09023E;
+  letter-spacing: -0.41px;
+}
+.open-invioce .left-bottom .right-box {
+  padding-bottom: 120rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.open-invioce .left-bottom .right-box .right-input {
+  width: 690rpx;
+  height: 100rpx;
+  line-height: 100rpx;
+  background: #F7F7FA;
+  border-radius: 2px;
+  margin-top: 20rpx;
+  padding: 0 30rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: black;
+  letter-spacing: -0.34px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.open-invioce .left-bottom .right-box .address {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  width: 690rpx;
+  height: 200rpx;
+  padding: 30rpx;
+  margin-top: 20rpx;
+  background: #F7F7FA;
+  border-radius: 2px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: black;
+  letter-spacing: -0.34px;
+}
+.open-invioce .left-bottom .right-box .textColor {
+  color: rgba(9, 2, 62, 0.3) !important;
+  font-weight: bold;
+}
+.open-invioce .submit {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 90rpx;
+  text-align: center;
+  line-height: 90rpx;
+  background: #5468FF;
+  border-radius: 2px;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #FFFFFF;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+

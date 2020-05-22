@@ -1,0 +1,58 @@
+.changePwd {
+  width: 100%;
+  height: 100%;
+  background-color: #f6f6fa;
+  position: relative;
+}
+.changePwd .pwd-item {
+  width: 100%;
+  height: 100rpx;
+  padding: 0 30rpx;
+  border-bottom: 1rpx solid #F7F7FA;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  background-color: #fff;
+}
+.changePwd .pwd-item .item-placeholder {
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: rgba(9, 2, 62, 0.3);
+  letter-spacing: -0.34px;
+}
+.changePwd .pwd-item .getCode {
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #5468FF;
+  letter-spacing: 0;
+  text-align: right;
+}
+.changePwd .pwd-item .getCode.timer {
+  color: #ccc;
+}
+.changePwd .confirm {
+  width: 100%;
+  height: 90rpx;
+  background: #5468FF;
+  border-radius: 2px;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #FFFFFF;
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+  line-height: 90rpx;
+}
+.changePwd .isreg {
+  font-size: 14px;
+  color: red;
+}
+

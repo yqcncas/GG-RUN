@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "usingComponents": {
+    "parser": "/components/jyf-Parser/index"
+  }
+}

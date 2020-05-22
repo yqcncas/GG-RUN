@@ -1,0 +1,112 @@
+.changePhone {
+  width: 100%;
+  height: 100%;
+  background-color: #f6f6fa;
+}
+.changePhone .changePhone-header {
+  width: 100%;
+  height: 208rpx;
+  padding: 30rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border-bottom: 1rpx solid #f6f6fa;
+  background-color: #fff;
+}
+.changePhone .changePhone-header .set-phone {
+  font-family: PingFangSC-Semibold;
+  font-size: 17px;
+  color: #09023E;
+  letter-spacing: -0.41px;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.changePhone .changePhone-header .phone-tip {
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: rgba(9, 2, 62, 0.3);
+  letter-spacing: -0.34px;
+}
+.changePhone .changePhone-item {
+  width: 100%;
+  height: 100rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  padding: 30rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  background-color: #fff;
+  border-bottom: 1rpx solid #f6f6fa;
+}
+.changePhone .changePhone-item:last-child {
+  border-bottom: none;
+}
+.changePhone .changePhone-item .item-left {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #09023E;
+  letter-spacing: -0.34px;
+}
+.changePhone .changePhone-item .item-right {
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #09023E;
+  letter-spacing: -0.34px;
+  text-align: right;
+}
+.changePhone .changePhone-item .joinCode {
+  width: 200rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: rgba(9, 2, 62, 0.3);
+  letter-spacing: -0.34px;
+  text-align: right;
+}
+.changePhone .changePhone-item .getCode {
+  width: 260rpx;
+  margin-left: 30rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #5468FF;
+  letter-spacing: 0;
+  text-align: left;
+}
+.changePhone .changePhone-item .getCode.timer {
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: rgba(9, 2, 62, 0.3);
+  letter-spacing: 0;
+}
+.changePhone .submit {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 750rpx;
+  height: 90rpx;
+  line-height: 90rpx;
+  text-align: center;
+  background: #5468FF;
+  border-radius: 2px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #FFFFFF;
+}
+

@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "",
+  "navigationStyle": "custom",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "simple-address": "/components/simple-address/simple-address"
+  }
+}

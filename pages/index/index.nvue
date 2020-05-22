@@ -1,0 +1,2480 @@
+<template>
+	<view class="index" style="background: #FFFFFF;">
+		<view class="status" :style="{ height: statusHeight }"></view>
+	
+		
+		<view class="nheader" :style="{ paddingTop: statusHeight }" v-if="nheaderFlag">
+			<view class="nheader-left" @tap="openAddres">
+				<text style="font-size: 17px;">{{ headerCity? headerCity : '宁波市'  }}</text>
+				<!-- <image src="../../static/img/index/down.png" mode="" style="width: 24rpx;height: 16rpx;"></image> -->
+			</view>
+			<view class="header-center">
+				<!-- <transition name="fade"> -->
+				<view class="center-left" @tap.stop="handleChoiceCar(0)">
+					<image v-if="choiceCar == 0" src="../../static/img/index/motuoActive.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
+					<image v-if="choiceCar == 1" src="../../static/img/index/motuo.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
+					<view class="center-font" :class="{on:choiceCar == 0}">
+						<text class="font-color">普通派送</text>
+					</view>
+						<view class="carLine"  :class="{carLineActive: choiceCar == 0}"></view>
+				</view>
+				<!-- </transition> -->
+				<!-- <transition name="fadecar"> -->
+				<view class="center-right" @tap.stop="handleChoiceCar(1)">
+					<image v-if="choiceCar == 1" src="../../static/img/index/carActice.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
+					<image v-if="choiceCar == 0" src="../../static/img/index/car.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
+					<view class="center-font" :class="{on:choiceCar == 1}">
+						<text class="font-color">特殊派送</text>
+					</view>
+					<view class="carLine"  :class="{carLineActive: choiceCar == 1}"></view>
+				</view>
+			<!-- </transition> -->
+			</view>
+			<view class="index-header-right" @tap.stop="goToNews">
+				<image src="../../static/img/index/xiaoxi.png" mode="aspectFill" class="lingdang"></image>
+				<view class="redCircle" v-if="newsReaderFlag == 0" ref="redCircle"></view>
+			</view>
+		</view>
+		
+	
+		
+		
+
+		<view class="map-box">
+			<!-- <map id="map1" ref="map1" v-if="covers[0].latitude" :style="{width: 750 + 'rpx', height: 1434 + 'rpx'}" -->
+			<!-- <map
+				id="maps"
+				v-if="covers[0].latitude"
+				:style="{ width: 750 + 'rpx', height: mapheight + 'rpx' }"
+				:latitude="latitude"
+				:longitude="longitude"
+				:markers="covers"
+				@tap.stop="handleMap"
+				@regionchange="region"
+				:controls="controls"
+				:polyline = "polyline"
+				
+			></map> -->
+			<map
+				id="maps"
+				:style="{ width: 750 + 'rpx', height: mapheight + 'rpx' }"
+				:latitude="latitude"
+				:longitude="longitude"
+				:markers="covers"
+				@tap="handleMap"
+				:polyline = "polyline"
+				:include-points="points"
+				v-if="mapShow"
+				ref = 'newsMap'
+				scale = 15
+			></map>
+		
+		</view>
+	<!-- 	<view v-if="platform == 'ios'">
+			<map
+				id="maps1"
+				:style="{ width: 750 + 'rpx', height: 1000 + 'rpx' }"
+				:latitude="latitude"
+				:longitude="longitude"
+				v-if="!mapShow"
+			></map>
+		</view> -->
+		<!-- <view class="button-box">
+			<text class="button-left" @tap.stop="goToStorage(0)">普通配送</text>
+			<text class="button-line"></text>
+			<text class="button-right" @tap.stop="goToStorage(1)">特殊派送</text>
+		</view> -->
+		
+		<view class="footer-box" ref="footerBox">
+			<view class="footer-scroll" v-if="choiceCar === 0">
+				<text class="ft-item" :class="{ftItemActive:index == ftItemIndex }" v-for="(item,index) in ftScroll" :key= 'index' @tap.stop="handleFTIndex(index)">{{item}}</text>
+				
+			</view>
+			<view class="footer-scroll" v-if="choiceCar === 1">
+				<text class="ft-item" :class="{ftItemActive:index == ftItemIndex }" v-for="(item,index) in ftScrollCar" :key= 'index' @tap.stop="handleFTIndex(index)">{{item}}</text>
+			</view>
+			
+			<view class="footer-center">
+				<view class="center-sendAddress">
+					<view class="center-sendAddress-left">
+						<view class="sendAddress-left-circle" style="background-color: #2642e1;">
+							
+							<text style="font-size: 12px; font-weight: bold; color: #FFFFFF;" v-if="ftItemIndex == 2">买</text>
+							<text style="font-size: 12px; font-weight: bold; color: #FFFFFF;" v-else>取</text>
+						</view>
+					</view>
+					<view class="center-sendAddress-right" @tap.stop="goToEdit(sendAddress, 0, sendAddress.id)">
+						<text class="sendAddress-right-top">{{ftSendAddress.titleName ? ftSendAddress.titleName : '从哪里取货'}}</text>
+						<text class="sendAddress-right-bottom">{{ftSendAddress.addressname ? ftSendAddress.addressname : '点击输入取货地址'}}</text>
+						<view class="center-sendAddress-right-text">
+							<text class="center-sendAddress-right-text-t right-text-t-marginr" v-if="userStartUserName && userStartUserName.length != 11">{{userStartUserName}}</text>
+							<text class="center-sendAddress-right-text-t" v-if="userStartUserPhone">{{userStartUserPhone}}</text>
+						</view>
+					</view>
+					<view class="center-sendAddress-address"  @tap.stop="goToAddress(0)">
+						<text style="font-size: 14px; color: #2642e1; padding-left: 20rpx;flex: 1;" >地址簿</text>
+					</view>
+				</view> 
+				<view class="center-sendAddress" style="padding-top: 20rpx;">
+					<view class="center-sendAddress-left">
+						<view class="sendAddress-left-circle" style="background-color: #ff6200;">
+							<text style="font-size: 12px; font-weight: bold;color: #FFFFFF;" v-if="ftItemIndex == 2">收</text>
+							<text style="font-size: 12px; font-weight: bold;color: #FFFFFF;" v-else>达</text>
+						</view>
+					</view>
+					<view class="center-sendAddress-right" @tap.stop="goToEdit(endAddress, 1, endAddress.id)">
+						<text class="sendAddress-right-top">{{endAddress.editAddress.name ? endAddress.editAddress.name:'要送到哪里'}}</text>
+						<text class="sendAddress-right-bottom">{{endAddress.editAddress.address ? endAddress.editAddress.address:'点击输入送达地址'}}</text>
+						<view class="center-sendAddress-right-text">
+							<text class="center-sendAddress-right-text-t right-text-t-marginr" v-if="userEndUserName && userEndUserName.length != 11">{{userEndUserName}}</text>
+							<text class="center-sendAddress-right-text-t" v-if="userEndUserPhone">{{userEndUserPhone}}</text>
+						</view>
+					</view>
+					<view class="center-sendAddress-address"  @tap.stop="goToAddress(1)">	
+						<text style="font-size: 14px; color: #2642e1; padding-left: 20rpx; flex: 1; " >地址簿</text>
+					</view>
+				</view>
+			</view>
+			
+			<view class="footer-bottom" @tap.stop="goToStorage(choiceCar)">
+				<text style="font-size: 14px;color: #FFFFFF;">下一步</text>
+			</view>	
+		</view>
+		<!-- <view class="zuobiao" @click.stop="restoration" :style="{bottom: platform == 'ios' ? 530 + 'rpx' : 390 + 'rpx'}" v-if="mapShow"> -->
+		<view class="zuobiao" @click.stop="restoration" :style="{bottom: platform == 'ios' ? 460 + 'rpx' : 390 + 'rpx'}" v-if="mapShow">
+			<image src="../../static/img/index/zuobiao.png" mode="" class="zuobiao-img" ></image>
+		</view>
+		
+		<simple-address ref="simpleAddress" @onConfirm.stop="onConfirm" themeColor="#007AFF" :pickerValueDefault="cityPickerValueDefault"></simple-address>
+	</view>
+</template>
+
+<script>
+import baseURL from '../../config/index.js';
+import permision from '@/js_sdk/wa-permission/permission.js';
+import simpleAddress from '@/components/simple-address/simple-address.nvue';
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime' // 引入相对时间
+import 'dayjs/locale/zh-cn' // 引入中文
+dayjs.locale('zh-cn') // 引入中文
+dayjs.extend(relativeTime)
+export default {
+	data() {
+		return {
+			statusHeight: 0,
+			mapheight: 0,
+			mapwidth: 0,
+	
+			latitude: 0,
+			longitude: 0,
+			
+			covers: [
+				{
+					id: 1,
+					latitude: 0,
+					longitude: 0,
+					iconPath: '/static/img/index/dingweione.png',
+					width: 20,
+					height: 30,
+					callout: {
+						content: '',
+						color: '#09023E',
+						fontSize: 12,
+						bgColor: 'white',
+						display: 'ALWAYS',
+						borderRadius: 0,
+						padding: 0
+					}
+				}
+			],
+			polyline:[
+				
+			],
+			points: [],
+			//储存地址
+			city: '',
+			area: '',
+			editAddress: {
+				longitude: 0,
+				name: '',
+				latitude: 0,
+				address: ''
+			},
+			//防抖处理
+			timerId: '',
+			//
+			headerCity: '宁波市',
+			routeFlag: true,
+			msgInfo: {},
+			//安卓或ios
+			platform: '',
+			newsReaderFlag: 0,
+			//禁用宁波市以外
+			disabledFlag: false,
+			cityPickerValueDefault: [10, 1, 0],
+			//
+			mapContext: {},
+			//首页改动后数据
+			choiceCar: 0,
+			ftScroll: ['帮我送','帮我取','帮我买'],
+			ftScrollCar: ['帮我送','帮我取'],
+			ftItemIndex: 0,
+			ftSendAddress: {},
+			endAddress: {
+				name: '',
+				address: '',
+				editAddress: {}
+			},
+			sendAddress: {
+				editAddress: ''
+			},
+			// 距离
+			distance: 0,
+			timer: 0,
+			showTimer: 0,
+			mapShow: true,
+			distanceTipFlag: true,
+			nheaderFlag: false,
+			//用户起始 终点的姓名号码
+			userStartUserName: '',
+			userStartUserPhone: '',
+			userEndUserName: '',
+			userEndUserPhone: '',
+			// 骑手个数
+			horseManTotal: 0,
+			// 是否开通标识 0允许
+			openFlag: 1,
+			// 地区编码
+			adcode: 0
+		};
+	},
+	components: {
+		simpleAddress
+	},
+	onHide () {
+		// this.endAddress = {}
+		// this.polyline = []
+		
+	},
+	created() {
+		this.choiceCar = 0
+	},
+	onLoad() {
+		
+		// 解决头部图标可能出不来
+		setTimeout(() => {
+			this.nheaderFlag = true
+		},1000)
+		this.choiceCar = 0
+		// console.log(this.choiceCar)
+		//判断手机 设置地图高度
+		let data = uni.getSystemInfoSync();
+		this.platform = data.platform;
+		this.statusHeight = data.statusBarHeight;
+		
+		// this.mapwidth = data.windowWidth * 2;
+		// if (data.brand === 'Xiaomi') {
+		// 	this.mapheight = data.safeArea.height * 2 - 112;
+		// } else if (this.platform == 'ios') {
+		// 	this.mapheight = data.safeArea.height * 2;
+		// } else {
+		// 	this.mapheight = data.windowHeight * 2 - 112 + (data.statusBarHeight * 2 + 10);
+		// }
+		this.mapheight = data.windowHeight * 2 - data.windowHeight * 0.2
+		
+		this.headerCity = '宁波市'
+		//获取当前用户位置
+		this.getLocation();
+		//获取默认地址
+		this.initAddress();
+		//查看是否有消息未读
+		this.initMsgReader();
+		setTimeout(()=>{
+			this.getLocation()
+		},1500)
+	},
+	onShow() {
+		this.distance = 0
+		uni.setStorageSync('loginFlag', 1)
+		this.routeFlag = true;
+		this.initMsgReader();
+		
+		if (this.platform == 'ios') {
+			this.initIosPosition();
+		} else {
+			this.initPosition();
+		}
+	
+		
+		if (uni.getStorageSync('endAddress')) {
+
+			this.endAddress = JSON.parse(uni.getStorageSync('endAddress')) 
+			// console.log(this.endAddress)
+			this.userEndUserName = this.endAddress.name
+			this.userEndUserPhone = this.endAddress.mobile
+			// this.covers = []
+			// this.covers = [...this.covers]
+			// this.$set(this.covers,0,[])
+			
+			
+			
+			// this.covers = [
+			// 	{
+			// 		id: 1,
+			// 		latitude: this.latitude,
+			// 		longitude: this.longitude,
+			// 		iconPath: '/static/img/index/dingweione.png',
+			// 		width: 20,
+			// 		height: 30,
+			// 		callout: {
+			// 			content: '',
+			// 			color: '#09023E',
+			// 			fontSize: 12,
+			// 			bgColor: 'white',
+			// 			display: 'ALWAYS',
+			// 			borderRadius: 0,
+			// 			padding: 10
+			// 		}
+			// 	},
+			// 	{
+			// 		latitude: this.endAddress.editAddress.latitude,
+			// 		longitude: this.endAddress.editAddress.longitude,
+			// 		iconPath: '/static/img/index/dingweitwo.png',
+			// 		width: 20,
+			// 		height: 30,
+			// 		callout: {
+			// 			content: '计算距离中....',
+			// 			color: '#09023E',
+			// 			fontSize: 12,
+			// 			bgColor: 'white',
+			// 			display: 'ALWAYS',
+			// 			borderRadius: 0,
+			// 			padding: 10
+			// 		}
+			// 	}
+			// ];
+			 
+			this.plusReady()
+			
+			
+		}
+		if (uni.getStorageSync('sendAddress')) {
+			this.sendAddress = JSON.parse(uni.getStorageSync('sendAddress')) 
+			// console.log(this.sendAddress)
+			this.userStartUserName = this.sendAddress.name
+			this.userStartUserPhone = this.sendAddress.mobile
+			this.ftSendAddress = {}
+			this.ftSendAddress.titleName = this.sendAddress.editAddress.name
+			this.ftSendAddress.addressname = this.sendAddress.editAddress.address
+			
+	
+			
+			this.handleMap(this.sendAddress.editAddress.latitude,this.sendAddress.editAddress.longitude)
+			
+		
+			
+			if(uni.getStorageSync('endAddress')) {
+				
+				// this.covers = []
+				// this.covers = [...this.covers]
+				// this.$set(this.covers,0,[])
+
+				// this.covers = [
+				// 	{
+				// 		id: 1,
+				// 		latitude: this.latitude,
+				// 		longitude: this.longitude,
+				// 		iconPath: '/static/img/index/dingweione.png',
+				// 		width: 20,
+				// 		height: 30,
+				// 		callout: {
+				// 			content: '',
+				// 			color: '#09023E',
+				// 			fontSize: 12,
+				// 			bgColor: 'white',
+				// 			display: 'ALWAYS',
+				// 			borderRadius: 0,
+				// 			padding: 10
+				// 		} 
+				// 	},
+				// 	{
+				// 		latitude: this.endAddress.editAddress.latitude,
+				// 		longitude: this.endAddress.editAddress.longitude,
+				// 		iconPath: '/static/img/index/dingweitwo.png',
+				// 		width: 20,
+				// 		height: 30,
+				// 		callout: {
+				// 			content: '计算距离中....',
+				// 			color: '#09023E',
+				// 			fontSize: 12,
+				// 			bgColor: 'white',
+				// 			display: 'ALWAYS',
+				// 			borderRadius: 0,
+				// 			padding: 10
+				// 		}
+				// 	}
+				// ];
+				 this.plusReady()
+				
+			}
+			
+			
+			
+			
+		}
+		if (this.distance) {
+			console.log(this.distance)
+			this.covers = [
+				{
+					id: 1,
+					latitude: this.latitude,
+					longitude: this.longitude,
+					iconPath: '/static/img/index/dingweione.png',
+					width: 20,
+					height: 30,
+					callout: {
+						content: '起始位置',
+						color: '#09023E',
+						fontSize: 12,
+						bgColor: 'white',
+						display: 'ALWAYS',
+						borderRadius: 0,
+						padding: 10
+					}
+				},
+				{
+					latitude: this.endAddress.editAddress.latitude,
+					longitude: this.endAddress.editAddress.longitude,
+					iconPath: '/static/img/index/dingweitwo.png',
+					width: 20,
+					height: 30,
+					callout: {
+						content: this.distance + '公里,预计'+ this.showTimer + '前送达',
+						color: '#09023E',
+						fontSize: 12,
+						bgColor: 'white',
+						display: 'ALWAYS',
+						borderRadius: 0,
+						padding: 10
+					}
+				}
+			];
+		}
+	
+	},
+	onTabItemTap (e) {
+		// 刷新地图
+		// if (this.platform == 'ios') {
+		// 	this.mapShow = false
+		// 	setTimeout(() => {
+		// 		this.mapShow = true
+		// 	},600)
+		// }
+		
+		// if (uni.getStorageSync('sendAddress')) {
+		// 	uni.removeStorageSync('sendAddress')
+		// }
+		
+		this.userEndUserName = ""
+		this.userEndUserPhone = ""
+		// this.mapShow = false
+		this.endAddress.editAddress.name = ""
+		this.endAddress.editAddress.address = ""
+		this.endAddress = {
+			name: '',
+			address: '',
+			editAddress: {}
+		}
+		uni.removeStorageSync('endAddress')
+		this.distance = 0
+		// 
+		// this.covers = [
+		// 	{
+		// 		id: 1,
+		// 		latitude: this.latitude,
+		// 		longitude: this.longitude,
+		// 		iconPath: '/static/img/index/dingweione.png',
+		// 		width: 20,
+		// 		height: 30,
+		// 		callout: {
+		// 			content: '起始位置',
+		// 			color: '#09023E',
+		// 			fontSize: 12,
+		// 			bgColor: 'white',
+		// 			display: 'ALWAYS',
+		// 			borderRadius: 0,
+		// 			padding: 10
+		// 		}
+		// 	}
+		// ];
+		this.setRefreshMarkTitle()
+		this.polyline = [
+			{
+				points: [],
+				color:'#0091ff',
+				width: 0
+			}
+		]
+		
+		
+		setTimeout(() => {
+			// this.covers = [
+			// 	{
+			// 		id: 1,
+			// 		latitude: this.latitude,
+			// 		longitude: this.longitude,
+			// 		iconPath: '/static/img/index/dingweione.png',
+			// 		width: 20,
+			// 		height: 30,
+			// 		callout: {
+			// 			content: '起始位置',
+			// 			color: '#09023E',
+			// 			fontSize: 12,
+			// 			bgColor: 'white',
+			// 			display: 'ALWAYS',
+			// 			borderRadius: 0,
+			// 			padding: 10
+			// 		}
+			// 	}
+			// ];
+			this.setRefreshMarkTitle()
+			this.polyline = [
+				{
+					points: [],
+					color:'#0091ff',
+					width: 0
+				}
+			]
+			
+		}, 200)
+		setTimeout(() => {
+			// this.covers = [
+			// 	{
+			// 		id: 1,
+			// 		latitude: this.latitude,
+			// 		longitude: this.longitude,
+			// 		iconPath: '/static/img/index/dingweione.png',
+			// 		width: 20,
+			// 		height: 30,
+			// 		callout: {
+			// 			content: '起始位置',
+			// 			color: '#09023E',
+			// 			fontSize: 12,
+			// 			bgColor: 'white',
+			// 			display: 'ALWAYS',
+			// 			borderRadius: 0,
+			// 			padding: 10
+			// 		}
+			// 	}
+			// ];
+			this.setRefreshMarkTitle()
+			this.polyline = [
+				{
+					points: [],
+					color:'#0091ff',
+					width: 0
+				}
+			]
+			
+		}, 400)
+		setTimeout(() => {
+			// this.covers = [
+			// 	{
+			// 		id: 1,
+			// 		latitude: this.latitude,
+			// 		longitude: this.longitude,
+			// 		iconPath: '/static/img/index/dingweione.png',
+			// 		width: 20,
+			// 		height: 30,
+			// 		callout: {
+			// 			content: '起始位置',
+			// 			color: '#09023E',
+			// 			fontSize: 12,
+			// 			bgColor: 'white',
+			// 			display: 'ALWAYS',
+			// 			borderRadius: 0,
+			// 			padding: 10
+			// 		}
+			// 	}
+			// ];
+			this.setRefreshMarkTitle()
+			this.polyline = [
+				{
+					points: [],
+					color:'#0091ff',
+					width: 0
+				}
+			]
+			
+		}, 800)
+		setTimeout(() => {
+			// this.covers = [
+			// 	{
+			// 		id: 1,
+			// 		latitude: this.latitude,
+			// 		longitude: this.longitude,
+			// 		iconPath: '/static/img/index/dingweione.png',
+			// 		width: 20,
+			// 		height: 30,
+			// 		callout: {
+			// 			content: '起始位置',
+			// 			color: '#09023E',
+			// 			fontSize: 12,
+			// 			bgColor: 'white',
+			// 			display: 'ALWAYS',
+			// 			borderRadius: 0,
+			// 			padding: 10
+			// 		}
+			// 	}
+			// ];
+			this.setRefreshMarkTitle()
+			this.polyline = [
+				{
+					points: [],
+					color:'#0091ff',
+					width: 0
+				}
+			]
+			
+		}, 1000)
+	
+	},
+	methods: {
+		//显示picker
+		openAddres() {
+			this.$refs.simpleAddress.open();
+		},
+		setRefreshMarkTitle () {
+			if (this.horseManTotal <= 0 ) {
+				this.covers = [
+					{
+						id: 1,
+						latitude: this.latitude,
+						longitude: this.longitude,
+						iconPath: '/static/img/index/dingweione.png',
+						width: 20,
+						height: 30,
+						callout: {
+							content: '附近暂无骑手,请稍等',
+							color: '#09023E',
+							fontSize: 12,
+							bgColor: 'white',
+							display: 'ALWAYS',
+							borderRadius: 0,
+							padding: 10
+						}
+					}
+				];
+				if (this.platform == 'ios') {
+					this.covers = [
+						{
+							id: 1,
+							latitude: this.latitude,
+							longitude: this.longitude,
+							iconPath: '/static/img/index/dingweione.png',
+							width: 20,
+							height: 30,
+							callout: {
+								content: '附近暂无骑手,请稍等',
+								color: '#09023E',
+								fontSize: 12,
+								bgColor: 'white',
+								display: 'ALWAYS',
+								borderRadius: 0,
+								padding: 10
+							}
+						}
+					];
+				}
+			}
+			
+			if (this.horseManTotal <= 2 && this.horseManTotal > 0) {
+				this.covers = [
+					{
+						id: 1,
+						latitude: this.latitude,
+						longitude: this.longitude,
+						iconPath: '/static/img/index/dingweione.png',
+						width: 20,
+						height: 30,
+						callout: {
+							content: '附近有' + 3 + '位骑手,预计3分钟内接单',
+							color: '#09023E',
+							fontSize: 12,
+							bgColor: 'white',
+							display: 'ALWAYS',
+							borderRadius: 0,
+							padding: 10
+						}
+					}
+				];
+				if (this.platform == 'ios') {
+					this.covers = [
+						{
+							id: 1,
+							latitude: this.latitude,
+							longitude: this.longitude,
+							iconPath: '/static/img/index/dingweione.png',
+							width: 20,
+							height: 30,
+							callout: {
+								content: '附近有' + 3 + '位骑手,预计3分钟内接单',
+								color: '#09023E',
+								fontSize: 12,
+								bgColor: 'white',
+								display: 'ALWAYS',
+								borderRadius: 0,
+								padding: 10
+							}
+						}
+					];
+				}
+			} else if (this.horseManTotal >= 3) {
+				this.covers = [
+					{
+						id: 1,
+						latitude: this.latitude,
+						longitude: this.longitude,
+						iconPath: '/static/img/index/dingweione.png',
+						width: 20,
+						height: 30,
+						callout: {
+							content: '附近有' + this.horseManTotal + '位骑手,预计3分钟内接单',
+							color: '#09023E',
+							fontSize: 12,
+							bgColor: 'white',
+							display: 'ALWAYS',
+							borderRadius: 0,
+							padding: 10
+						}
+					}
+				];
+				if (this.platform == 'ios') {
+					this.covers = [
+						{
+							id: 1,
+							latitude: this.latitude,
+							longitude: this.longitude,
+							iconPath: '/static/img/index/dingweione.png',
+							width: 20,
+							height: 30,
+							callout: {
+								content: '附近有' + this.horseManTotal + '位骑手,预计3分钟内接单',
+								color: '#09023E',
+								fontSize: 12,
+								bgColor: 'white',
+								display: 'ALWAYS',
+								borderRadius: 0,
+								padding: 10
+							}
+						}
+					];
+				}
+			}
+		},
+	
+		//切换城市
+		onConfirm(e) {
+			let choiceAddress = e.label.replace('-', '').replace('-', '');
+			
+			uni.request({
+				url: 'https://restapi.amap.com/v3/geocode/geo?address=' + choiceAddress + '&output=JSON&key=6223011d1e55de8ee9d00617ee5270c2', //仅为示例，并非真实接口地址。
+				success: res => {
+					
+					this.headerCity = res.data.geocodes[0].city;
+					
+					this.latitude = res.data.geocodes[0].location.split(',')[1]
+					this.longitude = res.data.geocodes[0].location.split(',')[0]
+					this.getHorseman();
+
+					if (res.data.geocodes[0].city !== '宁波市') {
+						this.disabledFlag = true;
+					}
+					
+					
+					uni.request({
+						url:
+							'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' +
+							this.longitude +
+							',' +
+							this.latitude +
+							'&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。
+						success: res => {
+						
+							let userPhone = uni.getStorageSync('user_phone');
+							let userName = uni.getStorageSync('user_Name');
+							let latitude = this.longitude + ',' + this.latitude;
+							if (res.data.regeocode.aois.length != 0) {
+								this.ftSendAddress = {}
+								this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
+								this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
+								this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+								
+								this.editAddress.name = res.data.regeocode.aois[0].name;
+								this.editAddress.address = res.data.regeocode.formatted_address;
+								this.editAddress.longitude = this.longitude;
+								this.editAddress.latitude = this.latitude;
+								
+								this.province = res.data.regeocode.addressComponent.province;
+								this.city = res.data.regeocode.addressComponent.city;
+								this.area = res.data.regeocode.addressComponent.district;
+												
+								let sendAddress = {
+									addressDetail: '',
+									latitude: latitude,
+									mobile: this.userStartUserPhone,
+									name: this.userStartUserName,
+									province: this.province,
+									editAddress: this.editAddress,
+									city: this.city,
+									area: this.area,
+									orderId: ''
+								};
+								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+							
+							}
+						}
+					});
+				}
+			});
+			
+		},
+
+		//安卓
+		initPosition() {
+			if (plus.os.name == 'Android') {
+				var context = plus.android.importClass('android.content.Context');
+				var locationManager = plus.android.importClass('android.location.LocationManager');
+				var main = plus.android.runtimeMainActivity();
+				var mainSvr = main.getSystemService(context.LOCATION_SERVICE);
+				var gpsProvider = mainSvr.isProviderEnabled(locationManager.GPS_PROVIDER); //检查是否开启了GPS
+				if (!gpsProvider) {
+					var message = '为了获取您的精准位置，请开启GPS设备。';
+					var title = 'GPS未启用';
+					var alertCB = function() {
+						var Intent = plus.android.importClass('android.content.Intent');
+						var mIntent = new Intent('android.settings.LOCATION_SOURCE_SETTINGS');
+						main.startActivity(mIntent); //打开GPS设置
+					};
+					plus.nativeUI.alert(message, alertCB, title);
+				}
+			}
+		},
+		//iosGPS
+		initIosPosition() {
+			var cllocationManger = plus.ios.import('CLLocationManager');
+			var enable = cllocationManger.locationServicesEnabled();
+			var status = cllocationManger.authorizationStatus();
+			if (enable && status != 2) {
+				// console.log("手机系统的定位已经打开且App已经获得定位权限");
+			} else {
+				uni.showModal({
+					title: 'GPS定位服务',
+					content: '为确保您的地址准确，请开启GPS服务系统',
+					success: function(res) {
+						if (res.confirm) {
+							permision.gotoAppPermissionSetting();
+							this.getLocation();
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+							this.getLocation();
+						}
+					}
+				});
+			}
+			plus.ios.deleteObject(cllocationManger);
+		},
+		goToNews() {
+			uni.navigateTo({
+				url: '../news/news'
+			});
+		},
+		
+		//点击小图标复位
+		restoration () {
+			this.mapShow = false
+			console.log(this.fwlongitude, this.fwlatitude)
+			this.longitude = this.fwlongitude
+			this.latitude = this.fwlatitude
+			this.points = []
+			this.handleMap(this.fwlatitude, this.fwlongitude)
+			setTimeout(() => {
+				this.mapShow = true
+			},400)
+		},
+		
+		//派送
+		goToStorage(index) {
+			
+			let token = uni.getStorageSync('token');
+			if (!token) {
+				uni.showToast({
+					icon: 'none',
+					title: '暂未登录'
+				});
+				setTimeout(() => {
+					uni.navigateTo({
+						url: '../enter/enter'
+					});
+				}, 1000);
+				return;
+			}
+			
+			console.log(this.headerCity)
+			// if (this.headerCity != '宁波市') {
+			// 	uni.showToast({
+			// 		icon: 'none',
+			// 		title: '该地区暂未开通服务，敬请期待'
+			// 	});
+			// 	return;
+			// }
+			
+			// if (uni.getStorageSync('sendAddress') == false || uni.getStorageSync('endAddress') == false ) {
+				if (uni.getStorageSync('endAddress') == '' ) {
+				uni.showToast({
+					icon: 'none',
+					title: '请检查地址信息是否完善'
+				});
+				return;
+			}
+			if (this.ftSendAddress.titleName === '未获取到地址') {
+				uni.showToast({
+					icon: 'none',
+					title: '请检查地址信息是否正确'
+				});
+				return;
+			}
+			
+			
+			if (this.ftItemIndex === 2) {
+				uni.navigateTo({
+					url: '../storage/storage?car=' + this.choiceCar + '&scrollIndex=' + this.ftItemIndex 
+				});
+				return
+			}
+			
+			console.log(this.sendAddress)
+			if (this.sendAddress.mobile.trim() == '' || this.sendAddress.name.trim() == '') {
+				uni.showToast({
+					icon: 'none',
+					title: '请完善取货地址信息'
+				});
+				return;
+			}
+
+			//防抖处理
+			this.timerId && clearTimeout(this.timerId);
+			this.timerId = setTimeout(() => {
+				
+				if (uni.getStorageSync('user_phone')) {
+					let userPhone = uni.getStorageSync('user_phone');
+					let userName = uni.getStorageSync('user_Name');
+					this.token = uni.getStorageSync('token')
+					let latitude = this.longitude + ',' + this.latitude;
+					uni.request({
+						url:
+							'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' +
+							this.longitude +
+							',' +
+							this.latitude +
+							'&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。
+						success: res => {
+							// console.log(res.data.regeocode.addressComponent.adcode.substring(0, 4))
+							
+							// if (res.data.regeocode.addressComponent.adcode.substring(0, 4) != '3302') {
+							// 	return uni.showToast({
+							// 		icon: 'none',
+							// 		title: '该地区暂未开通服务，敬请期待'
+							// 	})
+							// }
+							this.adcode = res.data.regeocode.addressComponent.adcode.substring(0, 4)
+							
+							uni.request({
+							    url: 'https://admin.gglaisong.com/token/order/test_adcode', //仅为示例，并非真实接口地址。
+							    data: {
+								   adcode : this.adcode,
+							    },
+								method: "POST",
+							    header: {
+									'content-type': 'application/x-www-form-urlencoded',
+									'token': this.token
+							    },
+							    success: (resOpen) => {
+							        console.log(resOpen);
+									this.openFlag = resOpen.data.code
+									if (this.openFlag != 0) {
+										return uni.showToast({
+											icon: 'none',
+											title: '该地区暂未开通服务，敬请期待'
+										})
+									}
+									if (res.data.regeocode.aois.length == 0 && res.data.regeocode.pois.length == 0) {
+										
+										this.editAddress.name = '';
+										this.editAddress.address = '';
+										this.editAddress.longitude = ''
+										this.editAddress.latitude = ""
+										latitude = ''
+										
+										let sendAddress = {
+											addressDetail: '',
+											latitude: latitude,
+											mobile: this.userStartUserPhone,
+											name: this.userStartUserName,
+											province: this.province,
+											editAddress: this.editAddress,
+											city: this.city,
+											area: this.area,
+											orderId: ''
+										};
+										// console.log(this.sendAddress)
+									
+										if (!uni.getStorageSync('sendAddress')) {
+											uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+										}
+										if (sendAddress != uni.getStorageSync('sendAddress')) {
+											uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+										}
+										
+										if (this.distanceTipFlag) {
+											if (this.distance > 10 && !this.choiceCar) {
+												uni.showModal({
+												    title: '提示',
+												    content: '您的下单距离已超过10公里，是否使用特殊派送',
+												    success: res => {
+												        if (res.confirm) {
+												           uni.navigateTo({
+												           	url: '../storage/storage?car=' + 1 + '&scrollIndex=' + this.ftItemIndex
+												           });
+												        } else if (res.cancel) {
+														   this.distanceTipFlag = true
+														   this.routeFlag = true
+												        }
+												    }
+												});
+											} else {
+													uni.navigateTo({
+														url: '../storage/storage?car=' + index + '&scrollIndex=' + this.ftItemIndex
+													});
+											}
+											this.disabledFlag = false
+										}
+										
+									} else if (this.msgInfo == undefined && res.data.regeocode.aois.length) {
+										// console.log(res.data.regeocode)
+										this.editAddress.name = res.data.regeocode.aois[0].name;
+										this.editAddress.address = res.data.regeocode.formatted_address;
+										this.editAddress.longitude = this.longitude;
+										this.editAddress.latitude = this.latitude;
+									
+										this.province = res.data.regeocode.addressComponent.province;
+										this.city = res.data.regeocode.addressComponent.city;
+										this.area = res.data.regeocode.addressComponent.district;
+										
+															
+										let sendAddress = {
+											addressDetail: '',
+											latitude: latitude,
+											mobile: this.userStartUserPhone,
+											name: this.userStartUserName,
+											province: this.province,
+											editAddress: this.editAddress,
+											city: this.city,
+											area: this.area,
+											orderId: ''
+										};
+										
+										if(uni.getStorageSync('sendAddress')) {
+											 sendAddress = JSON.parse(uni.getStorageSync('sendAddress'))
+										}
+										
+										if (!uni.getStorageSync('sendAddress')) {
+											uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+										}
+										if (sendAddress != uni.getStorageSync('sendAddress')) {
+											uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+										}
+									
+												
+										if (this.routeFlag) {
+											
+											this.routeFlag = false;
+											if (this.distanceTipFlag) {
+												if (this.distance > 10 && !this.choiceCar) {
+													uni.showModal({
+													    title: '提示',
+													    content: '您的下单距离已超过10公里，是否使用特殊派送',
+													    success: res => {
+													        if (res.confirm) {
+													           uni.navigateTo({
+													           	url: '../storage/storage?car=' + 1 + '&scrollIndex=' + this.ftItemIndex
+													           });
+													        } else if (res.cancel) {
+													  
+															   this.distanceTipFlag = true
+															   this.routeFlag = true
+													        }
+													    }
+													});
+												} else {
+														uni.navigateTo({
+															url: '../storage/storage?car=' + index + '&scrollIndex=' + this.ftItemIndex
+														});
+												}
+												this.disabledFlag = false
+											}
+										}
+									
+									} else {
+									
+										if (this.routeFlag) {
+											
+											this.routeFlag = false;
+											
+											if (this.distanceTipFlag) {
+												if (this.distance > 10 && !this.choiceCar) {
+													uni.showModal({
+													    title: '提示',
+													    content: '您的下单距离已超过10公里，是否使用特殊派送',
+													    success: res => {
+													        if (res.confirm) {
+													           uni.navigateTo({
+													           	url: '../storage/storage?car=' + 1 + '&scrollIndex=' + this.ftItemIndex
+													           });
+													        } else if (res.cancel) {
+													       
+															   this.distanceTipFlag = true
+															   this.routeFlag = true
+													        }
+													    }
+													});
+												} else {
+														uni.navigateTo({
+															url: '../storage/storage?car=' + index + '&scrollIndex=' + this.ftItemIndex
+														});
+												}
+												this.disabledFlag = false
+											}
+										}
+									}
+							    }
+							});
+							console.log(this.openFlag)
+							
+							
+						
+						}
+					});
+				}
+			}, 200);
+		},
+		//默认地址
+		initAddress() {
+			let token = uni.getStorageSync('token');
+			uni.request({
+				url: baseURL + 'token/address/user_address_list', //仅为示例，并非真实接口地址。
+				method: 'GET',
+				header: {
+					token: token,
+					'content-type': 'application/x-www-form-urlencoded'
+				},
+				success: res => {
+					if (res.data.code === 0) {
+						let msg = res.data.data.find(item => item.defaultFlag === 0);
+
+						this.msgInfo = msg;
+					}
+				}
+			});
+		},
+		//获取位置
+		getLocation() {
+			// this.$nextTick(() =>{
+			let that = this;
+			let userPhone = uni.getStorageSync('user_phone');
+			let userName = uni.getStorageSync('user_Name');
+			let latitude = this.longitude + ',' + this.latitude;
+			
+			uni.getLocation({
+				//获取当前的位置坐标
+				type: 'gcj02',
+				// geocode: true
+				success: res => {
+					
+					this.latitude = res.latitude;
+					this.longitude = res.longitude;
+					this.covers[0].latitude = res.latitude;
+					this.covers[0].longitude = res.longitude;
+					this.fwlatitude = res.latitude
+					this.fwlongitude = res.longitude
+					uni.request({
+						url:
+							'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' +
+							this.longitude +
+							',' +
+							this.latitude +
+							'&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。
+						success: res => {
+							
+							
+							this.headerCity = res.data.regeocode.addressComponent.city;
+							// console.log(res.data)
+							if (res.data.regeocode.aois.length != 0) {
+								
+								// this.ftSendAddress = {}
+								// this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
+								// this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
+								// this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+							
+								this.editAddress.name = res.data.regeocode.aois[0].name;
+								this.editAddress.address = res.data.regeocode.formatted_address;
+								this.editAddress.longitude = this.longitude;
+								this.editAddress.latitude = this.latitude;
+								
+								this.province = res.data.regeocode.addressComponent.province;
+								this.city = res.data.regeocode.addressComponent.city;
+								this.area = res.data.regeocode.addressComponent.district;
+								
+								// console.log('我改变了他6')		
+								let sendAddress = {
+									addressDetail: '',
+									latitude: latitude,
+									mobile: this.userStartUserPhone,
+									name: this.userStartUserName,
+									province: this.province,
+									editAddress: this.editAddress,
+									city: this.city,
+									area: this.area,
+									orderId: ''
+								};
+								
+								this.sendAddress = sendAddress
+								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+								
+							
+							} else if (res.data.regeocode.pois.length != 0) {
+								// this.ftSendAddress = {}
+								// this.$set(this.ftSendAddress,'titleName',res.data.regeocode.pois[0].name)
+								// this.$set(this.ftSendAddress,'location',res.data.regeocode.pois[0].location)
+								// this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+								
+								this.editAddress.name = res.data.regeocode.pois[0].name;
+								this.editAddress.address = res.data.regeocode.formatted_address;
+								this.editAddress.longitude = this.longitude;
+								this.editAddress.latitude = this.latitude;
+								
+								this.province = res.data.regeocode.addressComponent.province;
+								this.city = res.data.regeocode.addressComponent.city;
+								this.area = res.data.regeocode.addressComponent.district;
+							
+											
+								let sendAddress = {
+									addressDetail: '',
+									latitude: latitude,
+									mobile: this.userStartUserPhone,
+									name: this.userStartUserName,
+									province: this.province,
+									editAddress: this.editAddress,
+									city: this.city,
+									area: this.area,
+									orderId: ''
+								};
+								this.sendAddress = sendAddress
+								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+							}else {
+								this.ftSendAddress.titleName = '未获取到地址'
+								this.ftSendAddress.addressname = ''
+							}
+						}
+					}); 
+					
+					this.getHorseman();
+					
+				},
+				fail: err => {
+					console.log(err);
+				}
+			});
+		},
+		//有无骑手
+		getHorseman() {
+			let lat = Number(this.latitude).toFixed(6);
+			let long = Number(this.longitude).toFixed(5);
+			let center = lat + ',' + long;
+			let token = uni.getStorageSync('token')
+			uni.request({
+				url: 'https://tsapi.amap.com/v1/track/terminal/aroundsearch',
+				method: 'POST',
+				header: {
+					'content-type': 'application/x-www-form-urlencoded'
+				},
+				data: {
+					// key: 'e54514186dfbafae58736cd342838baf',
+					// sid: '92478',
+					key: "4145121d3d1b5dcf41702960f3bd5adc",
+					sid: '126730',
+					center: center,
+					radius: 3 * 1000
+				},
+				success: async res => {
+					// this.covers = []
+					// this.covers = [...this.covers]
+					// this.$set(this.covers,0,[])
+					
+				
+					
+					
+					let userIds = []
+					for (let i = 0; i < res.data.data.results.length; i++) {
+						
+						userIds.push(res.data.data.results[i].name)
+					}
+					userIds = userIds.join(',')
+			
+					
+					uni.request({
+					    url: 'https://admin.gglaisong.com/notoken/user/get_receipt_flag', //仅为示例，并非真实接口地址。
+						method: 'POST',
+					    data: {
+					        userIds: userIds
+					    },
+						header: {
+							
+							'content-type': 'application/x-www-form-urlencoded'
+						},
+					    success: (msg) => {
+							console.log(msg)
+					        this.horseManTotal  = msg.data.data.length
+					       
+					       if (this.horseManTotal == 0) {
+					       	this.covers = [
+					       		{
+					       			id: 1,
+					       			latitude: this.latitude,
+					       			longitude: this.longitude,
+					       			iconPath: '/static/img/index/dingweione.png',
+					       			width: 20,
+					       			height: 30,
+					       			callout: {
+					       				content: '附近暂无骑手,请稍等',
+					       				color: '#09023E',
+					       				fontSize: 12,
+					       				bgColor: 'white',
+					       				display: 'ALWAYS',
+					       				borderRadius: 0,
+					       				padding: 10
+					       			}
+					       		}
+					       	];
+					       	if (this.platform == 'ios') {
+					       		this.covers = [
+					       			{
+					       				id: 1,
+					       				latitude: this.latitude,
+					       				longitude: this.longitude,
+					       				iconPath: '/static/img/index/dingweione.png',
+					       				width: 20,
+					       				height: 30,
+					       				callout: {
+					       					content: '附近暂无骑手,请稍等',
+					       					color: '#09023E',
+					       					fontSize: 12,
+					       					bgColor: 'white',
+					       					display: 'ALWAYS',
+					       					borderRadius: 0,
+					       					padding: 10
+					       				}
+					       			}
+					       		];
+					       	}
+					       }
+					       
+					       if (this.horseManTotal <= 2 && this.horseManTotal > 0) {
+					       	this.covers = [
+					       		{
+					       			id: 1,
+					       			latitude: this.latitude,
+					       			longitude: this.longitude,
+					       			iconPath: '/static/img/index/dingweione.png',
+					       			width: 20,
+					       			height: 30,
+					       			callout: {
+					       				content: '附近有' + 3 + '位骑手,预计3分钟内接单',
+					       				color: '#09023E',
+					       				fontSize: 12,
+					       				bgColor: 'white',
+					       				display: 'ALWAYS',
+					       				borderRadius: 0,
+					       				padding: 10
+					       			}
+					       		}
+					       	];
+					       	if (this.platform == 'ios') {
+					       		this.covers = [
+					       			{
+					       				id: 1,
+					       				latitude: this.latitude,
+					       				longitude: this.longitude,
+					       				iconPath: '/static/img/index/dingweione.png',
+					       				width: 20,
+					       				height: 30,
+					       				callout: {
+					       					content: '附近有' + 3 + '位骑手,预计3分钟内接单',
+					       					color: '#09023E',
+					       					fontSize: 12,
+					       					bgColor: 'white',
+					       					display: 'ALWAYS',
+					       					borderRadius: 0,
+					       					padding: 10
+					       				}
+					       			}
+					       		];
+					       	}
+					       	
+					       	if (uni.getStorageSync('endAddress')){
+					       		
+					       		this.covers = [
+					       			{
+					       				id: 1,
+					       				latitude: this.latitude,
+					       				longitude: this.longitude,
+					       				iconPath: '/static/img/index/dingweione.png',
+					       				width: 20,
+					       				height: 30,
+					       				callout: {
+					       					content: '起始位置',
+					       					color: '#09023E',
+					       					fontSize: 12,
+					       					bgColor: 'white',
+					       					display: 'ALWAYS',
+					       					borderRadius: 0,
+					       					padding: 10
+					       				}
+					       			},
+					       			{
+					       				latitude: this.endAddress.editAddress.latitude,
+					       				longitude: this.endAddress.editAddress.longitude,
+					       				iconPath: '/static/img/index/dingweitwo.png',
+					       				width: 20,
+					       				height: 30,
+					       				callout: {
+					       					content: this.distance + '公里,预计'+ this.showTimer + '前送达',
+					       					color: '#09023E',
+					       					fontSize: 12,
+					       					bgColor: 'white',
+					       					display: 'ALWAYS',
+					       					borderRadius: 0,
+					       					padding: 10
+					       				}
+					       			}
+					       		];
+					       		if (this.platform == 'ios') {
+					       			this.covers = [
+					       				{
+					       					id: 1,
+					       					latitude: this.latitude,
+					       					longitude: this.longitude,
+					       					iconPath: '/static/img/index/dingweione.png',
+					       					width: 20,
+					       					height: 30,
+					       					callout: {
+					       						content: '起始位置',
+					       						color: '#09023E',
+					       						fontSize: 12,
+					       						bgColor: 'white',
+					       						display: 'ALWAYS',
+					       						borderRadius: 0,
+					       						padding: 10
+					       					}
+					       				},
+					       				{
+					       					latitude: this.endAddress.editAddress.latitude,
+					       					longitude: this.endAddress.editAddress.longitude,
+					       					iconPath: '/static/img/index/dingweitwo.png',
+					       					width: 20,
+					       					height: 30,
+					       					callout: {
+					       						content: this.distance + '公里,预计'+ this.showTimer + '前送达',
+					       						color: '#09023E',
+					       						fontSize: 12,
+					       						bgColor: 'white',
+					       						display: 'ALWAYS',
+					       						borderRadius: 0,
+					       						padding: 10
+					       					}
+					       				}
+					       			];
+					       		}
+					       	}
+					       	this.plusReady()
+					       } else {
+					       	
+					       	this.covers = [
+					       		{
+					       			id: 1,
+					       			latitude: this.latitude,
+					       			longitude: this.longitude,
+					       			iconPath: '/static/img/index/dingweione.png',
+					       			width: 20,
+					       			height: 30,
+					       			callout: {
+					       				content: '附近有' + this.horseManTotal + '位骑手,预计3分钟内接单',
+					       				color: '#09023E',
+					       				fontSize: 12,
+					       				bgColor: 'white',
+					       				display: 'ALWAYS',
+					       				borderRadius: 0,
+					       				padding: 10
+					       			}
+					       		}
+					       	];
+					       	if (this.platform == 'ios') {
+					       		this.covers = [
+					       			{
+					       				id: 1,
+					       				latitude: this.latitude,
+					       				longitude: this.longitude,
+					       				iconPath: '/static/img/index/dingweione.png',
+					       				width: 20,
+					       				height: 30,
+					       				callout: {
+					       					content: '附近有' + this.horseManTotal + '位骑手,预计3分钟内接单',
+					       					color: '#09023E',
+					       					fontSize: 12,
+					       					bgColor: 'white',
+					       					display: 'ALWAYS',
+					       					borderRadius: 0,
+					       					padding: 10
+					       				}
+					       			},
+					       			
+					       		];
+					       	}
+					       	if (this.horseManTotal <= 0 ) {
+					       		this.covers = [
+					       			{
+					       				id: 1,
+					       				latitude: this.latitude,
+					       				longitude: this.longitude,
+					       				iconPath: '/static/img/index/dingweione.png',
+					       				width: 20,
+					       				height: 30,
+					       				callout: {
+					       					content: '附近暂无骑手,请稍等',
+					       					color: '#09023E',
+					       					fontSize: 12,
+					       					bgColor: 'white',
+					       					display: 'ALWAYS',
+					       					borderRadius: 0,
+					       					padding: 10
+					       				}
+					       			}
+					       		];
+					       		if (this.platform == 'ios') {
+					       			this.covers = [
+					       				{
+					       					id: 1,
+					       					latitude: this.latitude,
+					       					longitude: this.longitude,
+					       					iconPath: '/static/img/index/dingweione.png',
+					       					width: 20,
+					       					height: 30,
+					       					callout: {
+					       						content: '附近暂无骑手,请稍等',
+					       						color: '#09023E',
+					       						fontSize: 12,
+					       						bgColor: 'white',
+					       						display: 'ALWAYS',
+					       						borderRadius: 0,
+					       						padding: 10
+					       					}
+					       				}
+					       			];
+					       		}
+					       	}
+							
+							if (this.horseManTotal >= 3)  {
+								this.covers = [
+									{
+										id: 1,
+										latitude: this.latitude,
+										longitude: this.longitude,
+										iconPath: '/static/img/index/dingweione.png',
+										width: 20,
+										height: 30,
+										callout: {
+											content: '附近有' + this.horseManTotal + '位骑手,预计3分钟内接单',
+											color: '#09023E',
+											fontSize: 12,
+											bgColor: 'white',
+											display: 'ALWAYS',
+											borderRadius: 0,
+											padding: 10
+										}
+									}
+								];
+								if (this.platform == 'ios') {
+									this.covers = [
+										{
+											id: 1,
+											latitude: this.latitude,
+											longitude: this.longitude,
+											iconPath: '/static/img/index/dingweione.png',
+											width: 20,
+											height: 30,
+											callout: {
+												content: '附近有' + this.horseManTotal + '位骑手,预计3分钟内接单',
+												color: '#09023E',
+												fontSize: 12,
+												bgColor: 'white',
+												display: 'ALWAYS',
+												borderRadius: 0,
+												padding: 10
+											}
+										},
+										
+									];
+								}
+							}
+					       	
+					       	if (uni.getStorageSync('endAddress')){
+					       	
+					       		this.covers = [
+					       			{
+					       				id: 1,
+					       				latitude: this.latitude,
+					       				longitude: this.longitude,
+					       				iconPath: '/static/img/index/dingweione.png',
+					       				width: 20,
+					       				height: 30,
+					       				callout: {
+					       					content: '起始位置',
+					       					color: '#09023E',
+					       					fontSize: 12,
+					       					bgColor: 'white',
+					       					display: 'ALWAYS',
+					       					borderRadius: 0,
+					       					padding: 10
+					       				}
+					       			},
+					       			{
+					       				latitude: this.endAddress.editAddress.latitude,
+					       				longitude: this.endAddress.editAddress.longitude,
+					       				iconPath: '/static/img/index/dingweitwo.png',
+					       				width: 20,
+					       				height: 30,
+					       				callout: { 
+					       					content: this.distance + '公里,预计'+ this.showTimer + '前送达',
+					       					color: '#09023E',
+					       					fontSize: 12,
+					       					bgColor: 'white',
+					       					display: 'ALWAYS',
+					       					borderRadius: 0,
+					       					padding: 10
+					       				}
+					       			}
+					       		];
+					       		
+					       		if (this.platform == 'ios') {
+					       			this.covers = [
+					       				{
+					       					id: 1,
+					       					latitude: this.latitude,
+					       					longitude: this.longitude,
+					       					iconPath: '/static/img/index/dingweione.png',
+					       					width: 20,
+					       					height: 30,
+					       					callout: {
+					       						content: '起始位置',
+					       						color: '#09023E',
+					       						fontSize: 12,
+					       						bgColor: 'white',
+					       						display: 'ALWAYS',
+					       						borderRadius: 0,
+					       						padding: 10
+					       					}
+					       				},
+					       				{
+					       					latitude: this.endAddress.editAddress.latitude,
+					       					longitude: this.endAddress.editAddress.longitude,
+					       					iconPath: '/static/img/index/dingweitwo.png',
+					       					width: 20,
+					       					height: 30,
+					       					callout: {
+					       						content: this.distance + '公里,预计'+ this.showTimer + '前送达',
+					       						color: '#09023E',
+					       						fontSize: 12,
+					       						bgColor: 'white',
+					       						display: 'ALWAYS',
+					       						borderRadius: 0,
+					       						padding: 10
+					       					}
+					       				}
+					       			];
+					       		}
+					       	}
+					       	this.plusReady()
+					       }
+					    }
+					});
+		
+				}
+			});
+		},
+		//触碰地图
+		handleMap(e,lati) {
+			// this.covers = []
+			// this.covers = [...this.covers]
+			// this.$set(this.covers,0,[])
+			// this.$refs.newsMap.attr.polyline = []
+			// setTimeout(() => {
+			// 	this.$refs.newsMap.attr.polyline = []
+			// },300)
+			// setTimeout(() => {
+			// 	this.$refs.newsMap.attr.polyline = []
+			// },600)
+			
+			// 刷新地图
+			// if (this.platform == 'ios') {
+			// 	this.mapShow = false
+			// 	setTimeout(() => {
+			// 		this.mapShow = true
+			// 	}, 800)
+			// }
+		
+			
+			if (typeof e === "string") {
+				
+				this.latitude = Number(e).toFixed(6);
+				
+				this.longitude = Number(lati).toFixed(5) ;
+			
+				
+			} else if (typeof e === "number") {
+				
+				this.latitude = Number(e).toFixed(6)
+				this.longitude = Number(lati).toFixed(5);
+			
+			}else {
+				console.log(typeof e === "object")
+				this.latitude = Number(e.detail.latitude).toFixed(6);
+				
+				this.longitude = Number(e.detail.longitude).toFixed(5);
+				
+			}
+
+			uni.request({
+				url:
+					'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' +
+					this.longitude +
+					',' +
+					this.latitude +
+					'&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。
+				success: res => {
+					this.headerCity = res.data.regeocode.addressComponent.city
+					let userPhone = uni.getStorageSync('user_phone');
+					let userName = uni.getStorageSync('user_Name');
+					let latitude = this.longitude + ',' + this.latitude;
+					
+					this.titleName = this.ftSendAddress.titleName
+					if (res.data.regeocode.aois.length != 0) {
+						console.log(e)
+						if (typeof e !== "string") {
+							
+							this.ftSendAddress = {}
+							this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
+							this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
+							this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+						} else {
+							
+							this.ftSendAddress = {}
+							this.$set(this.ftSendAddress,'titleName', this.sendAddress.editAddress.name)
+							this.$set(this.ftSendAddress,'location', res.data.regeocode.aois[0].location)
+							this.$set(this.ftSendAddress,'addressname', this.sendAddress.editAddress.address)
+						}
+						
+						
+						this.editAddress.name = res.data.regeocode.aois[0].name;
+						this.editAddress.address = res.data.regeocode.formatted_address;
+						this.editAddress.longitude = this.longitude;
+						this.editAddress.latitude = this.latitude;
+						
+						this.province = res.data.regeocode.addressComponent.province;
+						this.city = res.data.regeocode.addressComponent.city;
+						this.area = res.data.regeocode.addressComponent.district;
+					
+				
+						// 解决备注问题
+						if (this.titleName !== this.ftSendAddress.titleName && !this.sendAddress.id) {
+						
+							this.addressDetail = ''
+							this.sendAddress.addressDetail = ''
+						} else {
+					
+						}
+						if (this.sendAddress.addressDetail) {
+						
+							this.addressDetail = this.sendAddress.addressDetail
+						} else {
+						
+							this.addressDetail = ''
+						}
+						
+						if(typeof e === "object") {
+							this.addressDetail = ''
+							this.sendAddress.addressDetail = ''
+						}
+						
+				
+						if( typeof e !== 'string') {
+							console.log(this.addressDetail)
+							let sendAddress = {
+								addressDetail: this.addressDetail,
+								latitude: latitude,
+								mobile: this.userStartUserPhone,
+								name: this.userStartUserName,
+								province: this.province,
+								editAddress: this.editAddress,
+								city: this.city,
+								area: this.area,
+								orderId: ''
+							};
+							this.sendAddress = sendAddress
+							uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+						}
+						
+						
+		
+					} else if (res.data.regeocode.pois.length != 0) {
+					
+						if (typeof e !== "string") {
+							
+							this.ftSendAddress = {}
+							
+							this.$set(this.ftSendAddress,'titleName',res.data.regeocode.pois[0].name)
+							this.$set(this.ftSendAddress,'location',res.data.regeocode.pois[0].location)
+							this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+						} else {
+							
+							this.ftSendAddress = {}
+							this.$set(this.ftSendAddress,'titleName', this.sendAddress.editAddress.name)
+							this.$set(this.ftSendAddress,'location', res.data.regeocode.pois[0].location)
+							this.$set(this.ftSendAddress,'addressname', this.sendAddress.editAddress.address)
+						}
+						
+						this.editAddress.name = res.data.regeocode.pois[0].name;
+						this.editAddress.address = res.data.regeocode.formatted_address;
+						this.editAddress.longitude = this.longitude;
+						this.editAddress.latitude = this.latitude;
+						
+						this.province = res.data.regeocode.addressComponent.province;
+						this.city = res.data.regeocode.addressComponent.city;
+						this.area = res.data.regeocode.addressComponent.district;
+					
+						
+			
+						// 解决备注问题
+						if (this.titleName !== this.ftSendAddress.titleName && !this.sendAddress.id) {
+							
+							this.sendAddress.addressDetail = ''
+							this.titleName = this.ftSendAddress.titleName
+						} else {
+							
+						}
+					
+						if (this.sendAddress.addressDetail) {
+								
+							this.addressDetail = this.sendAddress.addressDetail
+						} else {
+								
+							this.addressDetail = ''
+						}
+						if(typeof e === "object") {
+							this.addressDetail = ''
+							this.sendAddress.addressDetail = ''
+						}
+						
+						
+						let sendAddress = {
+							addressDetail: this.addressDetail,
+							latitude: latitude,
+							mobile: this.userStartUserPhone,
+							name: this.userStartUserName,
+							province: this.province,
+							editAddress: this.editAddress,
+							city: this.city,
+							area: this.area,
+							orderId: ''
+						};
+						this.sendAddress = sendAddress
+						uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+					}else {
+						this.ftSendAddress.titleName = '未获取到地址'
+						this.ftSendAddress.addressname = ''
+					}
+					
+				}
+			});
+	
+			this.getHorseman();
+			
+		    this.plusReady()
+		},
+		//消息是否有未读
+		initMsgReader() {
+			let token = uni.getStorageSync('token');
+			// console.log(token)
+			uni.request({
+				url: baseURL + '/token/user/new_msg_is_read', //仅为示例，并非真实接口地址。
+				data: {
+					token: token
+				},
+				method: 'POST',
+				header: {
+					'content-type': 'application/x-www-form-urlencoded',
+					token: token
+				},
+				success: res => {
+					this.newsReaderFlag = res.data.data;
+				}
+			});
+		},
+		//切换车
+		handleChoiceCar(index) {
+			this.choiceCar = index
+			
+			if (this.choiceCar  && this.ftItemIndex === 2) {
+			
+				this.ftItemIndex = 0
+			}
+			
+		},
+		//切换帮我买等
+		handleFTIndex(index) {
+			this.ftItemIndex = index
+			if (index === 2) {
+				
+				uni.navigateTo({
+					url: '../storage/storage?car=' + this.choiceCar + '&scrollIndex=' + this.ftItemIndex 
+				});
+			}
+
+		},
+		//编辑
+		goToEdit(addressInfo, index, id) {
+		
+			if (index === 0 && !(uni.getStorageSync('sendAddress'))) {
+				console.log('123')
+				
+				uni.navigateTo({
+					url: '../editAddress/editAddress?addressInfo=' + JSON.stringify(addressInfo) + '&status=' + index + '&id=' + id + '&ftSendAddress=' + JSON.stringify(this.ftSendAddress)
+				});
+			} else {
+				uni.setStorageSync('noSetSend', false)
+				console.log('456')
+				uni.navigateTo({
+					url: '../editAddress/editAddress?addressInfo=' + JSON.stringify(addressInfo) + '&status=' + index + '&id=' + id 
+				});
+			}
+			
+		},
+		//去地址簿
+		goToAddress(index) {
+			uni.navigateTo({
+				url: '../address/address?address=' + index
+			});
+		},
+		
+		//设置骑手与目的地距离
+		plusReady() {
+	
+			if (uni.getStorageSync('endAddress')) {
+			
+				let origin = this.endAddress.editAddress.longitude + ',' + this.endAddress.editAddress.latitude
+		
+				let destination = this.longitude + ',' + this.latitude
+			
+				uni.request({
+					// url: 'https://restapi.amap.com/v3/direction/driving?origin=' + origin + '&destination=' + destination +
+					// 	'&extensions=base&output=JSON&key=8978acd8e3f1ba1623bfd047571db077',
+					url: 'https://restapi.amap.com/v4/direction/bicycling?origin=' + origin + '&destination=' + destination +
+						'&key=8978acd8e3f1ba1623bfd047571db077',
+					method: "GET",
+					success: (msg) => {
+						
+						// console.log(msg)
+						setTimeout( () => {
+							// console.log('进入设置')
+							
+							this.distance = Number(msg.data.data.paths[0].distance / 1000).toFixed(2)
+							this.timer = Math.floor(this.distance * 1000 / 500) * 3
+						
+							this.showTimer =  dayjs().add(this.timer,'minute').format('HH:mm')
+							
+							// this.covers = []
+							// this.covers = [...this.covers]
+							// this.$set(this.covers,0,[])
+			
+							if (uni.getStorageSync('endAddress')) {
+								this.covers = [
+									{
+										id: 1,
+										latitude: this.latitude,
+										longitude: this.longitude,
+										iconPath: '/static/img/index/dingweione.png',
+										width: 20,
+										height: 30,
+										callout: {
+											content: '起始位置',
+											color: '#09023E',
+											fontSize: 12,
+											bgColor: 'white',
+											display: 'ALWAYS',
+											borderRadius: 0,
+											padding: 10
+										}
+									},
+									{
+										latitude: this.endAddress.editAddress.latitude,
+										longitude: this.endAddress.editAddress.longitude,
+										iconPath: '/static/img/index/dingweitwo.png',
+										width: 20,
+										height: 30,
+										callout: {
+											content: this.distance + '公里,预计'+ this.showTimer + '前送达',
+											color: '#09023E',
+											fontSize: 12,
+											bgColor: 'white',
+											display: 'ALWAYS',
+											borderRadius: 0,
+											padding: 10
+										}
+									}
+								];
+							}
+							
+							
+							
+						},500)
+					
+						let data = msg.data.data
+					
+					
+						
+						let points = []
+						if(data.paths && data.paths[0] && data.paths[0].steps){
+							let steps = data.paths[0].steps
+							for(let i = 0;i<steps.length;i++){
+								let polen = steps[i].polyline.split(';');
+								for(let j = 0;j<polen.length;j++){
+									points.push({
+										longitude:parseFloat(polen[j].split(',')[0]),
+										latitude:parseFloat(polen[j].split(',')[1])
+									})
+								}
+							} 
+						}
+						
+					
+						// 绘制线
+						// this.polyline = [
+						// 	{
+						// 		points:points,
+						// 		color:'#0091ff',
+						// 		width:4
+						// 	}
+						// ]
+						// if(this.platform == 'ios') {
+						// 	this.polyline = [
+						// 		{
+						// 			points:points,
+						// 			color:'#0091ff',
+						// 			width:4
+						// 		}
+						// 	]
+						// }
+						if(uni.getStorageSync('endAddress')) {
+							// console.log(typeof this.endAddress.editAddress.latitude)
+							// console.log(typeof this.endAddress.editAddress.longitude)
+							this.points = [{
+								latitude: this.endAddress.editAddress.latitude,
+								longitude: this.endAddress.editAddress.longitude,
+							}]
+						} else {
+							this.points = [{
+								latitude: this.latitude,
+								longitude: this.longitude,
+							}]
+						}
+						
+						
+					}
+				});
+			}
+	
+		
+		}
+	}
+};
+</script>
+
+<style scoped>
+.index {
+	/* width: 100%; */
+	width: 750rpx;
+	/* height: 100%; */
+	background-color: #ffffff;
+}
+
+.status {
+	width: 750rpx;
+	position: fixed;
+	z-index: 10;
+	background-color: #fff;
+	top: 0;
+	height: 0;
+}
+
+.index-header {
+	width: 750rpx;
+	/* position: relative; */
+	background-color: #ffffff !important;
+	align-items: center;
+	justify-content: center;
+	position: fixed;
+	height: 160rpx;
+	/* height: 88rpx; */
+	/* flex-direction: row; */
+	/* 	align-items: center;
+	justify-content: space-between; */
+}
+
+.header-title {
+	font-size: 14px;
+}
+
+.index-header-box {
+	width: 750rpx;
+	/* height: 88rpx; */
+	/* display: flex; */
+	/* flex-direction: row; */
+	text-align: center;
+	justify-content: center;
+	/* align-items: center; */
+	padding-left: 50rpx;
+}
+
+.city {
+	font-family: PingFangSC-Regular;
+	font-size: 17px;
+	color: #000000;
+	line-height: 32px;
+	position: relative;
+}
+
+.city-down {
+	width: 20rpx;
+	height: 12rpx;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: 0;
+	
+}
+
+.index-header-right {
+	/* flex-direction: row; */
+	/* margin-right: 238rpx; */
+	position: absolute;
+	right: 0rpx;
+	z-index: 999;
+	padding: 30rpx 40rpx;
+	margin: -30rpx -40rpx;
+}
+
+.lingdang {
+	width: 28rpx;
+	height: 36rpx;
+	/* vertical-align:bottom; */
+	position: relative;
+	right: -27rpx;
+}
+.redCircle {
+	width: 16rpx;
+	height: 16rpx;
+	border-radius: 50%;
+	background-color: red;
+	position: absolute;
+	right: 11rpx;
+	top: 30rpx;
+}
+.button-box {
+	width: 690rpx;
+	height: 90rpx;
+	flex-direction: row;
+	align-items: center;
+	background-color: #ffffff;
+	box-shadow: 0 4px 8px 0 rgba(57, 67, 142, 0.05), 0 2px 4px 0 rgba(23, 30, 80, 0.07);
+	border-radius: 22.5px;
+	border-radius: 22.5px;
+	position: fixed;
+	bottom: 130rpx;
+	left: 30rpx;
+	/* left: 50%; */
+	/* transform: translateX(-25%); */
+}
+
+.button-left {
+	width: 344rpx;
+	height: 90rpx;
+	line-height: 90rpx;
+	font-family: PingFangSC-Semibold;
+	font-size: 14px;
+	color: #5468ff;
+	/* letter-spacing: 0.17px; */
+	text-align: center;
+}
+
+.button-right {
+	width: 344rpx;
+	height: 90rpx;
+	line-height: 90rpx;
+	font-family: PingFangSC-Semibold;
+	font-size: 14px;
+	color: #ff8516;
+	/* letter-spacing: 0.17px; */
+	text-align: center;
+}
+
+.button-line {
+	width: 2rpx;
+	height: 40rpx;
+	background-color: rgba(140, 92, 42, 0.07);
+	border-radius: 0.5px;
+	border-radius: 0.5px;
+}
+
+.nheader{
+	width: 750rpx;
+	height: 190rpx;
+	background-color: #FFFFFF;
+	/* justify-content: center; */
+	align-items: center;
+	flex-direction: row;
+	padding-left: 40rpx;
+	position: fixed;
+}
+
+.nheader-left{
+	/* align-items: flex-start; */
+	align-items: center;
+	margin: -100rpx 0;
+	padding: 100rpx 0;
+	
+}
+.header-center{
+		/* width: 100%; */
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+	}
+.center-left{
+	align-items: center;
+	padding-left: 100rpx;
+	margin-right: 40rpx;
+	
+}
+.font-color{
+	/* font-size: 14px; */
+	font-size: 14px;
+	color: #FFFFFF;
+}
+.center-font{
+	/* margin: 5rpx 0; */
+	padding: 10rpx;
+	background-color: #a49b9b;
+	border-radius: 10rpx;
+	
+}
+.on{
+	background-color: #5468ff;
+}
+.center-right{
+	align-items: center;
+	/* margin-left: 10rpx; */
+}
+.carLine{
+	width: 50rpx;
+	height: 6rpx;
+	/* background-color: #5468ff; */
+	background-color: #FFFFFF;
+	margin-top: 5rpx;
+	border-radius: 6rpx;
+}
+.carLineActive{
+	background-color: #5468ff;
+}
+
+.fade-enter-active{
+	transition: color .8s
+}
+.fade-leave-active{
+	transition: color .8s
+}
+.fadecar-enter-active{
+	transition: color .8s
+}
+.fadecar-leave-active{
+	transition: color .8s
+}
+
+
+.footer-box{ 
+	width: 700rpx;
+	/* height: 420rpx; */
+	background-color: #fff;
+	position: fixed;
+	align-items: center;
+	bottom: 10rpx;
+	left: 26rpx;
+	border-radius: 20rpx;
+	padding: 30rpx;
+	border-width: 1px;  
+	border-style: solid;  
+	border-color: #F5F5F5;  
+	/* box-shadow: 0 4px 8px 0 rgba(57, 67, 142, 0.05), 0 2px 4px 0 rgba(23, 30, 80, 0.07); */
+	
+}
+
+.footer-scroll{
+	width: 700rpx;
+	flex-direction: row;
+}
+
+.ft-item{
+	flex: 1;
+	text-align: center;
+	font-size: 16px;
+	color: #ccc; 
+	position: relative;
+	padding-bottom: 15rpx;
+	border-bottom-width: 3rpx;
+	border-bottom-color: #f7f7fa;
+}
+
+.ftItemActive{
+	color: #5468ff;	
+	
+}
+
+.center-sendAddress{
+	flex-direction: row;
+	align-items: center;
+	padding: 20rpx;
+	border-bottom-width: 2rpx;
+	border-bottom-color: #f7f7fa;
+}
+
+.footer-bottom{
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	width: 300rpx;
+	padding: 10rpx;
+	/* height: 50rpx; */
+	background-color: #5468ff;
+	border-radius: 20rpx;
+	/* position: relative; */
+	/* left: 90%; */
+	/* top: 30rpx; */
+	/* top: 5rpx; */
+	margin-top: 15rpx;
+}
+
+.sendAddress-right-top{
+	font-size: 16px;
+	lines: 1;
+	text-overflow: ellipsis;
+	font-weight: bold;
+}
+
+.sendAddress-right-bottom{
+	font-size: 14px;
+	/* color: rgba(9, 2, 62, 0.3); */
+	width: 460rpx;
+	lines:1;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	
+}
+
+.sendAddress-left-circle{
+	border-right-width: 2rpx;
+	border-left-width: 2rpx;
+	border-top-width: 2rpx;
+	border-bottom-width: 2rpx;
+	border-radius: 50%;
+	padding: 6rpx;
+	border-color: #bbbbbb;
+	margin-right: 20rpx ;
+
+}
+
+.center-sendAddress-address{
+/* 	width: 40rpx;
+	height: 40rpx; */
+	height: 40rpx;
+	flex-direction: row;
+	justify-content: flex-end;
+	border-left-width: 2rpx;
+	border-color: #CCCCCC;
+/* 	padding: -10rpx 0;
+	margin: 10rpx 0; */
+	/* transform: translateY(-12rpx); */
+	position: relative;
+}
+.center-sendAddress-address::after{
+	
+	position: absolute;
+	left: -30rpx;
+	top: -40rpx;
+	right: -30rpx;
+	bottom: -40rpx;
+}
+
+.center-sendAddress-right{
+	width: 460rpx;
+	text-overflow: ellipsis;
+	overflow:hidden;
+
+}
+.zuobiao{
+	width: 52rpx;
+	height: 52rpx;
+	position: absolute;
+	right: 40rpx;
+	/* top: -40rpx; */
+	/* bottom: 400rpx; */
+	z-index:100000;
+	/* transform: translateY(200rpx); */
+	/* transform: translateY(200rpx); */
+}
+.zuobiao-img{
+	width: 52rpx;
+	height: 52rpx;
+}
+.center-sendAddress-right-text{
+	flex-direction: row;
+	
+}
+.center-sendAddress-right-text-t{
+	font-size: 14px;
+}
+.right-text-t-marginr{
+	margin-right: 10rpx;
+}
+
+
+
+</style>
+

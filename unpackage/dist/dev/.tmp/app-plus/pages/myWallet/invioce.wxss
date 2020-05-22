@@ -1,0 +1,37 @@
+.invioce.data-v-3c3cd5dc {
+  width: 100%;
+  height: 100%;
+  background-color: #f7f7fa;
+}
+.invioce .invioce-item.data-v-3c3cd5dc {
+  width: 100%;
+  height: 100rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  padding: 0 30rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  background-color: #fff;
+  border-bottom: 1rpx solid #F7F7FA;
+}
+.invioce .invioce-item.data-v-3c3cd5dc:last-child {
+  border-bottom: none;
+}
+.invioce .invioce-item .item-left.data-v-3c3cd5dc {
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #09023E;
+  letter-spacing: -0.34px;
+}
+.invioce .invioce-item image.data-v-3c3cd5dc {
+  width: 16rpx;
+  height: 26rpx;
+}
+

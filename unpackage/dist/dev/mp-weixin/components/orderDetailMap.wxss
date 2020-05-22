@@ -1,0 +1,8 @@
+
+.orderDertailmap{
+	width: 100%;
+	height: 476rpx;
+	position: relative;
+}
+
+

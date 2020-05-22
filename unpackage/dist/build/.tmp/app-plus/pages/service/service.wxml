@@ -1,0 +1,1 @@
+<view class="service"><block wx:for="{{RichText}}" wx:for-item="item" wx:for-index="__i0__" wx:key="id"><view data-event-opts="{{[['tap',[['goToRichText',['$0'],[[['RichText','id',item.id,'id']]]]]]]}}" class="law-item" bindtap="__e"><view class="item-left">{{item.articleTitle}}</view><image src="../../static/img/my/right.png" mode="aspectFill"></image></view></block></view>

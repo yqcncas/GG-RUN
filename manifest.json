@@ -1,0 +1,161 @@
+{
+    "name" : "GG来送",
+    "appid" : "__UNI__E5FD5C0",
+    "description" : "",
+    "versionName" : "1.0.27",
+    "versionCode" : 102,
+    "transformPx" : false,
+    /* 5+App特有相关 */
+    "app-plus" : {
+        "usingComponents" : true,
+        "nvueCompiler" : "uni-app",
+        "kernel" : {
+            "ios" : "WKWebview" //或者 "WKWebview"  
+        },
+        "splashscreen" : {
+            "alwaysShowBeforeRender" : true,
+            "waiting" : true,
+            "autoclose" : true,
+            "delay" : 0
+        },
+        /* 模块配置 */
+        "modules" : {
+            "Maps" : {},
+            "Push" : {},
+            "Payment" : {},
+            "Contacts" : {},
+            "Share" : {}
+        },
+        /* 应用发布信息 */
+        "distribute" : {
+            /* android打包配置 */
+            "android" : {
+                "permissions" : [
+                    "<uses-feature android:name=\"android.hardware.camera\"/>",
+                    "<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.CALL_PHONE\"/>",
+                    "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+                    "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
+                    "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
+                    "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+                    "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
+                    "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_CONTACTS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
+                    "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
+                    "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_CONTACTS\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
+                ]
+            },
+            /* ios打包配置 */
+            "ios" : {
+                "idfa" : false,
+                "privacyDescription" : {
+                    "NSPhotoLibraryUsageDescription" : "\"GG来送\"需要您的同意，才能访问相册，以便于上传图片",
+                    "NSPhotoLibraryAddUsageDescription" : "\"GG来送\"需要您的同意，才能添加照片，以便于保存照片",
+                    "NSCameraUsageDescription" : "\"GG来送\"需要您的同意，才能访问相机，以便于拍摄照片和扫描二维码",
+                    "NSMicrophoneUsageDescription" : "",
+                    "NSLocationWhenInUseUsageDescription" : "\"GG来送\"需要您的同意，才能在运行期间访问位置，以便于为您搜索附近的骑手位置",
+                    "NSLocationAlwaysUsageDescription" : "\"GG来送\"需要您的同意，才能在后台期间访问位置，以便于为您搜索附近的骑手位置",
+                    "NSLocationAlwaysAndWhenInUseUsageDescription" : "\"GG来送\"需要您的同意，才能访问位置，以便于为您搜索附近的骑手位置",
+                    "NSContactsUsageDescription" : "\"GG来送\"需要您的同意，才能访问通讯录，以便于添加联系人",
+                    "NSCalendarsUsageDescription" : "\"GG来送\"需要您的同意，才能访问日历，以便于获取日期"
+                }
+            },
+            /* SDK配置 */
+            "sdkConfigs" : {
+                "maps" : {
+                    "amap" : {
+                        "appkey_ios" : "c6ec8c64a6e64dc1da0d9fa8fe23861d",
+                        "appkey_android" : "1cd1eea011f08a2a91eecc37481f0f2b"
+                    }
+                },
+                "push" : {
+                    "unipush" : {}
+                },
+                "payment" : {
+                    "weixin" : {
+                        "appid" : "wx4cc4ff622dc4cb2b",
+                        "UniversalLinks" : "https://bajiaostar.com/"
+                    },
+                    "alipay" : {}
+                },
+                "oauth" : {},
+                "share" : {
+                    "weixin" : {
+                        "appid" : "wx4cc4ff622dc4cb2b",
+                        "UniversalLinks" : "https://bajiaostar.com/"
+                    }
+                },
+                "ad" : {}
+            },
+            "icons" : {
+                "ios" : {
+                    "iphone" : {
+                        "app@2x" : "unpackage/res/icons/120x120.png",
+                        "app@3x" : "unpackage/res/icons/180x180.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
+                        "spotlight@3x" : "unpackage/res/icons/120x120.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "settings@3x" : "unpackage/res/icons/87x87.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png",
+                        "notification@3x" : "unpackage/res/icons/60x60.png"
+                    },
+                    "ipad" : {
+                        "app" : "unpackage/res/icons/76x76.png",
+                        "app@2x" : "unpackage/res/icons/152x152.png",
+                        "proapp@2x" : "unpackage/res/icons/167x167.png",
+                        "spotlight" : "unpackage/res/icons/40x40.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
+                        "settings" : "unpackage/res/icons/29x29.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "notification" : "unpackage/res/icons/20x20.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png"
+                    },
+                    "appstore" : "unpackage/res/icons/1024x1024.png"
+                },
+                "android" : {
+                    "hdpi" : "unpackage/res/icons/72x72.png",
+                    "xhdpi" : "unpackage/res/icons/96x96.png",
+                    "xxhdpi" : "unpackage/res/icons/144x144.png",
+                    "xxxhdpi" : "unpackage/res/icons/192x192.png"
+                }
+            }
+        },
+        "compilerVersion" : 2
+    },
+    /* 快应用特有相关 */
+    "quickapp" : {},
+    /* 小程序特有相关 */
+    "mp-weixin" : {
+        "appid" : "",
+        "setting" : {
+            "urlCheck" : false
+        },
+        "usingComponents" : true
+    },
+    "mp-alipay" : {
+        "usingComponents" : true
+    },
+    "mp-baidu" : {
+        "usingComponents" : true
+    },
+    "mp-toutiao" : {
+        "usingComponents" : true
+    },
+    "h5" : {
+        "devServer" : {
+            "port" : ""
+        }
+    }
+}

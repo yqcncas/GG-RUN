@@ -1,0 +1,1070 @@
+<template>
+	<div class="orderDetailing">
+
+		<div class="line"></div>
+		<div class="orderDetailing-header">
+			<div class="orderDetailing-header-left">
+				<image :src="orderDetailInfo.riderAvatar?orderDetailInfo.riderAvatar : '../../static/img/order/avatar.png' " mode="aspectFill" class="user-avatar"></image>
+				<div class="orderDetailing-header-left-box">
+				<view class="left-box-header">
+					<!-- <text class="user-name" >{{orderDetailInfo.riderName}}</text> -->
+					<text style="color: #09023E;margin-right: 10rpx;font-size: 16px;">{{orderDetailInfo.riderName}}</text> 
+					<text class="user-phone">{{orderDetailInfo.riderMobile}}</text>
+				</view>
+					<view class="start-box">
+						<image src="../../static/img/order/star-active.png" mode="aspectFill" class="star-acitve" v-for="(startActive,index) in rateActive"
+						 :key="index"></image>
+
+						<image src="../../static/img/order/star.png" mode="aspectFill" class="star" v-for="(start,i) in rate" :key="i"></image>
+						<text class="star-num">{{rateActive}}星</text>
+						<text class="order-num">{{orderDetailInfo.riderTotalNum}}单</text>
+					</view>
+					<!-- <text class="user-phone">{{orderDetailInfo.riderMobile}}</text> -->
+				</div>
+			</div>
+			<div class="orderDetailing-header-right">
+				<image src="../../static/img/order/call-phone.png" mode="aspectFill" @tap="callPhone(orderDetailInfo.riderMobile)"
+				 class="callphone"></image>
+			</div>
+		</div>
+		<map v-if="covers[1].latitude" style="width: 750rpx; height: 476rpx;" :latitude="orderDetailInfo.endAddress.latitude.split(',')[1]"
+		 :longitude="orderDetailInfo.endAddress.latitude.split(',')[0]" :markers="covers" :include-points="points">
+		</map>
+		<!-- <scroll-view scroll-y="true" :style="{height: windowHeight + 'rpx'}"> -->
+		<scroll-view scroll-y="true" :style="{height: windowHeight + 'rpx'}">
+			<div class="orderDetailing-center" v-if="orderDetailInfo.pickUpCode && enterFlag == 2">
+				<div class="orderDetailing-center-top" @tap="copyPickUpCode(orderDetailInfo.signForCode)">
+					<text class="send-code">取货码</text>
+					<text class="code-number">{{orderDetailInfo.pickUpCode}}</text>
+					<image src="../../static/img/order/fuzhi.png" mode="aspectFill" class="copy"></image>
+				</div>
+				<div class="orderDetailing-center-bottom">
+					<text class="send-code-tip">确认骑手收费后，将取货码给其收货确认收货。</text>
+				</div>
+			</div>
+			<div class="orderDetailing-center" v-if="orderDetailInfo.signForCodeFlag && enterFlag == 3">
+				<div class="orderDetailing-center-top" @tap="copyPickUpCode(orderDetailInfo.signForCode)">
+					<text class="send-code">签收码</text>
+					<text class="code-number">{{orderDetailInfo.signForCode}}</text>
+					<image src="../../static/img/order/fuzhi.png" mode="aspectFill" class="copy"></image>
+				</div>
+				<div class="orderDetailing-center-bottom">
+					<text class="send-code-tip">确认骑手收费后，将签收码给骑手确认收货。</text>
+				</div>
+			</div>
+			<div class="line"  v-if="orderDetailInfo.signForCodeFlag"></div>
+			<div class="orderDetailing-middle">
+				<div class="orderDetailing-middle-item">
+					<text class="middle-left">订单类型:</text>
+					<text class="middle-right" style="color: rgba(38, 66, 222, 1);">{{buyType[orderDetailInfo.type]}}</text>
+				</div>
+				<div class="orderDetailing-middle-item">
+					<text class="middle-left">商品价值:</text>
+					<text class="middle-right">¥{{orderDetailInfo.goodsInventory.cost}}</text>
+				</div>
+				<div class="orderDetailing-middle-item">
+					<text class="middle-left">物品重量:</text>
+					<text class="middle-right">{{orderDetailInfo.goodsInventory.weight?orderDetailInfo.goodsInventory.weight:1}}kg内</text>
+				</div>
+				<div class="orderDetailing-middle-item">
+					<text class="middle-left">物品信息:</text>
+					<text class="middle-right">{{orderDetailInfo.goodsInventory.goods}}</text>
+				</div>
+				<div class="orderDetailing-middle-item">
+					<text class="middle-left">其他属性:</text>
+					<text class="middle-right" style="color: rgba(38, 66, 222, 1);">{{elseInfo}}</text>
+				</div>
+				<view class="orderDetailing-middle-item" @click.stop="goTofreight(0)">
+					<text class="middle-left">跑腿服务:</text>
+					<text class="middle-right" style="color: #ff2525;">{{orderDetailInfo.payAmount? '￥'+ orderDetailInfo.payAmount : ""}}</text>
+					<image src="../../static/img/my/right.png" mode="" class="paotuiServerRight"></image>
+				</view>
+				<div class="orderDetailing-middle-item">
+					<text class="middle-left">取件时间:</text>
+					<text class="middle-right">{{orderDetailInfo.createTime}}</text>
+				</div>
+				<div class="orderDetailing-middle-item last-middle-item" v-if="orderDetailInfo.remark">
+					<text class="middle-left">用户备注:</text>
+					<!-- <text class="middle-right">{{orderDetailInfo.estimatedTime? "预约" : "即时"}}</text> -->
+					<text class="middle-right" style="color: rgba(38, 66, 222, 1);">{{orderDetailInfo.remark}}</text>
+				</div>
+			</div>
+			<div class="line"></div>
+			<div class="orderDetailing-bottom">
+				<div class="orderDetailing-bottom-left">
+					<div class="bottom-left-start">
+						<text class="left-start" v-if="orderDetailInfo.type == 2">买</text>
+						<text class="left-start" v-else>取</text>
+					</div>
+					<view class="left-line">
+						<div class="content">
+						</div>
+					</view>
+					<div class="bottom-left-end">
+						<text class="left-end" v-if="orderDetailInfo.type == 2">收</text>
+						<text class="left-end" v-else>达</text>
+					</div>
+				</div>
+				<div class="orderDetailing-bottom-right">
+					<div class="bottom-right-top" v-if="!orderDetailInfo.buyAddressType">
+						<text class="right-top-title">{{orderDetailInfo.startAddress.title}}</text>
+						<text class="right-top-address">{{orderDetailInfo.startAddress.addressDetail}}</text>
+						<div class="user-info" :class="{noName:orderDetailInfo.type == 2 }">
+							<text class="user-name" v-if="orderDetailInfo.type !== 2">{{orderDetailInfo.startAddress.userName}} {{orderDetailInfo.startAddress.mobile}}</text>
+						</div>
+					</div>
+					<div class="bottom-right-top " v-else>
+						<text class="right-top-title bottom-right-top-child">就近购买</text>
+					</div>
+					<div class="bottom-right-bottom">
+						<text class="right-top-title" style="color: #5468FF;">{{orderDetailInfo.endAddress.title}}</text>
+						<text class="right-top-address" style="color: #5468FF;">{{orderDetailInfo.endAddress.addressDetail}}</text>
+						<div class="user-info">
+							<text class="user-name">{{orderDetailInfo.endAddress.userName}} {{orderDetailInfo.endAddress.mobile}}</text>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="bottom-line"></div>
+			<div class="button-box">
+				<!-- <div class="cancel-button" @tap.stop="goToCancelOrder(orderDetailInfo.orderId)">
+					<text class="cancel-text">取消订单</text>
+				</div> -->
+				<div class="affirm-button" @tap="commitDelivery" v-if="enterFlag == 3">
+					<text class="affirm-text">确认收货</text>
+				</div>
+				<div class="cancel-button" v-if="enterFlag == 2" @tap.stop="closeCancelModel()">
+					<text class="cancel-text">取消订单</text>
+				</div>
+			</div>
+
+		</scroll-view>
+		
+		<view class="orderCancelModel"  v-if="showCancelButton">
+			<view class="orderCancelModel-Wrapper">
+				<view class="cancelModel-top" >
+					<text class="cancelModel-top-fz" @tap.stop="newsCloseCancelModel">取消订单</text>
+					<image class="cancelModel-top-img" src="../../static/img/order/closeBlack.png" mode="" @tap.stop="newsCloseCancelModel"></image>
+				</view>
+				<view class="cancelModel-center">
+					<text class="cancelModel-center-top">用户在3分钟内取消订单免责，超过3分钟取消订单有责，需要补偿骑手3元。</text>
+						
+					
+					<view class="realy-cancel-fontSize-box">
+						<text class="cancelModel-center-bottom">确定</text>
+						<text class="cancelModel-center-bottom-cancel">取消</text>
+						<text class="cancelModel-center-bottom">订单?</text>
+					</view>			
+				</view>
+				<view class="cancelModel-bottom">
+					<text class="cancelModel-bottom-left" @tap.stop="newsCloseCancelModel">取消</text>
+					<text class="cancelModel-bottom-right" @tap.stop="newGoToCancelOrder(orderDetailInfo.orderId)">确定</text>
+				</view>
+			</view>
+		</view>
+
+
+
+	</div>
+</template>
+
+<script>
+	import baseURL from '../../config/index.js'
+	export default {
+		onLoad(options) {
+			console.log(options)
+			this.enterFlag = options.currentIndex
+			this.statusHeight = uni.getSystemInfoSync().statusBarHeight
+			let res = uni.getStorageSync('orderDetailInfo')
+
+			let data = uni.getSystemInfoSync()
+			this.platform = data.platform
+
+			this.orderDetailInfo = JSON.parse(res)
+
+			console.log(this.orderDetailInfo)
+
+			// this.orderDetailInfo.riderAvatar = baseURL + this.orderDetailInfo.riderAvatar.slice(1, this.orderDetailInfo.riderAvatar.length)
+			if (this.orderDetailInfo.riderAvatar) {
+				var newStr= this.orderDetailInfo.riderAvatar.indexOf("http");
+					//不是以http开头
+				　　if(newStr==-1){
+						this.orderDetailInfo.riderAvatar = baseURL + this.orderDetailInfo.riderAvatar.slice(1, this.orderDetailInfo.riderAvatar.length)
+				　　}
+				// orderDetailInfo.riderAvatar = baseURL + orderDetailInfo.riderAvatar.slice(1, orderDetailInfo.riderAvatar.length)
+			}
+				
+			this.orderDetailInfo.startAddress = JSON.parse(this.orderDetailInfo.startAddress)
+			this.orderDetailInfo.endAddress = JSON.parse(this.orderDetailInfo.endAddress)
+			this.orderDetailInfo.goodsInventory = JSON.parse(this.orderDetailInfo.goodsInventory)
+			this.orderDetailInfo.startAddress.addressDetail = this.orderDetailInfo.startAddress.addressDetail.replace('undefined', '')
+			this.orderDetailInfo.endAddress.addressDetail = this.orderDetailInfo.endAddress.addressDetail.replace('undefined', '')
+			if (this.orderDetailInfo.premium) {
+				this.elseInfo += ' ' + "保价金"
+			}
+			if (this.orderDetailInfo.urgentExpressPriceFlag) {
+				this.elseInfo += ' ' + "加急快送"
+			}
+			if (this.orderDetailInfo.signForCodeFlag) {
+				this.elseInfo += ' ' + "签收码"
+			}
+			if (this.orderDetailInfo.incubatorFlag) {
+				this.elseInfo += ' ' + "保温箱"
+			}
+
+			if (this.elseInfo) {
+				this.elseInfo = this.elseInfo.slice(1, this.elseInfo.length)
+			}
+
+			//星星
+			if (this.orderDetailInfo.score) {
+				this.rateActive = Math.floor(this.orderDetailInfo.score / 20)
+				this.rate = 5 - this.rateActive
+			}
+
+			this.covers[0].latitude = this.orderDetailInfo.endAddress.latitude.split(',')[1]
+			this.covers[0].longitude = this.orderDetailInfo.endAddress.latitude.split(',')[0]
+			
+			// if (this.orderDetailInfo.type === 1) {
+				if(this.orderDetailInfo.buyAddressType == 0 && this.enterFlag == 2) {
+				this.covers[2].latitude = this.orderDetailInfo.startAddress.latitude.split(',')[1]
+				this.covers[2].longitude = this.orderDetailInfo.startAddress.latitude.split(',')[0]
+				} else if (this.orderDetailInfo.buyAddressType == 1) {
+					this.covers[0].latitude = this.orderDetailInfo.startAddress.latitude.split(',')[1]
+					this.covers[0].longitude = this.orderDetailInfo.startAddress.latitude.split(',')[0]
+				}
+			// }
+			
+			
+
+
+
+
+			this.initPhoneSize()
+			this.initMapInfo()
+			this.timer = setInterval(() => {
+				this.initMapInfo()
+			}, 30000)
+
+
+		},
+		data() {
+			return {
+				orderDetailInfo: {},
+				buyType: ["帮我送", "帮我取", "帮我买"],
+				elseInfo: '',
+				//有颜色的星星
+				rateActive: 0,
+				//无颜色的星星
+				rate: 0,
+				//地图标记
+
+				covers: [{
+					id: 2,
+					latitude: '',
+					longitude: '',
+					iconPath: '../../static/img/index/dingweitwo.png',
+					width: 20,
+					height: 32,
+					callout: {
+						content: '终点位置',
+						fontSize: 14,
+						display: 'ALWAYS',
+						padding: 10,
+						borderRadius: 0
+					}
+				}, {
+
+				},
+				{
+					latitude: '',
+					longitude: '',
+					iconPath: '../../static/img/index/dingweione.png',
+					width: 20,
+					height: 32,
+					callout: {
+						content: '取货位置',
+						fontSize: 14,
+						display: 'ALWAYS',
+						padding: 10,
+						borderRadius: 0
+					}
+				}],
+				points: [],
+				windowHeight: 0,
+				rotateDeg: 0,
+				platform: '',
+				enterFlag: 0,
+				showCancelButton: false
+
+			}
+		},
+		methods: {
+			//复制取货码
+			copyPickUpCode(copyCode) {
+				uni.setClipboardData({
+					data: copyCode,
+					success: function() {
+						console.log('success');
+					}
+				});
+			},
+			//拨打骑手电话
+			callPhone(phone) {
+				uni.makePhoneCall({
+					phoneNumber: phone
+				});
+			},
+			//到取消订单
+			goToCancelOrder(id) {
+				uni.navigateTo({
+					url: '../cancelOrder/cancelOrder?orderId=' + id
+				})
+			},
+			//去运费明细
+			goTofreight(index) {
+				uni.navigateTo({
+					url: '../freightDeatail/freightDeatail?freightInfo=' + JSON.stringify(this.orderDetailInfo) + "&status=" + index
+				});
+			},
+			//确认收货
+			commitDelivery() {
+				let token = uni.getStorageSync('token')
+				uni.showModal({
+					title: '确认收货',
+					content: '请确保您已收到货物',
+					success: async (res) => {
+						if (res.confirm) {
+							console.log('用户点击确定');
+							// let res = await this.$fetch(this.$api.orderConfirm,{orderId:this.orderDetailInfo.orderId},"POST","Form")
+							uni.request({
+								url: baseURL + "/token/order/confirm_receipt", //仅为示例，并非真实接口地址。
+								data: {
+									orderId: this.orderDetailInfo.orderId
+								},
+								header: {
+									'token': token,
+									'content-type': 'application/x-www-form-urlencoded'
+								},
+								method: 'POST',
+								success: (res) => {
+									
+								}
+							});
+
+
+							
+							uni.showToast({
+								icon: 'success',
+								title: '成功收货'
+							})
+							setTimeout(() => {
+								uni.switchTab({
+									url: '../order/order',
+									success() {
+										let page = getCurrentPages().pop(); //跳转页面成功之后
+										if (!page) return;
+										page.onLoad(); //如果页面存在，则重新刷新页面
+									}
+								})
+							}, 1000)
+						} else if (res.cancel) {
+							
+						}
+					}
+				});
+			},
+			//获取当前骑手
+			initMapInfo() {
+				console.log(this.orderDetailInfo.tid)
+				uni.request({
+					url: 'https://tsapi.amap.com/v1/track/terminal/search',
+					method: "POST",
+					data: {
+						// key: "e54514186dfbafae58736cd342838baf",
+						// sid: '92478',
+						key: "4145121d3d1b5dcf41702960f3bd5adc",
+						sid: '126730',
+						keywords: this.orderDetailInfo.riderId
+					},
+					header: {
+						'content-type': 'application/x-www-form-urlencoded'
+					},
+					success: (res) => {
+						// console.log(res)
+						this.horsemanInfo = res.data.data
+						this.covers[1].latitude = this.horsemanInfo.results[0].location.latitude
+						this.covers[1].longitude = this.horsemanInfo.results[0].location.longitude
+
+						// this.rotateDeg = this.privatedouble(this.covers[1].latitude, this.covers[1].longitude, this.covers[0].latitude,
+						// 	this.covers[0].longitude)
+						console.log(this.rotateDeg)
+						this.plusReady()
+
+
+
+					}
+				});
+			},
+			// //旋转 无用了
+			// privatedouble(lat_a, lng_a, lat_b, lng_b) {
+
+			// 	let d = 0;
+
+			// 	lat_a = lat_a * Math.PI / 180;
+
+			// 	lng_a = lng_a * Math.PI / 180;
+
+			// 	lat_b = lat_b * Math.PI / 180;
+
+			// 	lng_b = lng_b * Math.PI / 180;
+
+
+
+			// 	d = Math.sin(lat_a) * Math.sin(lat_b) + Math.cos(lat_a) * Math.cos(lat_b) * Math.cos(lng_b - lng_a);
+
+			// 	d = Math.sqrt(1 - d * d);
+
+			// 	d = Math.cos(lat_b) * Math.sin(lng_b - lng_a) / d;
+
+			// 	d = Math.asin(d) * 180 / Math.PI;
+
+
+			// 	// console.log(d)
+			// 	//     d = Math.round(d*10000);
+			// 	// this.covers[1].callout.rotate = Math.abs(d)
+			// 	return d
+
+			// },
+			//获取手机尺寸
+			initPhoneSize() {
+				uni.getSystemInfo({
+					success: (res) => {
+						
+						if (res.windowHeight>=500 && res.windowHeight <= 600 ) {
+							this.windowHeight = res.windowHeight - 150 
+						} else if (res.windowHeight > 600 && res.windowHeight <= 700 ) {
+							this.windowHeight = res.windowHeight - 140
+						} else {
+							this.windowHeight = res.windowHeight - 70
+						}
+						
+						// this.windowHeight = res.windowHeight
+						// this.windowHeight = this.windowHeight - 70
+					}
+				});
+			
+				
+				
+			},
+
+			//设置骑手与目的地距离
+			plusReady() {
+				var destination
+				if (this.enterFlag == 3 || this.orderDetailInfo.buyAddressType == 1) {
+					 destination = this.covers[0].longitude + ',' + this.covers[0].latitude
+					 this.qishowFont = '距离目的地'
+				} else if (this.enterFlag == 2) {
+					 destination = this.covers[2].longitude + ',' + this.covers[2].latitude
+					 this.qishowFont = '距离取货地'
+				}
+				let origin = this.covers[1].longitude + ',' + this.covers[1].latitude
+				// let destination = this.covers[0].longitude + ',' + this.covers[0].latitude
+				
+				uni.request({
+					url: 'https://restapi.amap.com/v3/direction/driving?origin=' + origin + '&destination=' + destination +
+						'&extensions=base&output=JSON&key=6223011d1e55de8ee9d00617ee5270c2',
+					method: "GET",
+					success: (msg) => {
+						if (msg.data.status == 1) {
+							this.distance = msg.data.route.paths[0].distance
+							
+							if (this.covers[0].latitude >= this.horsemanInfo.results[0].location.latitude) {
+								var changArr = {
+									latitude: this.horsemanInfo.results[0].location.latitude,
+									longitude: this.horsemanInfo.results[0].location.longitude,
+									iconPath: '../../static/img/index/kuaidifanzhuan.png',
+									width: 20,
+									height: 20,
+									callout: {
+										content: this.qishowFont + this.distance + '米',
+										fontSize: 14,
+										display: 'ALWAYS',
+										padding: 10,
+										borderRadius: 0,
+
+									}
+								}
+								if (this.platform == 'ios') {
+									var changArr = {
+										latitude: this.horsemanInfo.results[0].location.latitude,
+										longitude: this.horsemanInfo.results[0].location.longitude,
+										iconPath: '../../static/img/index/kuaidifanzhuan.png',
+										width: 20,
+										height: 20,
+										callout: {
+											content: this.qishowFont + this.distance + '米',
+											fontSize: 14,
+											display: 'ALWAYS',
+											padding: 10,
+											borderRadius: 0,
+
+										}
+									}
+								}
+							} else {
+								var changArr = {
+									latitude: this.horsemanInfo.results[0].location.latitude,
+									longitude: this.horsemanInfo.results[0].location.longitude,
+									iconPath: '../../static/img/index/kuaidi.png',
+									width: 20,
+									height: 20,
+									callout: {
+										content: this.qishowFont + this.distance + '米',
+										fontSize: 14,
+										display: 'ALWAYS',
+										padding: 10,
+										borderRadius: 0,
+
+									}
+								}
+								if (this.platform == 'ios') {
+									var changArr = {
+										latitude: this.horsemanInfo.results[0].location.latitude,
+										longitude: this.horsemanInfo.results[0].location.longitude,
+										iconPath: '../../static/img/index/kuaidi.png',
+										width: 20,
+										height: 20,
+										callout: {
+											content: this.qishowFont + this.distance + '米',
+											fontSize: 14,
+											display: 'ALWAYS',
+											padding: 10,
+											borderRadius: 0,
+
+										}
+									}
+								}
+							}
+
+							this.$set(this.covers, 1, changArr)
+							
+							// this.$forceUpdate()
+						
+							this.points = [{
+								latitude: this.horsemanInfo.results[0].location.latitude,
+								longitude: this.horsemanInfo.results[0].location.longitude,
+							}]
+						}
+
+					}
+				});
+
+			},
+			closeCancelModel () {
+				console.log('執行')
+				console.log(this.showCancelButton)
+				this.showCancelButton = !this.showCancelButton
+				// if (this.showCancelButton) {
+				// 	this.showCancelButton = false
+				// } else {
+				// 	this.showCancelButton = true
+				// }
+			},
+			newsCloseCancelModel () {
+				this.showCancelButton = false
+			},
+			newGoToCancelOrder (id) {
+				this.showCancelButton = false
+				uni.navigateTo({
+					url: '../cancelOrder/cancelOrder?orderId=' + id
+				})
+			}
+		},
+	}
+</script>
+
+<style>
+	.orderDetailing {
+		/* width: 100%; */
+		width: 750rpx;
+		/* height: 100vh; */
+		overflow: hidden;
+		background-color: #FFFFFF;
+		padding-bottom: 100rpx;
+
+	}
+
+	.line {
+		width: 750rpx;
+		height: 2rpx;
+		background-color: rgb(247, 247, 250);
+	}
+
+	.orderDetailing-header {
+		width: 750rpx;
+		height: 152rpx;
+		background-color: #fff;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0 30rpx;
+		/* position: fixed; */
+		/* padding-top: 1rpx; */
+	}
+
+	.orderDetailing-header-left {
+		flex-direction: row;
+		/* align-items: center; */
+		
+	}
+
+	.orderDetailing-header-left-box {
+		margin-left: 20rpx;
+	}
+	
+	.left-box-header{
+		flex-direction: row;
+		align-items: center;
+	}
+	
+	.user-avatar {
+		width: 90rpx;
+		height: 90rpx;
+		border-radius: 50%;
+	}
+	.noName{
+		padding-bottom: 35rpx;
+	}
+
+	.user-name {
+		font-family: PingFangSC-Semibold;
+		font-size: 16px;
+		color: #09023E;
+		font-weight: bold;
+		transform: translateY(5rpx);
+		margin-right: 20rpx;
+	}
+
+	.start-box {
+		margin-top: 12rpx;
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.star-acitve {
+		width: 30rpx;
+		height: 30rpx;
+	}
+
+	.star {
+		width: 30rpx;
+		height: 30rpx;
+	}
+
+	.star-num {
+		font-family: PingFangSC-Regular;
+		font-size: 12px;
+		color: rgba(9, 2, 62, 0.30);
+		margin-left: 10rpx;
+		margin-right: 20rpx;
+	}
+
+	.order-num {
+		font-family: PingFangSC-Regular;
+		font-size: 12px;
+		color: #09023E;
+	}
+
+	.user-phone {
+		font-family: PingFangSC-Semibold;
+		font-size: 16px;
+		color: #000000;
+		margin-top: 10rpx;
+	}
+
+	.callphone {
+		width: 80rpx;
+		height: 80rpx;
+		border-radius: 50%;
+	}
+
+	.orderDetailing-center {
+		width: 750rpx;
+		height: 154rpx;
+		/* padding: 30rpx; */
+		justify-content: center;
+		align-items: center;
+		background-color: #fff;
+	}
+
+	.orderDetailing-center-top {
+		width: 750rpx;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.send-code {
+		/* font-family: PingFangSC-Regular;
+		font-size: 14px; */
+		/* color: rgba(9, 2, 62, 0.30); */
+		font-family: PingFangSC;
+		font-weight: 700;
+		font-size: 18px;
+		color: rgb(16, 16, 16);
+		transform: translateX(-80rpx);
+	}
+
+	.copy {
+		width: 36rpx;
+		height: 36rpx;
+	}
+
+	.code-number {
+	/* 	font-family: PingFangSC-Semibold;
+		font-size: 17px;
+		color: #FF8516;
+		margin-left: 20rpx;
+		margin-right: 10rpx; */
+		font-family: PingFangSC;
+		font-weight: 700;
+		font-size: 24px;
+		color: rgba(255, 98, 0, 1);
+		
+		transform: translateX(-40rpx);
+	}
+
+	.orderDetailing-center-bottom {
+		margin-top: 10rpx;
+		flex-direction: row;
+
+	}
+
+	.send-code-tip {
+		font-family: PingFangSC-Regular;
+		font-size: 14px;
+		/* color: rgba(9, 2, 62, 0.30); */
+	}
+
+	.orderDetailing-middle {
+		padding: 30rpx;
+	}
+
+	.orderDetailing-middle-item {
+		flex-direction: row;
+		margin-bottom: 20rpx;
+
+	}
+
+	.last-middle-item {
+		margin-bottom: 0rpx;
+	}
+
+	.middle-left {
+		font-family: PingFangSC-Regular;
+		font-size: 14px;
+		/* color: rgba(9, 2, 62, 0.30); */
+	}
+
+	.middle-right {
+		font-family: PingFangSC-Regular;
+		font-size: 14px;
+		color: #09023E;
+		margin-left: 30rpx;
+		flex: 1;
+	}
+
+	.orderDetailing-bottom {
+		width: 750rpx;
+		height: 368rpx;
+		background-color: #fff;
+		flex-direction: row;
+		align-items: center;
+		padding: 30rpx;
+	}
+
+	.orderDetailing-bottom-left {
+		align-items: center;
+	}
+
+	.bottom-left-start {
+		width: 42rpx;
+		height: 42rpx;
+		border-radius: 50%;
+		/* color:#09023E; */
+		background-color: #09023E;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.left-start {
+		/* display: block; */
+		width: 41rpx;
+		height: 41rpx;
+		line-height: 41rpx;
+		border-radius: 50%;
+		background-color: #FFFFFF;
+		font-family: PingFangSC-Regular;
+		font-size: 12px;
+		color: #09023E;
+		text-align: center;
+
+	}
+
+	.bottom-left-end {
+		width: 42rpx;
+		height: 42rpx;
+		border-radius: 50%;
+		background-color: #5468FF;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.left-end {
+		width: 41rpx;
+		height: 41rpx;
+		line-height: 41rpx;
+		border-radius: 50%;
+		background-color: #fff;
+		font-family: PingFangSC-Regular;
+		font-size: 12px;
+		color: #5468FF;
+		text-align: center;
+	}
+
+	.left-line {
+		/* width: 2rpx; */
+		height: 65%;
+		/* background-color: black; */
+		border-left-width: 1rpx;
+		border-style: dashed;
+		/* background-color: linear-gradient(to bottom, #09023E, #5468FF); */
+	}
+
+	.orderDetailing-bottom-right {
+		margin-left: 20rpx;
+	}
+
+	.bottom-right-bottom {
+		margin-top: 40rpx;
+		padding-bottom: 10rpx;
+	}
+
+	.right-top-title {
+		font-family: PingFangSC-Semibold;
+		font-size: 20px;
+		color: #09023E;
+		font-weight: bold;
+	}
+
+	.right-top-address {
+		width: 650rpx;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		font-family: PingFangSC-Regular;
+		font-size: 14px;
+		color: #09023E;
+	}
+
+	.user-info {
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.user-name {
+		font-family: PingFangSC-Regular;
+		font-size: 12px;
+		color: rgba(9, 2, 62, 0.30);
+	}
+
+	.user-phone {
+		font-family: PingFangSC-Semibold;
+		font-size: 16px;
+		color: #000000;
+		transform: translateY(-7rpx);
+	}
+
+	.bottom-line {
+		width: 750rpx;
+		height: 30rpx;
+		background-color: rgb(247, 247, 250);
+	}
+
+	.button-box {
+		width: 750rpx;
+		height: 100rpx !important;
+		padding: 0 30rpx;
+		background-color: #fff;
+		flex-direction: row;
+		/* justify-content: flex-end; */
+		justify-content: center;
+		align-items: center;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+	}
+
+/* 	.cancel-button {
+		width: 160rpx;
+		height: 60rpx;
+		border-width: 2rpx;
+		border-color: rgba(9, 2, 62, 0.50);
+		border-radius: 30rpx;
+		background-color: #FFFFFF;
+		justify-content: center;
+		align-items: center;
+	} */
+
+	.cancel-text {
+		font-family: PingFangSC-Regular;
+		font-size: 14px;
+		color: rgba(9, 2, 62, 0.50);
+		background-color: #fff;
+		text-align: center;
+	}
+
+	.affirm-button {
+		width: 320rpx;
+		/* width: 160rpx; */
+		height: 70rpx;
+		line-height: 70rpx;
+		border-width: 2rpx;
+		border-color: #5468FF;
+		border-radius: 30rpx;
+		justify-content: center;
+		align-items: center;
+		background-color: #5468FF;
+		margin-left: 30rpx;
+	}
+
+	.affirm-text {
+		font-family: PingFangSC-Regular;
+		font-size: 14px;
+		color: #FFFFFF;
+		text-align: center;
+	}
+	.paotuiServerRight{
+		width: 16rpx;
+		height: 26rpx;
+		transform: translateY(6rpx);
+	}
+	.bottom-right-top-child{
+		height: 140rpx;
+		line-height: 120rpx;
+		font-family: PingFangSC-Semibold;
+		font-size: 20px;
+		color: #5468FF;
+		font-weight: bold;
+	}
+	.cancel-button{
+		width: 320rpx;
+		/* width: 160rpx; */
+		height: 70rpx;
+		line-height: 70rpx;
+		border-width: 2rpx;
+		border-color: rgba(9, 2, 62, 0.50);
+		border-radius: 30rpx;
+		justify-content: center;
+		align-items: center;
+		background-color: #FFFFFF;
+		margin-left: 30rpx;
+	}
+	.cancel-text{
+		font-family: PingFangSC-Regular;
+		font-size: 14px;
+		color: rgba(9, 2, 62, 0.50);
+		text-align: center;
+	}
+	.orderCancelModel{
+		position: fixed;
+		left: 0;
+		top:0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0.4);
+		z-index: 9999999;
+	}
+	.orderCancelModel-Wrapper{
+		width: 600rpx;
+		background-color: rgb(242, 234, 234);
+		/* position: absolute; */
+		position: relative;
+		left: 50%;
+		top: 200%;
+		/* transform: translateY(50%); */
+		padding: 30rpx;
+	}
+	.cancelModel-top{
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		/* border-bottom: 1rpx; */
+		border-color: #CCCCCC;
+	}
+	.cancelModel-top-fz{
+		font-family: PingFangSC;
+		font-weight: 400;
+		font-size: 18px;
+		color: rgb(16, 16, 16);
+	}
+	.cancelModel-top-img{
+		width: 28rpx;
+		height: 28rpx;
+		position: absolute;
+		right: 36rpx;
+	}
+	.cancelModel-center{
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		padding-top: 10rpx;
+	}
+	.cancelModel-center-top{
+		font-family: PingFangSC;
+		font-weight: 400;
+		font-size: 14px;
+		color: rgb(125, 125, 129);
+	}
+	.cancelModel-center-bottom{
+		font-family: PingFangSC;
+		font-weight: 400;
+		font-size: 20px;
+		color: rgb(16, 16, 16);
+	}
+	.cancelModel-center-bottom-cancel{
+		font-family: PingFangSC;
+		font-weight: 400;
+		font-size: 20px;
+	    color: rgb(219, 33, 33);
+	}
+	.realy-cancel-fontSize-box{
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		padding-top: 10rpx;
+	}
+	
+	.cancelModel-bottom{
+		/* width: 100%; */
+		flex-direction: row;
+		justify-content: space-around;
+		margin-top: 10rpx;
+	}
+	.cancelModel-bottom-left, .cancelModel-bottom-right{
+		width: 200rpx;
+		height: 60rpx;
+		text-align: center;
+		line-height: 60rpx;
+		border-radius: 10rpx;
+	}
+	.cancelModel-bottom-left{
+		text-align: center;
+		background-color: rgb(119, 112, 112);
+		color: #FFFFFF;
+	}
+	.cancelModel-bottom-right{
+		text-align: center;
+		background-color: rgb(98, 118, 255);
+	}
+</style>

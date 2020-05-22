@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "",
+  "navigationStyle": "custom",
+  "titleNView": false,
+  "usingComponents": {
+    "uni-popup": "/components/uni-popup/uni-popup",
+    "status": "/pages/components/status/status"
+  }
+}

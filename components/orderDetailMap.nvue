@@ -1,0 +1,53 @@
+<template>
+	<div class="orderDertailmap">
+		<div class="map">
+			<map style="width: 100%; height: 476rpx;" :latitude="orderDetailInfo.endAddress.latitude.split(',')[1]" 
+			:longitude="orderDetailInfo.endAddress.latitude.split(',')[0]" 
+			:markers="covers"
+			
+			></map>
+		</div>
+	</div>
+</template>
+
+<script>
+	export default {
+		props:['orderDetailInfo',"covers"],
+		data(){
+			return {
+				// covers:[{
+				// 	id: 1,
+				// 	latitude: '',
+				// 	longitude: '' ,
+				// 	iconPath: '../../static/img/index/dingweitwo.png',
+				// 	callout:{
+				// 		content: '终点位置',
+				// 		fontSize: 14,
+				// 		display: 'ALWAYS'
+				// 	}
+				// },{
+				// 	latitude: '',
+				// 	longitude: '' ,
+				// 	iconPath: '../../static/img/index/qishou.png',
+				// 	rotate: 75,
+				// 	callout:{
+				// 		content: '骑手位置',
+				// 		fontSize: 14,
+				// 		display: 'ALWAYS',
+						
+				// 	}
+				// }],
+			}
+		}
+	}
+</script>
+	
+	
+<style>
+.orderDertailmap{
+	width: 100%;
+	height: 476rpx;
+	position: relative;
+}
+
+</style>
