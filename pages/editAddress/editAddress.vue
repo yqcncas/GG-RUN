@@ -81,6 +81,7 @@
 				}
 				this.userName = this.addressInfo.name
 				this.userPhone = this.addressInfo.mobile
+				
 				if (this.addressInfo.addressDetail instanceof Array) {
 					console.log(this.addressInfo.addressDetail)
 					this.editAddress.name = this.addressInfo.addressDetail[2]
@@ -93,7 +94,10 @@
 						this.detailAddress = ''
 					}
 				} else {
-					// console.log(this.addressInfo.addressDetail)
+				
+					// if (this.addressInfo.editAddress == undefined) {
+					// 	this.addressInfo.editAddress = ''
+					// }
 					this.editAddress = this.addressInfo.editAddress
 
 					this.detailAddress = this.addressInfo.addressDetail
@@ -189,14 +193,19 @@
 			},
 			//获取手机联系人
 			getContacts() {
+				uni.showLoading({
+					title: '读取中'
+				})
 				let me = this
 				if (plus.os.name == "Android") {
+					
 					plus.contacts.getAddressBook(plus.contacts.ADDRESSBOOK_PHONE, (book) => {
 						var REQUESTCODE = 1000;
 						var main = plus.android.runtimeMainActivity();
 						var Intent = plus.android.importClass('android.content.Intent');
 						var ContactsContract = plus.android.importClass('android.provider.ContactsContract');
 						var intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+						 uni.hideLoading()
 						main.onActivityResult = function(requestCode, resultCode, data) {
 							if (REQUESTCODE == requestCode) {
 								var phoneNumber = "";
@@ -233,10 +242,12 @@
 						main.startActivityForResult(intent, REQUESTCODE);
 					})
 				} else {
+									// uni.hideLoading()
 									var peoplePickerNavController = plus.ios.newObject("ABPeoplePickerNavigationController");
 													console.log(2);
 													//实现代理方法【- (void)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker didSelectPerson:(ABRecordRef)person;】
 													//同时生成遵守ABPeoplePickerNavigationControllerDelegate协议的代理对象peoplePickerDelegate
+													 uni.hideLoading()
 													var peoplePickerDelegate = plus.ios.implements("ABPeoplePickerNavigationControllerDelegate", {
 														"peoplePickerNavigationController:didSelectPerson:": function(peoplePicker, person) {
 															//这里的peoplePicker竟然是CNContact实例对象，person是undefined
@@ -292,7 +303,7 @@
 				
 				let strLength = 0
 				let res = this.smartParse(this.autoFill)
-				
+				console.log(res)
 				//姓名
 				if (this.autoFill.trim() !== "") {
 					this.userName = res.name
@@ -300,6 +311,7 @@
 					this.province = res.province
 					this.city = res.city
 					this.area = res.county
+					this.detailAddress = res.address
 					let addressNumber = res.address
 					
 				

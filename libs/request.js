@@ -43,6 +43,11 @@ export default (url, data, method = 'POST', contentType = 'json', headers = {}) 
 				if (parseInt(res.statusCode) === 200) {
 				
 					if(res.data.code == 401){
+						
+						if (uni.getStorageSync('redInfoFlag')) {
+							uni.setStorageSync('redInfoFlag', 0)
+						}
+						
 						if (uni.getStorageSync('loginFlag')) {
 						uni.showToast({
 							icon:'none',

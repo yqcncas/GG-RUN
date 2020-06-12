@@ -1,14 +1,13 @@
 <template>
 	<view class="rich-text">
 		<view>
-			<parser :html="richTextMain.articleContent"></parser>
-			
+			<jyf-parser :html="richTextMain.articleContent"></jyf-parser>
 		</view>
 	</view>
 </template>
 
 <script>
-	import parser from "@/components/jyf-Parser/index"
+	import jyfParser from "@/components/jyf-Parser/jyf-parser";
 	export default {
 		onLoad (options) {
 			
@@ -24,9 +23,9 @@
 				richTextMain: ''
 			}
 		},
-		components:{
-			parser
-		},
+		 components: {
+		    jyfParser
+	  },
 		methods:{
 			async initRichText () {
 				if (this.id != undefined) {
@@ -35,6 +34,7 @@
 					if (res.code == 0) {
 						this.richTextMain = res.data
 					}
+					console.log(res.data)
 					uni.setNavigationBarTitle({
 						title: this.richTextMain.articleTitle
 					})
@@ -44,6 +44,7 @@
 					if (res.code == 0) {
 						this.richTextMain = res.data
 					}
+					console.log(res.data)
 					uni.setNavigationBarTitle({
 						title: this.richTextMain.articleTitle
 					})

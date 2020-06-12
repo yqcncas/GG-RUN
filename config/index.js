@@ -6,5 +6,5 @@ let baseURL = ''
 export default baseURL
 
 // 版本号
-export const versionAndroid = 105 // 当前版本 -- 安卓
-export const versionIos = 104 // 当前版本 -- ios
+export const versionAndroid = 109 // 当前版本 -- 安卓
+export const versionIos = 108 // 当前版本 -- ios

@@ -208,9 +208,9 @@
 				// 	url: '../rich-text/rich-text?id=' + id
 				// })
 				if(plus.os.name == "Android") {
-					plus.runtime.openURL('http://qishou.bajiaostar.com/');
+					plus.runtime.openURL('http://qishou.gglaisong.com/');
 				} else {
-					plus.runtime.openURL('http://qishou.bajiaostar.com/');
+					plus.runtime.openURL('http://qishou.gglaisong.com/');
 				}
 				
 			},
@@ -219,6 +219,9 @@
 					url:'../testMap/testMap'
 				})
 			}
+		},
+		onUnload() {
+			clearInterval(this.timer)
 		}
 	}
 </script>

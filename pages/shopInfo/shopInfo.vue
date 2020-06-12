@@ -84,7 +84,7 @@
 				// 重量
 				weight: 1,
 				//价值
-				price: 1,
+				price: 20,
 				//其他
 				showElse: false,
 				//选中的内容

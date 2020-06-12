@@ -48,7 +48,7 @@
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "",
     "navigationBarBackgroundColor": "#FFFFFF",
-    "backgroundColor": "#FFFFFF"
+    "backgroundColor": "#F8F8F8"
   },
   "tabBar": {
     "borderStyle": "white",

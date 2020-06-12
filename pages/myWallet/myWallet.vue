@@ -38,6 +38,10 @@
 				totalPrice: ''
 			}
 		},
+		onPullDownRefresh () {
+			this.initMyInfo()
+			uni.stopPullDownRefresh()
+		},
 		methods: {
 			//跳转充值
 			goToRecharge () {

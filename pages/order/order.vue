@@ -84,7 +84,7 @@
 											<!-- <div class="price" ref = 'price'></div> -->
 										</view>
 										<view class="bottom-left-bottom" v-if="item.goodsPredictAmount">
-											<view class="total">押金：</view>
+											<view class="total">预付金：</view>
 											<view class="price">¥{{item.goodsPredictAmount}}</view>
 										</view>
 										
@@ -155,7 +155,7 @@
 											<!-- <div class="price" ref = 'price'></div> -->
 										</view>
 										<view class="bottom-left-bottom" v-if="item.goodsPredictAmount">
-											<view class="total">押金：</view>
+											<view class="total">预付金：</view>
 											<view class="price">¥{{item.goodsPredictAmount}}</view>
 										</view>
 										
@@ -228,7 +228,7 @@
 											<!-- <div class="price" ref = 'price'></div> -->
 										</view>
 										<view class="bottom-left-bottom" v-if="item.goodsPredictAmount">
-											<view class="total">押金：</view>
+											<view class="total">预付金：</view>
 											<view class="price">¥{{item.goodsPredictAmount}}</view>
 										</view>
 										
@@ -302,7 +302,7 @@
 											<!-- <div class="price" ref = 'price'></div> -->
 										</view>
 										<view class="bottom-left-bottom" v-if="item.goodsPredictAmount">
-											<view class="total">押金：</view>
+											<view class="total">预付金：</view>
 											<view class="price">¥{{item.goodsPredictAmount}}</view>
 										</view>
 										
@@ -376,7 +376,7 @@
 											<!-- <div class="price" ref = 'price'></div> -->
 										</view>
 										<view class="bottom-left-bottom" v-if="item.goodsPredictAmount">
-											<view class="total">押金：</view>
+											<view class="total">预付金：</view>
 											<view class="price">¥{{item.goodsPredictAmount}}</view>
 										</view>
 										
@@ -449,7 +449,7 @@
 											<!-- <div class="price" ref = 'price'></div> -->
 										</view>
 										<view class="bottom-left-bottom" v-if="item.goodsPredictAmount">
-											<view class="total">押金：</view>
+											<view class="total">预付金：</view>
 											<view class="price">¥{{item.goodsPredictAmount}}</view>
 										</view>
 										
@@ -522,7 +522,7 @@
 											<!-- <div class="price" ref = 'price'></div> -->
 										</view>
 										<view class="bottom-left-bottom" v-if="item.goodsPredictAmount">
-											<view class="total">押金：</view>
+											<view class="total">预付金：</view>
 											<view class="price">¥{{item.goodsPredictAmount}}</view>
 										</view>
 										
@@ -595,7 +595,7 @@
 											<!-- <div class="price" ref = 'price'></div> -->
 										</view>
 										<view class="bottom-left-bottom" v-if="item.goodsPredictAmount">
-											<view class="total">押金：</view>
+											<view class="total">预付金：</view>
 											<view class="price">¥{{item.goodsPredictAmount}}</view>
 										</view>
 										

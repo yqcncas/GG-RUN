@@ -141,7 +141,7 @@
 						<view class="item-left-bottom">请认真填写包裹信息</view>
 					</view>
 					<view class="item-right item-right-shopInfo">
-						<view class="place" v-if="JSON.stringify(shopInfo) == '{}'" style="color: rgba(9,2,62,0.30);">请填写</view>
+						<view class="place" v-if="JSON.stringify(shopInfo) == '{}'" style="color: rgba(9,2,62,0.30);"><span style = "color: #ef392b; display: inline-block;padding-right: 8rpx;font-size: 16px;">*必填</span>请填写</view>
 						<view class="place" v-else-if="scrollIndex == 2">{{ shopInfo.main + ',' + shopInfo.price + '元' }}</view>
 						<view class="place item-right-shopInfo" v-else>{{ shopInfo.main + ',' + shopInfo.weight + '公斤内,' + shopInfo.price + '元' }}</view>
 						<image src="../../static/img/my/right.png" mode="aspectFill"></image>
@@ -260,7 +260,7 @@
 		</view>
 		<view class="footer-right" @tap="handleBilldetail">确认下单</view>
 	</view>
-	<view class="storage-footer column-footer" v-else>			<view class="newpopups-footer-top">				<view class="newpopups-footer-top-l">					<view class="paotuifei">跑腿费: <span>￥{{orderComputed.taskReward ? orderComputed.taskReward : 0}}</span></view>					<view class="paotuifei">押金: <span>￥{{orderComputed.goodsPredictAmount ? orderComputed.goodsPredictAmount : 50}}</span></view>				</view>				<view class="newpopups-footer-left-top-c">					合计: <span>￥{{orderComputed.payAmount ? orderComputed.payAmount : 50}}</span>				</view>				<view class="newpopups-footer-left-top-r" @tap="handleBilldetail">					确认下单				</view>			</view>			<view class="newpopups-footer-bottom">				<view class="newpopups-footer-bottom-l" @tap="choiceHelpbuyCircle">					<!-- <view class="newpopups-footer-left-bottom-circle"></view> -->
+	<view class="storage-footer column-footer" v-else>			<view class="newpopups-footer-top">				<view class="newpopups-footer-top-l">					<view class="paotuifei">跑腿费: <span>￥{{orderComputed.taskReward ? orderComputed.taskReward : 0}}</span></view>					<view class="paotuifei">预付金: <span>￥{{orderComputed.goodsPredictAmount ? orderComputed.goodsPredictAmount : 50}}</span></view>				</view>				<view class="newpopups-footer-left-top-c">					合计: <span>￥{{orderComputed.payAmount ? orderComputed.payAmount : 50}}</span>				</view>				<view class="newpopups-footer-left-top-r" @tap="handleBilldetail">					确认下单				</view>			</view>			<view class="newpopups-footer-bottom">				<view class="newpopups-footer-bottom-l" @tap="choiceHelpbuyCircle">					<!-- <view class="newpopups-footer-left-bottom-circle"></view> -->
 					<view class="horseman-circle" :class="{ on: helpbuyCircle }"></view>					<view>我已阅读并同意<span @tap.stop = "goToRichText(38)">《帮买服务协议》</span></view>				</view>				<view class="newpopups-footer-bottom-r" @tap = "goTofreight(1)">					费用明细				</view>			</view>		</view>
 		<!-- 有无运力 -->
 		<view class="horseman-box" v-if="horseman">
@@ -295,8 +295,8 @@
 					<image src="../../static/img/order/closeBlack.png" mode="aspectFill" ></image>
 				</view>
 				<view class="shopAppraisement-center">
-						<view class="yufu">押金: <span>¥50</span></view>
-						<view class="center-tip">说明：如骑手已购买商品，用户取消订单，押金不予退还</view>
+						<view class="yufu">预付金: <span>¥50</span></view>
+						<view class="center-tip">说明：如骑手已购买商品，用户取消订单，预付金不予退还</view>
 						<view class="center-input-box">
 							<view class="shopAppraisement-input-left">估价: ¥</view>
 							<input type="number" :adjust-position = 'false' placeholder="估价仅拱骑手参考，平台不扣除资金" placeholder-style="font-size: 12px" :focus = 'shopAppraisement' v-model="appraisement">
@@ -369,7 +369,7 @@
 					</view>
 					
 					<view class="popuos-main-item" v-if="scrollIndex === 2">
-						<view class="main-item-left">押金</view>
+						<view class="main-item-left">预付金</view>
 						<view class="main-item-right">¥{{ JSON.stringify(orderComputed) == '{}' ? 0 : orderComputed.goodsPredictAmount }}</view>
 					</view>
 					<view class="popuos-main-item" v-if="orderComputed.otherPrice">
@@ -400,6 +400,8 @@
 				<view class="popups-footer-right" @tap="handlePopPay">确认下单</view>
 			</view>
 		</uni-popup>
+		
+		
 
 		<!-- 支付弹框 -->
 		<uni-popup ref="popupPay" type="bottom" @change="closePay" >
@@ -1139,6 +1141,9 @@ export default {
 						});
 						return;
 					} else {
+						uni.showLoading({
+						    title: '订单生成中'
+						});
 						let latitude = this.sendAddress.latitude.split(',')[1];
 						let longitude = this.sendAddress.latitude.split(',')[0];
 					
@@ -1169,6 +1174,7 @@ export default {
 							},
 							success: res => {
 								console.log(res)
+								uni.hideLoading()
 								this.horsemanCount = res.data.data.count;
 								this.horsemanList = res.data.data.results;
 								// if (this.choiceMinunteStart >= 22) {

@@ -252,6 +252,7 @@
 			justify-content: space-between;
 			align-items: center;
 			background-color: #fff;
+
 		}
 		.code-box{
 			display: flex;

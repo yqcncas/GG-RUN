@@ -26,6 +26,9 @@ dayjs.locale('zh-cn') // 引入中文
 dayjs.extend(relativeTime)
 Vue.prototype.$dayjs = dayjs // 放入原型中
 
+import uView from "uview-ui";
+Vue.use(uView);
+
 // import gcoord from 'gcoord'
 // Vue.prototype.$gcoord = gcoord
 

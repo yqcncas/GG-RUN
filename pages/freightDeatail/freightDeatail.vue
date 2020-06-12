@@ -26,7 +26,7 @@
 				<view class="item-right">¥{{JSON.stringify(freightInfo) =='{}' ? 0 : freightInfo.urgentExpressPric}}</view>
 			</view>
 			<view class="freight-item" v-if="freightInfo.specialTimePrice">
-				<view class="item-left">特殊时段<p class = "item-left-bottom">(遇交通高峰期，促进骑手快速接单，临时加价)</p></view>
+				<view class="item-left">特殊时段<p class = "item-left-bottom">(遇特殊时段时，促进骑手快速接单，临时加价)</p></view>
 				<view class="item-right">¥{{JSON.stringify(freightInfo) =='{}' ? 0 : freightInfo.specialTimePrice}}</view>
 			</view>
 			<view class="freight-item" v-if="freightInfo.weatherSubsidy">
@@ -47,7 +47,7 @@
 				<view class="item-right total-text">¥{{freightInfo.taskReward}}</view>
 			</view>
 			<view class="freight-total" v-if="freightInfo.goodsPredictAmount">
-				<view class="item-left">押金:<p class = "item-left-bottom">(押金金额与商品价值无关，多退少补，私下支付)</p></view>
+				<view class="item-left">预付金:<p class = "item-left-bottom">(预付金金额与商品价值无关，多退少补，私下支付)</p></view>
 				<view class="item-right total-text">¥{{freightInfo.goodsPredictAmount}}</view>
 			</view>
 			<view class="freight-total" v-if="freightInfo.taskReward - freightInfo.payAmount">

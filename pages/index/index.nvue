@@ -11,8 +11,8 @@
 			<view class="header-center">
 				<!-- <transition name="fade"> -->
 				<view class="center-left" @tap.stop="handleChoiceCar(0)">
-					<image v-if="choiceCar == 0" src="../../static/img/index/motuoActive.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
-					<image v-if="choiceCar == 1" src="../../static/img/index/motuo.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
+					<image v-if="choiceCar == 0" src="../../static/img/index/kuaidi.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
+					<image v-if="choiceCar == 1" src="../../static/img/index/kuaidic.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
 					<view class="center-font" :class="{on:choiceCar == 0}">
 						<text class="font-color">普通派送</text>
 					</view>
@@ -141,7 +141,7 @@
 			</view>	
 		</view>
 		<!-- <view class="zuobiao" @click.stop="restoration" :style="{bottom: platform == 'ios' ? 530 + 'rpx' : 390 + 'rpx'}" v-if="mapShow"> -->
-		<view class="zuobiao" @click.stop="restoration" :style="{bottom: platform == 'ios' ? 460 + 'rpx' : 390 + 'rpx'}" v-if="mapShow">
+		<view class="zuobiao" @click.stop="restoration" :style="{bottom: platform == 'ios' ? 400 + 'rpx' : 390 + 'rpx'}" v-if="mapShow">
 			<image src="../../static/img/index/zuobiao.png" mode="" class="zuobiao-img" ></image>
 		</view>
 		
@@ -245,7 +245,8 @@ export default {
 			// 是否开通标识 0允许
 			openFlag: 1,
 			// 地区编码
-			adcode: 0
+			adcode: 0,
+			handleFWInco: false
 		};
 	},
 	components: {
@@ -280,7 +281,9 @@ export default {
 		// } else {
 		// 	this.mapheight = data.windowHeight * 2 - 112 + (data.statusBarHeight * 2 + 10);
 		// }
-		this.mapheight = data.windowHeight * 2 - data.windowHeight * 0.2
+		
+		// this.mapheight = data.windowHeight * 2 - data.windowHeight * 0.2
+		this.mapheight = data.windowHeight * 2 - data.windowHeight * 0.3
 		
 		this.headerCity = '宁波市'
 		//获取当前用户位置
@@ -893,11 +896,13 @@ export default {
 		//点击小图标复位
 		restoration () {
 			this.mapShow = false
-			console.log(this.fwlongitude, this.fwlatitude)
-			this.longitude = this.fwlongitude
-			this.latitude = this.fwlatitude
+			// console.log(this.fwlongitude, this.fwlatitude)
+			// this.longitude = this.fwlongitude
+			// this.latitude = this.fwlatitude
+			// this.handleMap(this.fwlatitude, this.fwlongitude)
 			this.points = []
-			this.handleMap(this.fwlatitude, this.fwlongitude)
+			this.handleFWInco = true
+			this.getLocation()
 			setTimeout(() => {
 				this.mapShow = true
 			},400)
@@ -961,7 +966,11 @@ export default {
 				});
 				return;
 			}
-
+			
+			uni.showLoading({
+			    title: '加载中'
+			});
+			
 			//防抖处理
 			this.timerId && clearTimeout(this.timerId);
 			this.timerId = setTimeout(() => {
@@ -1000,6 +1009,7 @@ export default {
 									'token': this.token
 							    },
 							    success: (resOpen) => {
+									uni.hideLoading()
 							        console.log(resOpen);
 									this.openFlag = resOpen.data.code
 									if (this.openFlag != 0) {
@@ -1160,9 +1170,6 @@ export default {
 							    }
 							});
 							console.log(this.openFlag)
-							
-							
-						
 						}
 					});
 				}
@@ -1220,11 +1227,13 @@ export default {
 							this.headerCity = res.data.regeocode.addressComponent.city;
 							// console.log(res.data)
 							if (res.data.regeocode.aois.length != 0) {
+								if (this.handleFWInco) {
+									this.ftSendAddress = {}
+									this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
+									this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
+									this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+								}
 								
-								// this.ftSendAddress = {}
-								// this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
-								// this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
-								// this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
 							
 								this.editAddress.name = res.data.regeocode.aois[0].name;
 								this.editAddress.address = res.data.regeocode.formatted_address;
@@ -1253,10 +1262,13 @@ export default {
 								
 							
 							} else if (res.data.regeocode.pois.length != 0) {
-								// this.ftSendAddress = {}
-								// this.$set(this.ftSendAddress,'titleName',res.data.regeocode.pois[0].name)
-								// this.$set(this.ftSendAddress,'location',res.data.regeocode.pois[0].location)
-								// this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+								if (this.handleFWInco) {
+									this.ftSendAddress = {}
+									this.$set(this.ftSendAddress,'titleName',res.data.regeocode.pois[0].name)
+									this.$set(this.ftSendAddress,'location',res.data.regeocode.pois[0].location)
+									this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+								}
+								
 								
 								this.editAddress.name = res.data.regeocode.pois[0].name;
 								this.editAddress.address = res.data.regeocode.formatted_address;
@@ -1343,7 +1355,7 @@ export default {
 							'content-type': 'application/x-www-form-urlencoded'
 						},
 					    success: (msg) => {
-							console.log(msg)
+							// console.log(msg)
 					        this.horseManTotal  = msg.data.data.length
 					       
 					       if (this.horseManTotal == 0) {

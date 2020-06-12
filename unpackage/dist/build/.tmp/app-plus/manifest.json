@@ -7,8 +7,8 @@
   "id": "__UNI__E5FD5C0",
   "name": "GG来送",
   "version": {
-    "name": "1.0.27",
-    "code": 102
+    "name": "1.0.31",
+    "code": 106
   },
   "description": "",
   "launch_path": "__uniappview.html",
@@ -25,6 +25,7 @@
     "Payment": {},
     "Contacts": {},
     "Share": {},
+    "OAuth": {},
     "UniNView": {
       "description": "UniNView原生渲染"
     }
@@ -149,7 +150,13 @@
           },
           "alipay": {}
         },
-        "oauth": {},
+        "oauth": {
+          "weixin": {
+            "appid": "wx4cc4ff622dc4cb2b",
+            "appsecret": "1598f164010d25fea9d07f00360534d3",
+            "UniversalLinks": ""
+          }
+        },
         "share": {
           "weixin": {
             "appid": "wx4cc4ff622dc4cb2b",

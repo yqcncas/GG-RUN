@@ -145,6 +145,9 @@ import uniPopup from "@/components/uni-popup/uni-popup.vue"
 			async rechargeSubmit () {
 				if (this.currentIndex != -1) {
 					let res = await this.$fetch(this.$api.userRecharge,{money:this.isChoiceItem.amount,payType:this.circleTapIndex},"Post","Form")
+					console.log(this.isChoiceItem.amount)
+					console.log(this.circleTapIndex)
+					console.log(res)
 					
 					if (this.circleTapIndex === 1) {
 						uni.requestPayment({
