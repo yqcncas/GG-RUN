@@ -29,10 +29,12 @@
 			</view>
 			<view class="save-right" @tap="clearForm">清空当前信息</view>
 		</view>
-		<textarea class="copy-address" @blur="autoFillFn" v-model="autoFill" @focus='focusAutoFill' placeholder-class="textarea-font"
-		 :placeholder="holder" placeholder-style="font-family: PingFangSC-Regular;font-size: 14px;color: rgba(9,2,62,0.30);"></textarea>
+		<textarea class="copy-address" @blur="autoFillFn" v-model="autoFill" @focus='focusAutoFill' 
+		 :placeholder="holder" placeholder-style="font-family: PingFangSC-Regular;font-size: 14px;color: #A3A3A3;"></textarea>
 		<view class="submit" @tap="submitAddress">提交</view>
-
+	<!-- 	<view class="shibie-box" @click="shibieImg">
+			<image src="../../static/icon/26.png" mode=""></image>
+		</view> -->
 
 	</view>
 
@@ -415,6 +417,12 @@
 					})
 					return
 				}
+				if (this.userName.trim() == '') {
+					return uni.showToast({
+						icon: 'none',
+						title: '请填写姓名'
+					})
+				}
 
 				
 				this.addressLongitude = this.editAddress.longitude + "," + this.editAddress.latitude
@@ -724,7 +732,30 @@
 				})
 
 			}
-
+			// shibieImg () {
+			// 	uni.chooseImage({
+			// 	    count: 1, //默认9
+			// 	    sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+			// 	    sourceType: ['album', 'camera'], //从相册选择
+			// 	    success: (res) => {
+			// 	        console.log(res.tempFilePaths[0]);
+			// 			// uni.request({
+			// 			//     url: 'https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=24.ac3c2e0edc3d8d6894b5a32ad8382a7c.2592000.1594783530.282335-20410815', //仅为示例，并非真实接口地址。
+			// 			//     data: {
+			// 			//         image: res.tempFilePaths[0]
+			// 			//     },
+			// 			// 	method: 'POST',
+			// 			//     header: {
+			// 			//         'Content-Type': 'application/x-www-form-urlencoded' //自定义请求头信息
+			// 			//     },
+			// 			//     success: (msg) => {
+			// 			//         console.log(msg);
+			// 			//         // this.text = 'request success';
+			// 			//     }
+			// 			// });
+			// 	    }
+			// 	});
+			// }
 		}
 	}
 </script>
