@@ -1,6 +1,8 @@
 <template>
 	<view class="address">
-		<view class="no-address" v-if="!userAddress.length">暂无地址</view>
+		<view class="no-address" v-if="!userAddress.length && isShowLoding">
+			<u-empty  mode="address"></u-empty>
+		</view>
 		<view class="address-item" v-for="(item,index) in userAddress" :key = 'index' @tap.stop="storageInfo(item,index)">
 			<view class="item-header">
 				<view class="user-name">{{item.name}}</view>
@@ -9,6 +11,7 @@
 			<view class="item-center">
 				<view class="center-top">{{item.addressDetail[2]}}</view>
 				<view class="center-bottom">{{item.addressDetail[0] + item.addressDetail[1]}}</view>
+				<view class="center-bottom cbb">{{item.addressDetail[1]}}</view>
 			</view>
 			<view class="item-bottom">
 				
@@ -40,6 +43,9 @@
 			//是否显示设为默认地址  0 起点  1 终点
 			this.addressStatus = options.address
 			// this.mapLocation()
+			uni.showLoading({
+				title: '加载中'
+			})
 		},
 		onShow(){
 			this.initAddress()
@@ -57,6 +63,7 @@
 				
 				userAddress:[],
 				hasFlag:false,
+				isShowLoding: false
 			}
 		},
 		methods: {
@@ -97,10 +104,11 @@
 			//存储信息
 			storageInfo (item,index) {
 				// 起点点击
+				
 				item.latitude = item.latitude.split(',')
-				console.log(this.addressStatus)
-				console.log(this.addressStatus == 0)
-				console.log(this.addressStatus == 1)
+				uni.removeStorageSync('helpMeBuy')
+				uni.removeStorageSync('helpMeGet')
+				
 				if (this.addressStatus == 0) {
 					if(item.addressDetail[1] == 'undefined') {
 						item.addressDetail[1] = ""
@@ -123,9 +131,10 @@
 							latitude: item.latitude[1],
 							longitude: item.latitude[0]
 						},
+						extensionNumber: item.extensionNumber
 					}
 					uni.setStorageSync('sendAddress',JSON.stringify(sendAddress))
-					
+					uni.setStorageSync('clickAddressFlag', true)
 					uni.navigateBack({
 						delta:1
 					})
@@ -153,10 +162,11 @@
 							latitude: item.latitude[1],
 							longitude: item.latitude[0]
 						},
+						extensionNumber: item.extensionNumber
 					}
 	
 					uni.setStorageSync('endAddress',JSON.stringify(endAddress))
-
+					uni.setStorageSync('clickAddressFlag', true)
 					uni.navigateBack({
 						delta:1
 					})
@@ -180,8 +190,16 @@
 					}
 				}
 				
+				
 				this.userAddress.unshift(...this.userAddress.splice(this.userAddressDefaultFlag,1))
-
+				
+				if (this.userAddress.length <= 0) {
+					this.isShowLoding = true
+				}
+				console.log(this.userAddress)
+				setTimeout(() => {
+					uni.hideLoading()
+				}, 1700)
 			},
 			//删除地址
 			async delAddress (id) {
@@ -192,6 +210,11 @@
 				    success: res => {
 				        if (res.confirm) {
 				           let result = this.$fetch(this.$api.delAddress,{id:Number(id)},'POST','form').then(res => {
+							   console.log(res)
+							   uni.showToast({
+							   	icon:'none',
+								title: res.msg
+							   })
 							  if (res.code === 0) {
 							  	this.initAddress()
 							  }
@@ -228,6 +251,7 @@
 		.address-item{
 			width: 690rpx;
 			padding: 30rpx;
+			padding-bottom: 0;
 			margin-top: 30rpx;
 			box-sizing: border-box;
 			background: #FFFFFF;
@@ -264,14 +288,18 @@
 					text-overflow: ellipsis;
 					overflow: hidden;
 					white-space: nowrap;
+					&.cbb{
+						font-weight: bold;
+						color: #09023E;
+					}
 				}
 			}
 			.item-bottom{
-				
+				height: 88rpx;
 				display: flex;
 				// align-items: center;
 				justify-content: space-between;
-				margin-top: 20rpx;
+				// margin-top: 20rpx;
 				box-sizing: border-box;
 				.bottom-left{
 					display: flex;
@@ -304,6 +332,7 @@
 					align-items: center;
 					
 					.right-edit,.right-del{
+						height: 88rpx;
 						display: flex;
 						align-items: center;
 						image{

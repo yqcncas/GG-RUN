@@ -8,6 +8,32 @@
 			}
 		},
 		onLaunch: function() {
+			// 检查版本更新
+			// #ifdef APP-PLUS
+			let system = uni.getSystemInfoSync()
+			if (system.platform === 'android') {
+				this.$fetch(this.$api.version,{type:1,userType:2},"GET",'form').then(res => {
+					// console.log(res)
+					if (res.code !== 0) throw res.msg
+					versionAdmin.init(JSON.parse(res.msg))
+				})
+			} else if (system.platform === 'ios') {
+				this.$fetch(this.$api.version,{type:2,userType:2},"GET",'form').then(res => {
+					// console.log(res)
+					if (res.code !== 0) throw res.msg
+					versionAdmin.init(JSON.parse(res.msg))
+				})
+			}
+			// #endif 
+			
+			
+			this.$fetch(this.$api.newNoticeMsg, {type: 2}, "POST", 'FORM').then((res) => {
+				console.log(res)
+				uni.setStorageSync('gundongText', res.data.content)
+				uni.setStorageSync('gundongSpeed', res.data.params.rollingSpeed)
+			})
+			
+			
 			uni.getProvider({
 				service: "push",
 				success: (e) => {
@@ -78,26 +104,12 @@
 			uni.removeStorageSync('shopInfo')
 			uni.removeStorageSync('discount')
 			uni.removeStorageSync('takeTimer')
+			uni.removeStorageSync('newAddressFlag')
+			uni.removeStorageSync('clickAddressFlag')
 		},
 		onShow: function() {
 			console.log('App Show')
-			// 检查版本更新
-			// #ifdef APP-PLUS
-			let system = uni.getSystemInfoSync()
-			if (system.platform === 'android') {
-				this.$fetch(this.$api.version,{type:1,userType:2},"GET",'form').then(res => {
-					// console.log(res)
-					if (res.code !== 0) throw res.msg
-					versionAdmin.init(JSON.parse(res.msg))
-				})
-			} else if (system.platform === 'ios') {
-				this.$fetch(this.$api.version,{type:2,userType:2},"GET",'form').then(res => {
-					// console.log(res)
-					if (res.code !== 0) throw res.msg
-					versionAdmin.init(JSON.parse(res.msg))
-				})
-			}
-			// #endif 
+	
 		},
 		onHide: function() { 
 			console.log('App Hide')
@@ -115,14 +127,14 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
 	/*每个页面公共css */
 	///* #ifndef APP-PLUS-NVUE */
-	
+	@import "uview-ui/index.scss";
 	
 	page{
 		width: 100%;
-		height: 100%;
+		height: 100%; 
 	}
 	/* 顶部阴影 */
 	page::after {

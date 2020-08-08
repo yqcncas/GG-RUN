@@ -1,6 +1,8 @@
 <template>
-	<view class="order">
+	<view class="order" >
 		<Status/>
+		<!-- <view class="header-box" @touchstart = "touchDemo" @touchcancel = "touchEndDemo" @touchmove = "touchmoveDemo" @touchend = "touchenditem"> -->
+		<view class="header-box">
 		<view class="order-header">
 			<view class="header-title">我的订单</view>
 			<image src="../../static/img/order/search.png" mode="aspectFill" class="header-search" @tap="goToSearch"></image>
@@ -16,6 +18,7 @@
 				</view>
 			</scroll-view>
 		</view>
+		</view>
 		<view class="center-text" v-if="!swiperItem1.length && currentIndex == 0">{{noOrderText}}</view>
 		<view class="center-text" v-if="!swiperItem2.length && currentIndex == 1">{{noOrderText}}</view>
 		<view class="center-text" v-if="!swiperItem3.length && currentIndex == 2">{{noOrderText}}</view>
@@ -23,12 +26,15 @@
 		<view class="center-text" v-if="!swiperItem5.length && currentIndex == 4">{{noOrderText}}</view>
 		<view class="center-text" v-if="!swiperItem6.length && currentIndex == 5">{{noOrderText}}</view>
 		<view class="center-text" v-if="!swiperItem7.length && currentIndex == 6">{{noOrderText}}</view>
+		<view class="center-text" v-if="!swiperItem8.length && currentIndex == 7">{{noOrderText}}</view>
 		<!-- <view class="center-text"></view> -->
+		<mescroll-body ref="mescrollRef"  @down="downCallback" :up="upOption" :down = "downOption">
 			<swiper class="swiper" style="height: calc(100vh );" :current="currentIndex" @change="swiperChange">
-			
+				
 					<!-- <block v-for="(count,i) in 7" :key = "i"> -->
 						<swiper-item>
-							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" :scroll-top = "secondsSCT" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+								<view class="pullDownPage" v-if="swiperItem1.length">下拉刷新页面, 查看订单情况</view>
 							<view class="swiper-main" v-for="(item,index) in swiperItem1" :key = "index" @tap="goToDeatail(item.id,item.payAmount)">
 								<view class="main-header">
 									<view class="header-top" >
@@ -109,8 +115,10 @@
 						</swiper-item>
 						
 						<swiper-item>
-							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" :scroll-top = "secondsSCT" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<view class="pullDownPage" v-if="swiperItem2.length">下拉刷新页面, 查看订单情况</view>
 							<view class="swiper-main" v-for="(item,index) in swiperItem2" :key = "index" @tap="goToDeatail(item.id,item.payAmount)">
+								
 								<view class="main-header">
 									<view class="header-top" >
 										<view class="top-box" @tap.stop="copyNumber(item.orderNo)">
@@ -127,7 +135,7 @@
 								</view>
 								<view class="main-center">
 									<view class="center-left">
-										<view class="left-top" v-if="item.type == 2">买</view>										<view class="left-top" v-else>取</view>
+										<view class="left-top" v-if="item.type == 2">买</view>										<view class="left-top" v-else>取</view>
 										<view class="left-line">
 											<div class="content">
 											</div>
@@ -136,7 +144,7 @@
 										<view class="left-bottom" v-else>达</view>
 									</view>
 									<view class="center-right">
-										<view class="right-top" v-if="!item.buyAddressType">											<view class="right-top-header">												<view class="top-title">{{item.startAddress.title}}</view>											</view>											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>										</view>										<view class="right-top top-title-child" v-else>											就近购买										</view>
+										<view class="right-top" v-if="!item.buyAddressType">											<view class="right-top-header">												<view class="top-title">{{item.startAddress.title}}</view>											</view>											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>										</view>										<view class="right-top top-title-child" v-else>											就近购买										</view>
 										<view class="right-bottom" :style="{paddingTop:item.startAddress.addressDetail.length < 27 ? 70 + 'rpx' : 48 + 'rpx'}">
 										<!-- <view class="right-bottom"> -->
 											<view class="right-bottom-header">
@@ -181,7 +189,8 @@
 						</scroll-view>
 						</swiper-item>
 						<swiper-item>
-							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" :scroll-top = "secondsSCT" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<view class="pullDownPage" v-if="swiperItem3.length">下拉刷新页面, 查看订单情况</view>
 							<view class="swiper-main" v-for="(item,index) in swiperItem3" :key = "index" @tap="goToDeatail(item.id,item.payAmount)">
 								<view class="main-header">
 									<view class="header-top" >
@@ -209,7 +218,20 @@
 										<view class="left-bottom" v-else>达</view>
 									</view>
 									<view class="center-right">
-										<view class="right-top" v-if="!item.buyAddressType">											<view class="right-top-header">												<view class="top-title">{{item.startAddress.title}}</view>											</view>											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>										</view>										<view class="right-top top-title-child" v-else>											就近购买										</view>
+										<view class="right-top" v-if="!item.buyAddressType">
+											<view class="right-top-header">
+											<view class="top-title">{{item.startAddress.title}}</view>	
+											</view>										
+											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>						
+											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>
+											</view>										
+											<view class="right-top top-title-child" v-else>就近购买</view>
+											<view class="buyTimerDJS" v-if="item.endPickTimer && !item.buyAddressType">取件倒计时: <span>{{item.endPickTimer}}分钟</span>内购买</view>	
+											<view class="buyTimerDJS" v-else-if = "item.endPickTimer <= 0 && !item.buyAddressType">取件倒计时: <span>已超时</span></view>
+											<view class="buyTimerDJS" v-if="item.endPickTimer && item.buyAddressType">购买倒计时: <span>{{item.endPickTimer}}分钟</span>内购买</view>
+											<view class="buyTimerDJS" v-else-if = "item.endPickTimer <= 0 && item.buyAddressType">购买倒计时: <span>已超时</span></view>
+											
+											
 										<view class="right-bottom" :style="{paddingTop:item.startAddress.addressDetail.length < 27 ? 70 + 'rpx' : 48 + 'rpx'}">
 										<!-- <view class="right-bottom"> -->
 											<view class="right-bottom-header">
@@ -217,6 +239,7 @@
 											</view>
 											<view class="right-bottom-center">{{item.endAddress.addressDetail}}</view>
 											<view class="right-bottom-footer" >{{item.endAddress.userName}} {{item.endAddress.mobile}}</view>
+											<!-- <view class="buyTimerDJS">送达倒计时: <span>18分钟</span>内购买</view> -->
 										</view>
 									</view>
 								</view>
@@ -255,7 +278,8 @@
 						</scroll-view>
 						</swiper-item>
 						<swiper-item>
-							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" :scroll-top = "secondsSCT" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<view class="pullDownPage" v-if="swiperItem4.length">下拉刷新页面, 查看订单情况</view>
 							<view class="swiper-main" v-for="(item,index) in swiperItem4" :key = "index" @tap="goToDeatail(item.id,item.payAmount)">
 								<view class="main-header">
 									<view class="header-top" >
@@ -283,7 +307,16 @@
 										<view class="left-bottom" v-else>达</view>
 									</view>
 									<view class="center-right">
-										<view class="right-top" v-if="!item.buyAddressType">											<view class="right-top-header">												<view class="top-title">{{item.startAddress.title}}</view>											</view>											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>										</view>										<view class="right-top top-title-child" v-else>											就近购买										</view>
+										<view class="right-top" v-if="!item.buyAddressType">
+											<view class="right-top-header">	
+												<view class="top-title">{{item.startAddress.title}}</view>
+												</view>	
+												<view class="right-top-center">{{item.startAddress.addressDetail}}</view>
+												<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>
+												
+											</view>
+											<view class="right-top top-title-child" v-else>就近购买</view>
+											
 										<view class="right-bottom" :style="{paddingTop:item.startAddress.addressDetail.length < 27 ? 70 + 'rpx' : 48 + 'rpx'}">
 										<!-- <view class="right-bottom"> -->
 											<view class="right-bottom-header">
@@ -291,9 +324,12 @@
 											</view>
 											<view class="right-bottom-center">{{item.endAddress.addressDetail}}</view>
 											<view class="right-bottom-footer" >{{item.endAddress.userName}} {{item.endAddress.mobile}}</view>
+											<view class="buyTimerDJS" v-if="item.estimatedTimeDown > 0">送达倒计时: <span>{{item.estimatedTimeDown}}分钟</span>内送达</view>
+											<view class="buyTimerDJS" v-else-if="item.estimatedTimeDown <= 0">送达倒计时: <span>已超时</span></view>
 										</view>
 									</view>
 								</view>
+								
 								<view class="main-bottom">
 									<view class="bottom-left">
 										<view class="bottom-left-top">
@@ -329,7 +365,8 @@
 						</scroll-view>
 						</swiper-item>
 						<swiper-item>
-							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" :scroll-top = "secondsSCT" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<view class="pullDownPage" v-if="swiperItem5.length">下拉刷新页面, 查看订单情况</view>
 							<view class="swiper-main" v-for="(item,index) in swiperItem5" :key = "index" @tap="goToDeatail(item.id,item.payAmount)">
 								<view class="main-header">
 									<view class="header-top" >
@@ -357,7 +394,14 @@
 										<view class="left-bottom" v-else>达</view>
 									</view>
 									<view class="center-right">
-										<view class="right-top" v-if="!item.buyAddressType">											<view class="right-top-header">												<view class="top-title">{{item.startAddress.title}}</view>											</view>											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>										</view>										<view class="right-top top-title-child" v-else>											就近购买										</view>
+										<view class="right-top" v-if="!item.buyAddressType">
+											<view class="right-top-header">	
+											<view class="top-title">{{item.startAddress.title}}</view>
+											</view>
+											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>											
+											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>	
+											</view>					
+											<view class="right-top top-title-child" v-else>就近购买</view>
 										<view class="right-bottom" :style="{paddingTop:item.startAddress.addressDetail.length < 27 ? 70 + 'rpx' : 48 + 'rpx'}">
 										<!-- <view class="right-bottom"> -->
 											<view class="right-bottom-header">
@@ -368,6 +412,7 @@
 										</view>
 									</view>
 								</view>
+								
 								<view class="main-bottom">
 									<view class="bottom-left">
 										<view class="bottom-left-top">
@@ -402,7 +447,8 @@
 						</scroll-view>
 						</swiper-item>
 						<swiper-item>
-							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" :scroll-top = "secondsSCT" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<view class="pullDownPage" v-if="swiperItem6.length">下拉刷新页面, 查看订单情况</view>
 							<view class="swiper-main" v-for="(item,index) in swiperItem6" :key = "index" @tap="goToDeatail(item.id,item.payAmount)">
 								<view class="main-header">
 									<view class="header-top" >
@@ -430,7 +476,14 @@
 										<view class="left-bottom" v-else>达</view>
 									</view>
 									<view class="center-right">
-										<view class="right-top" v-if="!item.buyAddressType">											<view class="right-top-header">												<view class="top-title">{{item.startAddress.title}}</view>											</view>											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>										</view>										<view class="right-top top-title-child" v-else>											就近购买										</view>
+										<view class="right-top" v-if="!item.buyAddressType">
+											<view class="right-top-header">	
+											<view class="top-title">{{item.startAddress.title}}</view>
+											</view>
+											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>
+											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>	
+											</view>										
+											<view class="right-top top-title-child" v-else>就近购买</view>
 										<view class="right-bottom" :style="{paddingTop:item.startAddress.addressDetail.length < 27 ? 70 + 'rpx' : 48 + 'rpx'}">
 										<!-- <view class="right-bottom"> -->
 											<view class="right-bottom-header">
@@ -475,7 +528,8 @@
 						</scroll-view>
 						</swiper-item>
 						<swiper-item>
-							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" :scroll-top = "secondsSCT" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<view class="pullDownPage" v-if="swiperItem7.length">下拉刷新页面, 查看订单情况</view>
 							<view class="swiper-main" v-for="(item,index) in swiperItem7" :key = "index" @tap="goToDeatail(item.id,item.payAmount)">
 								<view class="main-header">
 									<view class="header-top" >
@@ -503,7 +557,14 @@
 										<view class="left-bottom" v-else>达</view>
 									</view>
 									<view class="center-right">
-										<view class="right-top" v-if="!item.buyAddressType">											<view class="right-top-header">												<view class="top-title">{{item.startAddress.title}}</view>											</view>											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>										</view>										<view class="right-top top-title-child" v-else>											就近购买										</view>
+										<view class="right-top" v-if="!item.buyAddressType">
+											<view class="right-top-header">
+												<view class="top-title">{{item.startAddress.title}}</view>
+												</view>	
+												<view class="right-top-center">{{item.startAddress.addressDetail}}</view>									
+												<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>	
+												</view>								
+												<view class="right-top top-title-child" v-else>就近购买</view>
 										<view class="right-bottom" :style="{paddingTop:item.startAddress.addressDetail.length < 27 ? 70 + 'rpx' : 48 + 'rpx'}">
 										<!-- <view class="right-bottom"> -->
 											<view class="right-bottom-header">
@@ -548,7 +609,8 @@
 						</scroll-view>
 						</swiper-item>
 						<swiper-item>
-							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<scroll-view scroll-y="true" class="swiper-scroll" style="height: calc(100vh );" :scroll-top = "secondsSCT" @scrolltolower = "scrollBottom" @scroll = "watchScrollY" > 
+							<view class="pullDownPage" v-if="swiperItem8.length">下拉刷新页面, 查看订单情况</view>
 							<view class="swiper-main" v-for="(item,index) in swiperItem8" :key = "index" @tap="goToDeatail(item.id,item.payAmount)">
 								<view class="main-header">
 									<view class="header-top" >
@@ -576,7 +638,15 @@
 										<view class="left-bottom" v-else>达</view>
 									</view>
 									<view class="center-right">
-										<view class="right-top" v-if="!item.buyAddressType">											<view class="right-top-header">												<view class="top-title">{{item.startAddress.title}}</view>											</view>											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>										</view>										<view class="right-top top-title-child" v-else>											就近购买										</view>
+										<view class="right-top" v-if="!item.buyAddressType">
+											<view class="right-top-header">								
+												<view class="top-title">{{item.startAddress.title}}</view>					
+											</view>										
+											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>	
+											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>	
+											</view>										
+											<view class="right-top top-title-child" v-else>就近购买</view>
+											
 										<view class="right-bottom" :style="{paddingTop:item.startAddress.addressDetail.length < 27 ? 70 + 'rpx' : 48 + 'rpx'}">
 										<!-- <view class="right-bottom"> -->
 											<view class="right-bottom-header">
@@ -624,12 +694,13 @@
 				
 				
 			</swiper>
+		</mescroll-body>
 			
 		<!-- </scroll-view> -->
 		<view class="orderCancelModel" v-if="showCancelModel">
 			<view class="orderCancelModel-Wrapper">
 				<view class="cancelModel-top">
-					<view>取消订单</view>
+					<view>提示:骑手已接单</view>
 					<image src="../../static/img/order/closeBlack.png" mode="" @click.stop="closeCancelModel(0)"></image>
 				</view>
 				<view class="cancelModel-center">
@@ -676,7 +747,9 @@
 	// let windowWidth = 0, scrollTimer = false, tabBar;
 	// import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue'	
 	import uniPopup from "@/components/uni-popup/uni-popup.vue"
+	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";
 	export default {
+		mixins: [MescrollMixin], // 使用mixin
 		onLoad (options) {
 			
 			const query = uni.createSelectorQuery().in(this);
@@ -701,7 +774,11 @@
 			const pages = getCurrentPages();
 			const page = pages[pages.length - 1];  
 			this.currentWebview = page.$getAppWebview();
-			
+			this.currentWebview.setStyle({
+			  pullToRefresh: {  
+			    support: false	
+			  }  
+			});
 			
 		},
 		onShow() {
@@ -754,6 +831,7 @@
 		data () {
 			return {
 				//头部导航
+				secondsSCT: 0,
 				scrollList:[{id: 'waitpay', name: '待支付',value: 1},{id: 'waitjiedan', name: '待接单',value:2},{id: 'waitshouqu', name: '待收取',value:3},{id: 'loding', name: '进行中',value:4},{id: 'evaluate', name: '待评价',value:5},{id: 'complete', name: '已完成',value:6},{id: 'cancel', name: '已取消',value:0},{id: 'questions', name: '问题订单',value:7}],
 				currentIndex: 0,
 				//轮播图用
@@ -813,7 +891,18 @@
 				priceArr7: [],
 				priceArr8: [],
 				resTotal: 0,
-				firstPushArr: []
+				firstPushArr: [],
+				touchEndY: 0,
+				touchStartY: 0,
+				touchTimer: '',
+				upOption: {
+					use: false
+				},
+				downOption: {
+					offset: 30
+				},
+				pickUpTimerFlag: [],
+				estimatedTimerFlag: []
 			}
 		},
 		computed:{
@@ -828,6 +917,101 @@
 		},
 		
 		methods: {
+			downCallback () {
+				setTimeout(()=>{
+					this.hasFlag = true
+					this.orderList = []
+					this.i = 0
+					this.orderArr = []
+					this.orderArrLength = 0
+					this.priceArr = []
+					this.initOrder()
+					
+				}, 1000)
+				this.mescroll.endDownScroll()
+				
+			},
+			touchenditem (e) {
+				console.log(e)
+				// this.touchEndY = e.changedTouches[0].pageY
+				// // console.log(this.touchEndY - this.touchStartY)
+				// console.log(this.touchEnsdY)
+				// console.log(this.touchStartY)
+				// if (this.touchEndY - this.touchStartY) {
+				// 	this.currentWebview.setStyle({  
+				// 	  pullToRefresh: {  
+				// 	    support: true,  
+				// 		style: plus.os.name === 'Android' ? 'circle' : 'circle'
+				// 	  }  
+				// 	});  
+				// 	if (this.touchTimer != '' || this.touchTimer != null) {
+				// 		clearTimeout(this.touchTimer)
+				// 		this.touchTimer = null
+				// 	}
+					
+				//  this.touchTimer = setTimeout(() => {
+				// 		this.currentWebview.setStyle({
+				// 		  pullToRefresh: {  
+				// 		    support: false
+				// 		  }  
+				// 		});  
+				// 	}, 700)
+					
+				// 	this.secondsSCT = 0
+				// } else {
+				// 	this.currentWebview.setStyle({
+				// 	  pullToRefresh: {  
+				// 	    support: false,  
+				// 	  }  
+				// 	});  
+				// }
+			},
+			touchmoveDemo (e) {
+				console.log(e)
+				this.touchEndY = e.changedTouches[0].pageY
+				// console.log(this.touchEndY - this.touchStartY)
+				console.log(this.touchEndY)
+				console.log(this.touchStartY)
+				if (this.touchEndY - this.touchStartY) {
+					this.currentWebview.setStyle({  
+					  pullToRefresh: {  
+					    support: true,  
+						// style: plus.os.name === 'Android' ? 'circle' : 'circle'
+						style: plus.os.name === 'Android' ? 'circle' : 'default'
+					  }  
+					});  
+					if (this.touchTimer != '' || this.touchTimer != null) {
+						clearTimeout(this.touchTimer)
+						this.touchTimer = null
+					}
+					
+				 // this.touchTimer = setTimeout(() => {
+					// 	this.currentWebview.setStyle({
+					// 	  pullToRefresh: {  
+					// 	    support: false
+					// 	  }  
+					// 	});  
+					// }, 700)
+					
+					this.secondsSCT = 0
+				} else {
+					this.currentWebview.setStyle({
+					  pullToRefresh: {  
+					    support: false,  
+					  }  
+					});  
+				}
+			},
+			touchDemo (e) {
+				console.log(e)
+				this.touchStartY = e.changedTouches[0].pageY
+			},
+			touchEndDemo (e) {
+				console.log(e)
+			
+				
+				
+			},
 			//更改下标
 			async handleCurrent (index,e,dele) {
 				
@@ -1159,7 +1343,6 @@
 					riderId: riderId,
 					type: 1
 				}, "POST", 'Form')
-
 				uni.showToast({
 					icon: 'success',
 					title: '屏蔽骑手成功'
@@ -1181,7 +1364,6 @@
 				} else {
 					this.noOrderText = ""
 				}
-
 				// 分页
 				if (this.orderList.length < res.total) {
 					
@@ -1200,14 +1382,15 @@
 						item.endAddress = JSON.parse(item.endAddress)
 						item.startAddress.addressDetail = item.startAddress.addressDetail.replace('undefined', '')
 						item.endAddress.addressDetail = item.endAddress.addressDetail.replace('undefined', '')
-
 					})
 					
 					//订单数据
 					if(this.orderArrLength <= res.total) {
 						
 						this.orderList = [...this.orderList,...this.orderArr]
+						console.log(this.orderList)
 					
+						
 						if (this.currentIndex == 0) {
 							this.swiperItem1 = this.orderList
 							
@@ -1223,15 +1406,61 @@
 							// })
 						}
 						if (this.currentIndex == 2) {
-							this.swiperItem3 = this.orderList
+	
+							if (this.orderList.length) {
+								this.orderList.forEach((item, index) => {
+									
+									item.endPickTimer = this.$dayjs(item.pickUpTime).diff(this.$dayjs(), "minute")
+								
+									clearInterval(this.pickUpTimerFlag[index])
+									this.pickUpTimerFlag[index] = null;
+									this.pickUpTimerFlag[index] = setInterval(() => {
+										console.log('1111')
+										// item.endPickTimer = --item.endPickTimer
+										this.$set(this.orderList[index], "endPickTimers", --item.endPickTimer)
+										console.log(item.endPickTimer)
+										if (item.endPickTimer <= 0) {
+											item.endPickTimer = 0
+											this.endOfTime(index)
+											return
+										}
+									}, 60000)
+								})
+							}
 							
+							
+							this.swiperItem3 = this.orderList
+							console.log(this.swiperItem3)
 							// this.swiperItem3.forEach(item => {
 							// 	// this.priceArr3.push((item.payAmount - item.goodsPredictAmount).toFixed(2))
 							// })
 						}
 						if (this.currentIndex == 3) {
-							this.swiperItem4 = this.orderList
 							
+							
+							if (this.orderList.length) {
+								this.orderList.forEach((item, index) => {
+									
+									item.estimatedTimeDown = this.$dayjs(item.pickUpTime).diff(this.$dayjs(), "minute")
+								
+									clearInterval(this.estimatedTimerFlag[index])
+									this.estimatedTimerFlag[index] = null;
+									this.estimatedTimerFlag[index] = setInterval(() => {
+										console.log('1111')
+										// item.endPickTimer = --item.endPickTimer
+										this.$set(this.orderList[index], "estimatedTimeDowns", --item.estimatedTimeDown)
+										console.log(item.estimatedTimeDown)
+										if (item.estimatedTimeDown <= 0) {
+											item.estimatedTimeDown = 0
+											this.endOfTime(index)
+											return
+										}
+									}, 60000)
+								})
+							}
+							
+							this.swiperItem4 = this.orderList
+							console.log(this.orderList)
 							// this.swiperItem4.forEach(item => {
 							// 	// this.priceArr4.push((item.payAmount - item.goodsPredictAmount).toFixed(2))
 							// })
@@ -1302,12 +1531,18 @@
 					}
 					this.hasFlag = false
 				}
-				
 			
 				
 			
 			
 				
+			},
+			// 清除定时器
+			endOfTime (i) {
+				clearInterval(this.pickUpTimerFlag[i])
+				this.pickUpTimerFlag[i] = null;
+				clearInterval(this.estimatedTimerFlag[i])
+				this.estimatedTimerFlag[i] = null
 			},
 			//去评价
 			goToEvaluate(id) {
@@ -1413,21 +1648,22 @@
 			},
 			//监听下拉多少 开启下拉刷新
 			watchScrollY(e){
-				
-				// if (e.detail.scrollTop <= -10) {
-				// 	this.currentWebview.setStyle({  
-				// 	  pullToRefresh: {  
-				// 	    support: true,  
-				// 	  }  
-				// 	});  
-					
-				// } else {
-				// 	this.currentWebview.setStyle({
-				// 	  pullToRefresh: {  
-				// 	    support: false,  
-				// 	  }  
-				// 	});  
-				// }
+				// console.log(e)
+				if (e.detail.scrollTop <= 20) {
+					this.currentWebview.setStyle({
+					  pullToRefresh: {  
+					    support: false,  
+						style: plus.os.name === 'Android' ? 'circle' : 'default'  
+					  }  
+					});  
+					this.secondsSCT = 0
+				} else {
+					this.currentWebview.setStyle({
+					  pullToRefresh: {  
+					    support: false,  
+					  }  
+					});  
+				}
 				
 			},
 			closeCancelModel (index) {
@@ -1775,6 +2011,15 @@
 								font-size: 12px;
 								color: rgba(9,2,62,0.30);
 							}
+							
+						}
+						.buyTimerDJS{
+							font-size: 16px;
+							font-weight: bold;
+						
+							span{
+								color: #d32928;
+							}
 						}
 						.right-bottom{
 							padding-top: 48rpx;
@@ -1807,6 +2052,14 @@
 								font-family: PingFangSC-Regular;
 								font-size: 12px;
 								color: rgba(9,2,62,0.30);
+							}
+							.buyTimerDJS{
+								font-size: 16px;
+								font-weight: bold;
+								color: #4658c5;
+								span{
+									color: #d32928;
+								}
 							}
 						}
 					}
@@ -1878,13 +2131,17 @@
 			.orderCancelModel-Wrapper{
 				width: 600rpx;
 				
-				background-color: rgb(242, 234, 234);
+				// background-color: rgb(242, 234, 234);
+				background-color: #fff;
 				position: absolute;
 				left: 50%;
 				top: 50%;
 				transform: translate(-50%, -50%);
 				padding: 30rpx;
+				border-radius: 12rpx;
+				overflow: hidden;
 				box-sizing: border-box;
+				
 				.cancelModel-top{
 					
 					display: flex;
@@ -1909,19 +2166,20 @@
 					flex-direction: column;
 					justify-content: center;
 					align-items: center;
-					padding-top: 10rpx;
+					padding-top: 15rpx;
 					box-sizing: border-box;
 					.cancelModel-center-top{
 						font-family: PingFangSC;
 						font-weight: 400;
-						font-size: 14px;
-						color: rgb(125, 125, 129);
+						font-size: 16px;
+						// color: rgb(125, 125, 129);
 						
 					}
 					.cancelModel-center-bottom{
 						font-family: PingFangSC;
-						font-weight: 400;
-						font-size: 20px;
+						// font-weight: 400;
+						font-weight: bold;
+						font-size: 16px;
 						color: rgb(16, 16, 16);
 						span{
 							    color: rgb(219, 33, 33);
@@ -2081,5 +2339,21 @@
 				letter-spacing: -0.34px;
 			}
 		}
+		.pullDownPage{
+			width: 100%;
+			padding-top: 220rpx;
+			padding-bottom: 10rpx;
+			text-align: center;
+			font-size: 14px;
+		}
+	}
+	
+</style>
+<style>
+	.downwarp-tip{
+		transform: translateY(170rpx) !important;
+	}
+	.mescroll-downwarp .downwarp-progress {
+		transform: translateY(170rpx) !important;
 	}
 </style>

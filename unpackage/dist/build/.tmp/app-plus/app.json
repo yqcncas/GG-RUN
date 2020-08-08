@@ -42,13 +42,16 @@
     "pages/historyInvioce/historyNewDeatail",
     "pages/chat/chat",
     "pages/news/newsRich",
-    "pages/remark/remark"
+    "pages/remark/remark",
+    "pages/orderDetail/shopInfoImg"
   ],
   "window": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "",
     "navigationBarBackgroundColor": "#FFFFFF",
-    "backgroundColor": "#F8F8F8"
+    "backgroundColor": "#F8F8F8",
+    "bounce": "none",
+    "scrollIndicator": "none"
   },
   "tabBar": {
     "borderStyle": "white",
@@ -111,6 +114,8 @@
   "usingComponents": {
     "status": "/pages/components/status/status",
     "lyzml-datepicker": "/components/lyzml-datepicker/lyzml-datepicker",
-    "uni-load-more": "/components/uni-load-more/uni-load-more"
+    "uni-load-more": "/components/uni-load-more/uni-load-more",
+    "mescroll-body": "/components/mescroll-uni/mescroll-body",
+    "mescroll-uni": "/components/mescroll-uni/mescroll-uni"
   }
 }

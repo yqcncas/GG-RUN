@@ -51,7 +51,7 @@
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "",
     "navigationBarBackgroundColor": "#FFFFFF",
-    "backgroundColor": "#FFFFFF"
+    "backgroundColor": "#F8F8F8"
   },
   "tabBar": {
     "borderStyle": "white",
@@ -84,6 +84,5 @@
     "status": "/pages/components/status/status",
     "lyzml-datepicker": "/components/lyzml-datepicker/lyzml-datepicker",
     "uni-load-more": "/components/uni-load-more/uni-load-more"
-  },
-  "sitemapLocation": "sitemap19.json"
+  }
 }

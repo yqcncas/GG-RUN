@@ -178,7 +178,6 @@ to {
           flex: 1;
   background: #fff;
   height: 80rpx;
-  font-size: 16px;
   border-radius: 8rpx;
   width: 544rpx;
   padding: 20rpx 30rpx;

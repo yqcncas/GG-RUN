@@ -315,7 +315,7 @@ import uniPopup from "@/components/uni-popup/uni-popup.vue"
 					.price{
 						font-family: PingFangSC-Semibold;
 						font-size: 20px;
-						color: rgba(9,2,62,0.30);
+						color: rgba(9,2,62);
 						text-align: center;
 						&.huodongtext{
 							color: #000000;
@@ -324,7 +324,7 @@ import uniPopup from "@/components/uni-popup/uni-popup.vue"
 					.selling{
 						font-family: PingFangSC-Regular;
 						font-size: 12px;
-						color: rgba(9,2,62,0.30);
+						color: rgba(9,2,62);
 						text-align: center;
 						&.huodongtext{
 							color: #000000;

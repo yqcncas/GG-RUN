@@ -207,6 +207,8 @@ export default {
 			return !isNaN(parseFloat(val));
 		},
 		formatNumber(num) {
+			// 将num转为Number类型，因为其值可能为字符串数值，调用toFixed会报错
+			num = Number(num);
 			num = num.toFixed(Number(this.decimals));
 			num += '';
 			const x = num.split('.');
@@ -228,6 +230,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../libs/css/style.components.scss";
+
 .u-count-num {
 	display: inline-block;
 	text-align: center;

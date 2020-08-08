@@ -65,7 +65,6 @@
 	export default {
 		onLoad(){
 			this.initMyInfo()
-			
 		},
 		data () {
 			return {

@@ -7,8 +7,8 @@
   "id": "__UNI__E5FD5C0",
   "name": "GG来送",
   "version": {
-    "name": "1.0.31",
-    "code": 106
+    "name": "1.0.42",
+    "code": 117
   },
   "description": "",
   "launch_path": "__uniappview.html",
@@ -25,6 +25,7 @@
     "Payment": {},
     "Contacts": {},
     "Share": {},
+    "Speech": {},
     "OAuth": {},
     "UniNView": {
       "description": "UniNView原生渲染"
@@ -125,7 +126,7 @@
           "NSPhotoLibraryUsageDescription": "\"GG来送\"需要您的同意，才能访问相册，以便于上传图片",
           "NSPhotoLibraryAddUsageDescription": "\"GG来送\"需要您的同意，才能添加照片，以便于保存照片",
           "NSCameraUsageDescription": "\"GG来送\"需要您的同意，才能访问相机，以便于拍摄照片和扫描二维码",
-          "NSMicrophoneUsageDescription": "",
+          "NSMicrophoneUsageDescription": "\"GG来送\"需要您的同意，才能访问麦克风，以便于录制音频",
           "NSLocationWhenInUseUsageDescription": "\"GG来送\"需要您的同意，才能在运行期间访问位置，以便于为您搜索附近的骑手位置",
           "NSLocationAlwaysUsageDescription": "\"GG来送\"需要您的同意，才能在后台期间访问位置，以便于为您搜索附近的骑手位置",
           "NSLocationAlwaysAndWhenInUseUsageDescription": "\"GG来送\"需要您的同意，才能访问位置，以便于为您搜索附近的骑手位置",
@@ -154,7 +155,7 @@
           "weixin": {
             "appid": "wx4cc4ff622dc4cb2b",
             "appsecret": "1598f164010d25fea9d07f00360534d3",
-            "UniversalLinks": ""
+            "UniversalLinks": "https://bajiaostar.com/"
           }
         },
         "share": {
@@ -164,6 +165,13 @@
           }
         },
         "ad": {},
+        "speech": {
+          "baidu": {
+            "appid": "20803533",
+            "apikey": "vKWwhHmPGud7BXVMVUOx4dc1",
+            "secretkey": "3WVQ7VfHtnh6lAi7TaDTi0fb7r2KGfw1"
+          }
+        },
         "audio": {
           "mp3": {
             "description": "Android平台录音支持MP3格式文件"
@@ -172,6 +180,15 @@
       }
     },
     "compilerVersion": 2,
+    "privacy": {
+      "prompt": "template",
+      "template": {
+        "title": "服务协议和隐私政策",
+        "message": "　　请你务必审慎阅读、充分理解“服务协议”和“隐私政策”各条款，包括但不限于：为了更好的向你提供服务，我们需要收集你的设备标识、操作日志等信息用于分析、优化应用性能。<br/>　　你可阅读<a href=\"http://yonghu.gglaisong.com/#/pages/RichText/RichText?id=2\">《服务协议》</a>和<a href=\"http://yonghu.gglaisong.com/#/pages/RichText/RichText?id=43\">《隐私政策》</a>了解详细信息。如果你同意，请点击下面按钮开始接受我们的服务。",
+        "buttonAccept": "我知道了",
+        "buttonRefuse": "暂不同意"
+      }
+    },
     "arguments": "{\"name\":\"\",\"path\":\"\",\"query\":\"\",\"id\":0}",
     "allowsInlineMediaPlayback": true,
     "safearea": {

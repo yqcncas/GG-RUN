@@ -39,7 +39,7 @@
 					<image src="../../static/img/order/fuzhi.png" mode="aspectFill" class="copy"></image>
 				</div>
 				<div class="orderDetailing-center-bottom">
-					<text class="send-code-tip">确认骑手收费后，将取货码给其收货确认收货。</text>
+					<text class="send-code-tip">确认骑手取货后，将取货码给其收货确认收货。</text>
 				</div>
 			</div>
 			<div class="orderDetailing-center" v-if="orderDetailInfo.signForCodeFlag && enterFlag == 3">
@@ -49,7 +49,7 @@
 					<image src="../../static/img/order/fuzhi.png" mode="aspectFill" class="copy"></image>
 				</div>
 				<div class="orderDetailing-center-bottom">
-					<text class="send-code-tip">确认骑手收费后，将签收码给骑手确认收货。</text>
+					<text class="send-code-tip">确认骑手送达后，将签收码给骑手确认收货。</text>
 				</div>
 			</div>
 			<div class="line"  v-if="orderDetailInfo.signForCodeFlag"></div>
@@ -66,9 +66,10 @@
 					<text class="middle-left">物品重量:</text>
 					<text class="middle-right">{{orderDetailInfo.goodsInventory.weight?orderDetailInfo.goodsInventory.weight:1}}kg内</text>
 				</div>
-				<div class="orderDetailing-middle-item">
+				<div class="orderDetailing-middle-item" @click.stop="showImgPage">
 					<text class="middle-left">物品信息:</text>
 					<text class="middle-right">{{orderDetailInfo.goodsInventory.goods}}</text>
+					<image src="../../static/img/my/right.png" mode="" class="paotuiServerRight"></image>
 				</div>
 				<div class="orderDetailing-middle-item">
 					<text class="middle-left">其他属性:</text>
@@ -125,6 +126,23 @@
 					</div>
 				</div>
 			</div>
+			
+			<view class="line-30"></view>
+			<view class="order-status-box" >
+				
+				<uni-steps :options="numList" direction="column" :active="stepIndex" :active-color = "'#007AFF'"></uni-steps>
+			<!-- 	<view class="order-status-ul">
+					<view class="order-status-ul-li"><text class="order-status-ul-li-text">{{orderDetailInfo.createTime}}</text></view>
+					<view class="order-status-ul-li" :class="{liHidden: !orderDetailInfo.receiptTime}"><text class="order-status-ul-li-text">{{orderDetailInfo.receiptTime}}</text></view>
+					<view class="order-status-ul-li" :class="{liHidden: !orderDetailInfo.actualPickUpTime}" ><text class="order-status-ul-li-text">{{orderDetailInfo.actualPickUpTime }}</text></view>
+					<view class="order-status-ul-li" :class="{liHidden: !orderDetailInfo.actualPickUpTime}" ><text class="order-status-ul-li-text">{{orderDetailInfo.pickUpCode}}</text></view>
+					<view class="order-status-ul-li" :class="{liHidden: !orderDetailInfo.actualEstimatedTime}" ><text class="order-status-ul-li-text">{{orderDetailInfo.actualEstimatedTime}}</text> </view>
+					<view class="order-status-ul-li" :class="{liHidden: !orderDetailInfo.actualEstimatedTime}" ><text class="order-status-ul-li-text">{{orderDetailInfo.signForCode}}</text> </view>
+					<view class="order-status-ul-li" :class="{liHidden: !orderDetailInfo.evaluationTime}" ><text class="order-status-ul-li-text">{{orderDetailInfo.evaluationTime}}</text> </view>
+				</view> -->
+			</view>
+			
+			
 			<div class="bottom-line"></div>
 			<div class="button-box">
 				<!-- <div class="cancel-button" @tap.stop="goToCancelOrder(orderDetailInfo.orderId)">
@@ -170,10 +188,33 @@
 
 <script>
 	import baseURL from '../../config/index.js'
+	import uniSteps from '@/components/uni-steps/uni-steps.vue'
 	export default {
+		components: {
+			uniSteps
+		},
 		onLoad(options) {
 			console.log(options)
 			this.enterFlag = options.currentIndex
+			
+			switch (this.enterFlag) {
+				case "1":
+					this.stepIndex = 0
+					break;
+				case "2": 
+					this.stepIndex = 1
+					break;
+				case "3":
+					this.stepIndex = 3
+					break;
+				case "4":
+					this.stepIndex = 5
+					break;
+				case "5":
+					this.stepIndex = 6
+					break;
+			}
+			
 			this.statusHeight = uni.getSystemInfoSync().statusBarHeight
 			let res = uni.getStorageSync('orderDetailInfo')
 
@@ -199,6 +240,10 @@
 			this.orderDetailInfo.goodsInventory = JSON.parse(this.orderDetailInfo.goodsInventory)
 			this.orderDetailInfo.startAddress.addressDetail = this.orderDetailInfo.startAddress.addressDetail.replace('undefined', '')
 			this.orderDetailInfo.endAddress.addressDetail = this.orderDetailInfo.endAddress.addressDetail.replace('undefined', '')
+			
+			
+			
+			
 			if (this.orderDetailInfo.premium) {
 				this.elseInfo += ' ' + "保价金"
 			}
@@ -235,9 +280,24 @@
 				}
 			// }
 			
+			this.$set(this.numList[0], 'desc', this.orderDetailInfo.createTime)
+			this.$set(this.numList[1], 'desc', this.orderDetailInfo.receiptTime)
+			console.log(this.orderDetailInfo.actualPickUpTime == null)
+			if (this.orderDetailInfo.actualPickUpTime == null) {
+				this.$set(this.numList[2], 'desc', '暂无')
+			} else {
+				this.$set(this.numList[2], 'desc', this.orderDetailInfo.actualPickUpTime)
+			}
+			if (this.orderDetailInfo.pickUpCode == null) {
+				this.$set(this.numList[3], 'desc', '暂无')
+			} else {
+				this.$set(this.numList[3], 'desc', this.orderDetailInfo.pickUpCode)
+			}
 			
-
-
+			// 
+			// this.$set(this.numList[4], 'desc', this.orderDetailInfo.actualEstimatedTime)
+			// this.$set(this.numList[5], 'desc', this.orderDetailInfo.signForCode)
+			
 
 
 			this.initPhoneSize()
@@ -295,7 +355,37 @@
 				rotateDeg: 0,
 				platform: '',
 				enterFlag: 0,
-				showCancelButton: false
+				showCancelButton: false,
+				numList: [{
+					title: '发布订单',
+					desc: '暂无',
+					nvuedetail: 1
+				}, {
+					title: '已接单',
+					desc: '暂无',
+					nvuedetail: 1
+				}, {
+					title: '已收件',
+					desc: '暂无',
+					nvuedetail: 1
+				}, {
+					title: '收件码',
+					desc: '暂无',
+					nvuedetail: 1
+				}, {
+					title: '已送达',
+					desc: '暂无',
+					nvuedetail: 1
+				},{
+					title: '签收码',
+					desc: '暂无',
+					nvuedetail: 1
+				},{
+					title: '未评价',
+					desc: '暂无',
+					nvuedetail: 1
+				},],
+				stepIndex: 0
 
 			}
 		},
@@ -308,6 +398,12 @@
 						console.log('success');
 					}
 				});
+			},
+			// 去展示图片
+			showImgPage () {
+				uni.navigateTo({
+					url: './shopInfoImg?imgList=' + this.orderDetailInfo.goodsInventory.pics
+				})
 			},
 			//拨打骑手电话
 			callPhone(phone) {
@@ -562,8 +658,7 @@
 
 			},
 			closeCancelModel () {
-				console.log('執行')
-				console.log(this.showCancelButton)
+
 				this.showCancelButton = !this.showCancelButton
 				// if (this.showCancelButton) {
 				// 	this.showCancelButton = false
@@ -1066,5 +1161,56 @@
 	.cancelModel-bottom-right{
 		text-align: center;
 		background-color: rgb(98, 118, 255);
+	}
+	.order-status-box{
+		width: 750rpx;
+		/* display: flex; */
+		flex-direction: row;
+		/* justify-content: space-between; */
+		/* justify-content: space-around; */
+		/* align-items: center; */
+		background-color: #fff;
+		padding-left: 30rpx;
+		padding-right: 30rpx;
+		/* padding-top: 25rpx; */
+		
+	}
+	.order-status-ul{
+	/* 	font-family: PingFangSC-Regular;
+		font-size: 14px;
+		color: #09023E; */
+		/* height: 100%; */
+		/* justify-content: space-between; */
+		/* transform: translateY(10rpx); */
+		/* padding-top: 5%; */
+		/* height: 100%; */
+		flex-direction: column;
+		/* justify-content: space-between; */
+		/* padding-top: 16rpx; */
+		/* transform: translateY(14rpx); */
+	}
+	.order-status-ul-li{
+		/* padding-bottom: 20rpx; */
+		/* padding-bottom: 12%; */
+		/* padding-bottom: 31rpx; */
+	}
+	.order-status-ul-li-text{
+		font-family: PingFangSC-Regular;
+		font-size: 14px;
+		color: #09023E;
+		
+	}
+	.uni-steps__column-text{
+		/* border-bottom-width: 0 !important;
+		border-color: transparent !important;
+		height: 80rpx !important; */
+	}
+	.line-30{
+		width: 750rpx;
+		height: 30rpx;
+		background-color: rgb(247, 247, 250);
+	}
+	.liHidden{
+		opacity: 0;
 	}
 </style>

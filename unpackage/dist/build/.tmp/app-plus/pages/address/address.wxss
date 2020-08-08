@@ -31,6 +31,7 @@ page {
 .address .address-item {
   width: 690rpx;
   padding: 30rpx;
+  padding-bottom: 0;
   margin-top: 30rpx;
   background: #FFFFFF;
   -webkit-box-shadow: 0 4px 8px 0 rgba(140, 92, 42, 0.03), 0 2px 4px 0 rgba(140, 92, 42, 0.01);
@@ -77,14 +78,18 @@ page {
   overflow: hidden;
   white-space: nowrap;
 }
+.address .address-item .item-center .center-bottom.cbb {
+  font-weight: bold;
+  color: #09023E;
+}
 .address .address-item .item-bottom {
+  height: 88rpx;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
   -webkit-box-pack: justify;
   -webkit-justify-content: space-between;
           justify-content: space-between;
-  margin-top: 20rpx;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
 }
@@ -130,6 +135,7 @@ page {
 }
 .address .address-item .item-bottom .bottom-right .right-edit,
 .address .address-item .item-bottom .bottom-right .right-del {
+  height: 88rpx;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;

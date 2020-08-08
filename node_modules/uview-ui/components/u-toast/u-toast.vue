@@ -1,10 +1,9 @@
 <template>
 	<view class="u-toast" :class="[isShow ? 'u-show' : '', 'u-type-' + config.type, 'u-position-' + config.position]" :style="{
-		padding: isShow ? '0 40rpx' : 0,
 		zIndex: uZIndex
 	}">
 		<view class="u-icon-wrap">
-			<u-icon v-if="config.icon" class="u-icon" :name="iconName" :size="30" :color="$u.color[config.type]"></u-icon>
+			<u-icon v-if="config.icon" class="u-icon" :name="iconName" :size="30" :color="config.type"></u-icon>
 		</view>
 		<text class="u-text">{{config.title}}</text>
 	</view>
@@ -38,9 +37,11 @@
 					type: '', // 主题类型，primary，success，error，warning，black
 					duration: 2000, // 显示的时间，毫秒
 					isTab: false, // 是否跳转tab页面
-					url: '', // toast消失后是否跳转页面，有则跳转
+					url: '', // toast消失后是否跳转页面，有则跳转，优先级高于back参数
 					icon: true, // 显示的图标
 					position: 'center', // toast出现的位置
+					callback: null, // 执行完后的回调函数
+					back: false, // 结束toast是否自动返回上一页
 				}
 			};
 		},
@@ -54,13 +55,13 @@
 			},
 			uZIndex() {
 				// 显示toast时候，如果用户有传递z-index值，有限使用
-				return this.isShow ? (this.zIndex ? this.zIndex : this.$u.zIndex.toast) : '-1';
+				return this.isShow ? (this.zIndex ? this.zIndex : this.$u.zIndex.toast) : '999999';
 			}
 		},
 		methods: {
 			// 显示toast组件，由父组件通过this.$refs.xxx.show(options)形式调用
 			show(options) {
-				this.config = Object.assign(this.config, options);
+				this.config = this.$u.deepMerge(this.config, options);
 				if (this.timer) {
 					// 清除定时器
 					clearTimeout(this.timer);
@@ -72,6 +73,8 @@
 					this.isShow = false;
 					clearTimeout(this.timer);
 					this.timer = null;
+					// 判断是否存在callback方法，如果存在就执行
+					typeof(this.config.callback) === 'function' && this.config.callback();
 					this.timeEnd();
 				}, this.config.duration);
 			},
@@ -115,6 +118,11 @@
 							url: this.config.url
 						});
 					}
+				} else if(this.config.back) {
+					// 回退到上一页
+					this.$u.route({
+						type: 'back'
+					})
 				}
 			}
 		}
@@ -122,6 +130,8 @@
 </script>
 
 <style lang="scss" scoped>
+	@import "../../libs/css/style.components.scss";
+	
 	.u-toast {
 		position: fixed;
 		z-index: -1;
@@ -136,11 +146,12 @@
 		justify-content: center;
 		font-size: 28rpx;
 		opacity: 0;
+		pointer-events: none;
+		padding:0 40rpx;
 	}
 
 	.u-toast.u-show {
 		opacity: 1;
-		z-index: 9999999;
 	}
 
 	.u-text {

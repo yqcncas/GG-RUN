@@ -2,8 +2,13 @@
   "navigationBarTitleText": "",
   "navigationStyle": "custom",
   "titleNView": false,
+  "pullToRefresh": {
+    "support": true,
+    "style": "default"
+  },
   "usingComponents": {
     "uni-popup": "/components/uni-popup/uni-popup",
-    "status": "/pages/components/status/status"
+    "status": "/pages/components/status/status",
+    "mescroll-body": "/components/mescroll-uni/mescroll-body"
   }
 }

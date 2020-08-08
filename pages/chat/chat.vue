@@ -6,13 +6,29 @@
 					<!-- 聊天时间 -->
 					<view class="time" v-if="item.timeFlag">{{ item.time }}</view>
 					<!-- 聊天内容，头像，左 -->
-					<view class="main-left" v-if="item.isAdmin === 0">
+					<view class="main-left" v-if="item.isAdmin === 0 || item.isAdmin === 2">
 						<image class="avatar" :src="avatar" mode="aspectFill"></image>
-						<view class="content">{{ item.content }}</view>
+						<view class="content"  v-if="item.msgType == 0">{{ item.content }}</view>
+						<image
+							@click="previewImage(item.content)" 
+							class="content-image" 
+							:style="'width:'+ item.imgWidth/2 +'px;'" 
+							v-if="item.msgType == 1" 
+							:src="item.content" 
+							mode="widthFix"
+						></image>
 					</view>
 					<!-- 聊天内容，头像，右 -->
 					<view class="main-right" v-if="item.isAdmin === 1">
-						<view class="content">{{ item.content }}</view>
+						<image
+							@click="previewImage(item.content)" 
+							class="content-image" 
+							:style="'width:'+ item.imgWidth/2 +'px;'" 
+							v-if="item.msgType == 1" 
+							:src="item.content" 
+							mode="widthFix"
+						></image>
+						<view class="content" v-if="item.msgType == 0">{{ item.content }}</view>
 						<image class="avatar" :src="myAvatar" mode="aspectFill"></image>
 					</view>
 				</view>
@@ -23,10 +39,10 @@
 		<!-- 组件 -->
 		<view class="button-send-container">
 			<view class="send-container"> 
-				<textarea cursor-spacing="14" :show-confirm-bar="false" :fixed="true" placeholder="请输入内容…" placeholder-style="font-size:16px" auto-height placeholder-class="ipt-tip" v-model="chatContent" />
+				<textarea cursor-spacing="14" :show-confirm-bar="false" :fixed="true" placeholder="请输入内容…" auto-height placeholder-class="ipt-tip" v-model="chatContent" />
 				<view class="confirm">
-					<view class="send-text"  @click="sendMsg" :class="[chatContent.length == 0 ?'gray':'']">发送</view>
-					<!-- <view class="send-img" v-show="chatContent.length === 0" @click="chooseImage"></view> -->
+					<view class="send-text"  @click="sendMsg" :class="[chatContent.length == 0 ?'gray':'']" v-show="chatContent.length !== 0" >发送</view>
+					<view class="send-img" v-show="chatContent.length === 0" @click="chooseImage"></view>
 				</view>
 			</view>
 		</view>
@@ -34,31 +50,28 @@
 </template>
 
 <script>
+	// const qiniuUploader =require("../../components/until/qiniuUploader.js")
+	// import {MD5} from '../../common/md5.js'		 
 	export default {
 		data() {
 			return {
-				avatar: '../../static/img/my/service.png', // 对方头像
+				avatar: '../../static/icon/61.png', // 对方头像
 				msgList:[],
 				chatContent: '', // 聊天消息内容
 				sendHeight: 84,
 				myAvatar: '', // 本人头像
 				page:0,
-				hasFlag:true
+				hasFlag:true,
+				qiniuToken:'',
+				sendImg:'',
 			};
 		},
-		onShow() {
-			this.initChangeReadFlag()
-			
-		},
 		methods:{
-			async initChangeReadFlag () {
-				let res = await this.$fetch(this.$api.chantReadFlag, {}, 'Post')
-				
-			},
 			//发送消息
 			async sendMsg(){
 				if(!this.chatContent) return
-				let res = await this.$fetch(this.$api.sendMsg,{content:this.chatContent},'POST','form')
+				let res = await this.$fetch(this.$api.sendMsg,{content:this.chatContent,msgType:0},'POST','form')
+				console.log(res);
 				let createTime = this.$dayjs()
 				let time = this.$dayjs().fromNow()
 				if(res.code == 0){
@@ -67,9 +80,33 @@
 						'time':time,
 						'isAdmin':1,
 						'content':this.chatContent,
-						'timeFlag':true
+						'timeFlag':true,
+						'msgType':0
+					})
+					if(res.msg != 1){
+						console.log(JSON.parse(res.msg));
+						this.msgList.push(JSON.parse(res.msg))
+					}
+					this.msgList.forEach((item,index,that) =>{
+						item.time = this.$dayjs(item.createTime).fromNow()
+						if (index === 0){
+							item.timeFlag = true
+						}else{
+							// 当聊天消息间隔超过10分钟时
+							item.timeFlag = this.$dayjs(that[index].createTime).valueOf() - this.$dayjs(that[index-1].createTime).valueOf() > 600000 ? true : false
+						}
 					})
 					this.chatContent = ''
+					this.$nextTick(()=>{
+						uni.pageScrollTo({
+							scrollTop:0,
+							duration:0
+						})
+						uni.pageScrollTo({
+							scrollTop:999999,
+							duration:0
+						})
+					})
 				}
 			},
 			// 获取消息列表
@@ -77,7 +114,7 @@
 				if(!this.hasFlag) return
 				this.page = ++this.page
 				let res = await this.$fetch(this.$api.chatMsgList,{pageNum:this.page,pageSize:10},'POST','form')
-				
+				console.log(res);
 				//第一页记录需要返回数据倒序展示
 				if(this.page == 1){
 					res.rows.reverse()
@@ -114,8 +151,88 @@
 				let view = uni.createSelectorQuery().select(".button-send-container")
 				view.boundingClientRect(res => {
 					if (res.height <= 84) this.sendHeight = 84
-					else this.sendHeight = res.height + 2
+					else this.sendHeight = res.height+2
 				}).exec()
+			},
+			// 更新聊天已读
+			async updateChatFlag(){
+				let res = await this.$fetch(this.$api.chantReadFlag,{},'POST')
+				console.log(res);
+			},
+			// 选择图片
+			chooseImage(){
+				uni.chooseImage({
+					count:1,
+					success: (res) => {
+						console.log(res);
+						 uni.uploadFile({
+						   url: this.$api.unloadLocation,
+						   filePath: res.tempFilePaths[0],
+						   name: 'file',
+						   header: {
+							token: uni.getStorageSync('token')
+						   },
+						   formData: {
+							token: this.qiniuToken
+						   },
+						   success: (uploadFileRes) => {
+							let imgInfo = JSON.parse(uploadFileRes.data)
+							
+							this.sendImg = this.$api.baseLocation + imgInfo.hash
+							uni.showLoading({
+								title:'发送中...'
+							})
+							this.sendImgMsg()
+						   },
+						   fail: (err) => {
+							uni.showToast({
+								title: '上传失败',
+								icon: 'none'
+							})
+						   }
+						});
+						
+								
+								
+						
+						
+					}
+				})
+			},
+			// 获取七牛token
+			async getQiniuToken(){
+				let res = await this.$fetch(this.$api.getQiniuToken,{},'POST','form')
+				this.qiniuToken = res.data.token
+			},
+			// 发送图片消息
+			async sendImgMsg(){
+				let res = await this.$fetch(this.$api.sendMsg,{content:this.sendImg,msgType:1},'POST','form')
+				let createTime = this.$dayjs()
+				let time = this.$dayjs().fromNow()
+				if(res.code == 0){
+					this.msgList.push({
+						'createTime':createTime,
+						'time':time,
+						'isAdmin':1,
+						'content':this.sendImg,
+						'timeFlag':true,
+						'msgType':1,
+					})
+					this.sendImg = ''
+					uni.pageScrollTo({
+						scrollTop:999999,
+						duration:0
+					})
+					uni.hideLoading()
+				}
+			},
+			// 图片预览
+			previewImage(current) { 
+				let urls = []
+				// 获取全部图片链接
+				this.msgList.forEach(item => { if (item.msgType == 1) urls.push(item.content) })
+				let indicator = urls.length > 1 ? 'default' : 'none'
+				uni.previewImage({ urls, indicator, current })
 			},
 		},
 		watch:{
@@ -125,10 +242,9 @@
 		},
 		onLoad(options) {
 			this.myAvatar = options.avatar
-			if (options.avatar === "") {
-				this.myAvatar = '../../static/img/order/avatar.png'
-			}
 			this.getMsgList()
+			this.updateChatFlag()
+			this.getQiniuToken()
 		},
 		mounted() {
 			this.$nextTick(()=>{
@@ -329,7 +445,6 @@ page {
 			flex: 1;
 			background: #fff;
 			height: 80upx;
-			font-size: 16px;
 			border-radius: 8upx;
 			width: 544upx;
 			padding: 20upx 30upx;

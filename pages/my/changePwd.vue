@@ -21,6 +21,7 @@
 </template>
 
 <script>
+	import jsencrypt from '@/js_sdk/jsencrypt-Rsa/jsencrypt/jsencrypt.vue';
 	export default {
 		data () {
 			return {
@@ -127,7 +128,8 @@
 						this.computedTimer--
 					}
 				},1000)
-				let res = await this.$fetch(this.$api.customerPhone,{mobile:this.phone},'GET','form')
+				var pubblicData= jsencrypt.setEncrypt(this.$api.publiukey,this.phone);
+				let res = await this.$fetch(this.$api.customerPhone,{mobile: pubblicData},'GET','form')
 			
 				this.yzm = res.msg
 			},

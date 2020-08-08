@@ -69,10 +69,9 @@ page {
   background-color: #fff;
 }
 .edit-address .edit-center .center-left {
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
 }
 .edit-address .edit-center .center-left .center-top {
   font-family: PingFangSC-Semibold;
@@ -90,10 +89,7 @@ page {
           box-sizing: border-box;
   font-family: PingFangSC-Regular;
   font-size: 14px;
-  color: rgba(9, 2, 62, 0.3);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  color: rgba(9, 2, 62);
 }
 .edit-address .edit-center .center-left .center-center {
   -webkit-box-sizing: border-box;
@@ -103,12 +99,22 @@ page {
   color: rgba(9, 2, 62, 0.3);
 }
 .edit-address .edit-center .center-right {
-  -webkit-transform: scale(0.5);
-          transform: scale(0.5);
+  width: 100rpx;
+  height: 100%;
+  text-align: center;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+          justify-content: center;
 }
 .edit-address .edit-center .center-right image {
-  width: 56rpx;
-  height: 56rpx;
+  width: 32rpx;
+  height: 52rpx;
 }
 .edit-address .edit-detail {
   width: 100%;
@@ -191,10 +197,78 @@ page {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   background-color: #fff;
-  font-size: 14px;
+  font-size: 18px;
 }
 .edit-address .textarea-font {
-  color: rgba(9, 2, 62, 0.3) !important;
+  color: rgba(9, 2, 62, 0.8) !important;
+}
+.edit-address .say-speak {
+  width: 100%;
+  text-align: center;
+  padding-top: 30rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.edit-address .say-speak .say-left {
+  font-size: 20px;
+  padding-left: 170rpx;
+  padding-right: 70rpx;
+}
+.edit-address .say-speak .say-right {
+  font-size: 20px;
+  padding-left: 70rpx;
+  color: #5468FF;
+}
+.edit-address .say-speak .say-button {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+          justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.edit-address .say-speak .say-button .say-button-top {
+  font-size: 14px;
+  color: rgba(9, 2, 62, 0.3);
+  padding-bottom: 15rpx;
+}
+.edit-address .say-speak image {
+  width: 128rpx;
+  height: 128rpx;
+}
+.edit-address .say-tip {
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+          justify-content: center;
+  padding-top: 20rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.edit-address .say-tip image {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 10rpx;
+}
+.edit-address .say-tip view {
+  color: #fd8439;
 }
 .edit-address .submit {
   width: 100%;
@@ -211,5 +285,41 @@ page {
   position: fixed;
   bottom: 0;
   left: 0;
+}
+.edit-address .saySpeakPopFlag-box {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+          justify-content: center;
+}
+.edit-address .saySpeakPopFlag-box .say-button-over {
+  margin-top: 40rpx;
+  padding: 20rpx;
+  padding-left: 86rpx;
+  padding-right: 86rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  font-family: PingFangSC-Regular;
+  font-size: 18px;
+  color: #FFFFFF;
+  background: #5468FF;
+  border-radius: 60rpx;
+  text-align: center;
+}
+.edit-address .say-button-tip {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  color: #d92134;
+  padding-top: 10rpx;
 }
 

@@ -76,7 +76,7 @@
 .recharge .recharge-top .top-box .item .price.data-v-1057a6d4 {
   font-family: PingFangSC-Semibold;
   font-size: 20px;
-  color: rgba(9, 2, 62, 0.3);
+  color: rgba(9, 2, 62);
   text-align: center;
 }
 .recharge .recharge-top .top-box .item .price.huodongtext.data-v-1057a6d4 {
@@ -85,7 +85,7 @@
 .recharge .recharge-top .top-box .item .selling.data-v-1057a6d4 {
   font-family: PingFangSC-Regular;
   font-size: 12px;
-  color: rgba(9, 2, 62, 0.3);
+  color: rgba(9, 2, 62);
   text-align: center;
 }
 .recharge .recharge-top .top-box .item .selling.huodongtext.data-v-1057a6d4 {

@@ -4,7 +4,7 @@
 		<view class="storage-header">
 			<view class="back" @tap="goBack"><image src="../../static/img/index/left.png" mode="aspectFill"></image></view>
 			<view class="header-title">{{ car == 0 ? 'GG来送' : '小汽车' }}</view>
-			<view class="header-sectitle">3公里1小时内到达</view>
+			<view class="header-sectitle">3公里30分钟内到达</view>
 		</view>
 		<view class="storage-scroll" v-if="Number(car) === 0">
 			<view class="scroll-item" v-for="(scroll, index) in scrollList" :key="index" :class="{ on: index === scrollIndex }" @tap="handleScrollIndex(index)">{{ scroll }}</view>
@@ -14,11 +14,17 @@
 			<view class="scroll-item"  v-for="(scroll, index) in carScrollList" :key="index" :class="{ on: index === scrollIndex }" @tap="handleScrollIndex(index)">{{ scroll }}</view>
 		</view>
 		<view class="textArea-box"   v-if="scrollIndex === 2" style="padding-top: 220rpx;">
-			<textarea value="" placeholder="输入你想要买的商品，比如：红牛一厅" class="helpBuyTextArea"  @blur = "setHelpBuyInfo"  v-model="helpBuyTextArea"/>
+			<textarea value="" placeholder="输入你想要买的商品，比如：红牛一厅(*必填)" class="helpBuyTextArea"  @blur = "setHelpBuyInfo"  v-model="helpBuyTextArea"/>
+			
 			<view class="needxiaopiao" @tap.stop="needTicket">
 				<view class="xiaopiao-circle" :class="{ on: xiaopiaoCircle }"></view>
 				需要小票,按小票结算
 			</view>
+			
+		</view>
+		<view class="upload-box" v-if="scrollIndex == 2" style="width: 100%; background-color: #fff; padding-left: 10rpx; box-sizing: border-box; ">
+			<u-upload :action="action" :file-list="fileList" :form-data = "QNtoken" :show-progress = "false" :max-count = "3" @on-uploaded = "UpLoaded" @on-remove = "RemoveImg"></u-upload>
+			<view style="font-size: 14px; color: rgba(145, 145, 145); padding-bottom: 6rpx;">上传你想要买的物品样品,避免代购员购买错误</view>
 		</view>
 		<scroll-view scroll-y="true" :class="{'scrollPadding': scrollIndex !== 2 }"> 
 			<view class="storage-address">
@@ -116,10 +122,14 @@
 				</view>
 				
 				<view class="storage-item" @click="closeShopAppraisement" v-if="scrollIndex === 2">
-					<view class="item-left">商品预估价</view>
+					<view class="new-storage-item-box">
+						<view class="item-left">商品预估价</view>
+						<view class="place"  style="color: rgba(9,2,62,0.30);">实际价格以骑手发票为准,多退少补</view>
+					</view>
+					
 					<view class="item-right">
 						<view class="place" v-if = "shopInfo.price" >{{ shopInfo.price + '元' }}</view>
-						<view class="place" v-else style="color: rgba(9,2,62,0.30);">实际价格以骑手发票为准,多退少补</view>
+						<view class="place" v-else style="color: #e34a48;">*必填</view>
 						
 						<image src="../../static/img/my/right.png" mode="aspectFill"></image>
 					</view>
@@ -256,7 +266,7 @@
 					<image src="../../static/img/index/up.png" mode="aspectFill"></image>
 				</view>
 			</view>
-			<view class="flt-bottom">3公里内：1小时内送达</view>
+			<view class="flt-bottom">3公里内：30分钟内送达</view>
 		</view>
 		<view class="footer-right" @tap="handleBilldetail">确认下单</view>
 	</view>
@@ -309,7 +319,9 @@
 			</view>
 		</view>
 
-		<!-- 取件弹框 -->
+	
+
+		<!-- 取件弹框 -->	
 		<uni-popup ref="popup" type="bottom" class="popup">
 			<view class="pop-left">
 				<view class="pop-left-day">
@@ -321,22 +333,28 @@
 					<view class="right-timer-box">
 						<view class="timer-item takenow" v-if="dayIndex === 0" @tap="initTakeNow">
 							<view class="item-left" :class="{ acitve: rightIndex === 999 }">马上取件</view>
-							<image src="../../static/img/index/duihou.png" mode="aspectFill" v-if="rightIndex === 999"></image>
+							<!-- <image src="../../static/img/index/duihou.png" mode="aspectFill" v-if="rightIndex === 999"></image> -->
 						</view>
+						
+						
+					
+						
 						<view class="timer-item" v-for="(item, index) in timeList" :key="index" @tap="handleRight(item, index)" v-if="dayIndex === 0">
 							<view class="item-left second-left" :class="{ acitve: index === rightIndex }">{{ item.text }}</view>
-							<image src="../../static/img/index/duihou.png" mode="aspectFill" v-if="index === rightIndex"></image>
+							<!-- <image src="../../stasstic/img/index/duihou.png" mode="aspectFill" v-if="index === rightIndex"></image> -->
 						</view>
 
 						<view class="timer-item" v-if="!timeList.length" v-for="(item, index) in timer" :key="index" @tap="handleRight(item, index)">
 							<view class="item-left second-left" :class="{ acitve: index === rightIndex }">{{ item.text }}</view>
-							<image src="../../static/img/index/duihou.png" mode="aspectFill" v-if="index === rightIndex"></image>
+							<!-- <image src="../../static/img/index/duihou.png" mode="aspectFill" v-if="index === rightIndex"></image> -->
 						</view>
 					</view>
 				</scroll-view>
 			</view>
 			<view class="pop-button" @tap="popSubmit">确定</view>
 		</uni-popup>
+		 
+		
 
 		<!-- 确认下单弹框 -->
 		<uni-popup ref="popups" type="bottom" >
@@ -395,7 +413,7 @@
 							<image src="../../static/img/index/up.png" mode="aspectFill" class="up-down" :class="{ on: priceDetailshow }"></image>
 						</view>
 					</view>
-					<view class="footer-left-bottom">3公里内：1小时内送达</view>
+					<view class="footer-left-bottom">3公里内：30分钟内送达</view>
 				</view>
 				<view class="popups-footer-right" @tap="handlePopPay">确认下单</view>
 			</view>
@@ -432,6 +450,7 @@
 import uniPopup from '@/components/uni-popup/uni-popup.vue';
 export default {
 	onLoad(option) {
+		this.getQiniuToken()
 		console.log(option.assignIndex)
 		this.car = option.car;
 		this.scrollIndex = Number(option.scrollIndex)
@@ -443,19 +462,27 @@ export default {
 		//富文本
 		this.initRichText();
 		//获取当前时间
-		let nowTime = this.$dayjs().hour();
+		// let nowTime = this.$dayjs().hour();
+		let nowTime = this.$dayjs().format('HH:mm');
+
+		nowTime = nowTime.substring(0, nowTime.length - 1) + '0'
+	
 		this.nowTime = nowTime;
 		
 		//更改数组
 		///找到对应的下标
 		let arrIndex = this.timer.findIndex(value => {
+			console.log(value)
+			console.log(this.nowTime)
+			console.log('*****')
 			if (this.nowTime == value.start) {
 				return true;
 			}
 		});
+		console.log(arrIndex)
 		//截取字符串
-		this.timeList = this.timer.slice(arrIndex + 1);
-
+		this.timeList = this.timer.slice(arrIndex + 3);
+		
 		//获取余额
 		// this.payInfo[0].sectext =  "(" + uni.getStorageSync('user_amount') + ')'
 
@@ -484,6 +511,7 @@ export default {
 			if (sendAddress !== this.sendAddress) {
 			}
 			this.sendAddress = sendAddress;
+			console.log(this.sendAddress)
 		}
 
 		//终点地址
@@ -556,6 +584,14 @@ export default {
 	},
 	data() {
 		return {
+			action: 'https://upload.qiniup.com/',
+			fileList: [],
+			QNtoken: {},
+			pics: '',
+			
+			pickerTimerShow: false,
+			pickerTimerList: [1,2,3,4,6,7],
+			
 			platform: '',
 			//发货地址
 			sendAddress: {},
@@ -571,22 +607,127 @@ export default {
 			day: ['今天', '明天', '后天'],
 			//立即取件
 			rightIndex: 999,
+			// timer: [
+			// 	{ text: '9:00-10:00', start: '9', end: '10' },
+			// 	{ text: '10:00-11:00', start: '10', end: '11' },
+			// 	{ text: '11:00-12:00', start: '11', end: '12' },
+			// 	{ text: '12:00-13:00', start: '12', end: '13' },
+			// 	{ text: '13:00-14:00', start: '13', end: '14' },
+			// 	{ text: '14:00-15:00', start: '14', end: '15' },
+			// 	{ text: '15:00-16:00', start: '15', end: '16' },
+			// 	{ text: '16:00-17:00', start: '16', end: '17' },
+			// 	{ text: '17:00-18:00', start: '17', end: '18' },
+			// 	{ text: '18:00-19:00', start: '18', end: '19' },
+			// 	{ text: '19:00-20:00', start: '19', end: '20' },
+			// 	{ text: '21:00-22:00', start: '21', end: '22' },
+			// 	{ text: '22:00-23:00', start: '22', end: '23' },
+			// 	{ text: '23:00-24:00', start: '23', end: '24' }
+			// ],
+			
 			timer: [
-				{ text: '9:00-10:00', start: '9', end: '10' },
-				{ text: '10:00-11:00', start: '10', end: '11' },
-				{ text: '11:00-12:00', start: '11', end: '12' },
-				{ text: '12:00-13:00', start: '12', end: '13' },
-				{ text: '13:00-14:00', start: '13', end: '14' },
-				{ text: '14:00-15:00', start: '14', end: '15' },
-				{ text: '15:00-16:00', start: '15', end: '16' },
-				{ text: '16:00-17:00', start: '16', end: '17' },
-				{ text: '17:00-18:00', start: '17', end: '18' },
-				{ text: '18:00-19:00', start: '18', end: '19' },
-				{ text: '19:00-20:00', start: '19', end: '20' },
-				{ text: '21:00-22:00', start: '21', end: '22' },
-				{ text: '22:00-23:00', start: '22', end: '23' },
-				{ text: '23:00-24:00', start: '23', end: '24' }
+				{ text: '9:00', start: '09:00', end: '9:10' },
+				{ text: '9:10', start: '09:10', end: '9:20' },
+				{ text: '9:20', start: '09:20', end: '9:30' },
+				{ text: '9:30', start: '09:30', end: '9:40' },
+				{ text: '9:40', start: '09:40', end: '9:50' },
+				{ text: '9:50', start: '09:50', end: '10' },
+				{ text: '10:00', start: '10:00', end: '10:10' },
+				{ text: '10:10', start: '10:10', end: '10:20' },
+				{ text: '10:20', start: '10:20', end: '10:30' },
+				{ text: '10:30', start: '10:30', end: '10:40' },
+				{ text: '10:40', start: '10:40', end: '10:50' },
+				{ text: '10:50', start: '10:50', end: '11' },
+				{ text: '11:00', start: '11:00', end: '11:10' },
+				{ text: '11:10', start: '11:10', end: '11:20' },
+				{ text: '11:20', start: '11:20', end: '11:30' },
+				{ text: '11:30', start: '11:30', end: '11:40' },
+				{ text: '11:40', start: '11:40', end: '11:50' },
+				{ text: '11:50', start: '11:50', end: '12' },
+				{ text: '12:00', start: '12:00', end: '12:10' },
+				{ text: '12:10', start: '12:10', end: '12:20' },
+				{ text: '12:20', start: '12:20', end: '12:30' },
+				{ text: '12:30', start: '12:30', end: '12:40' },
+				{ text: '12:40', start: '12:40', end: '12:50' },
+				{ text: '12:50', start: '12:50', end: '13' },
+				{ text: '13:00', start: '13:00', end: '13:10' },
+				{ text: '13:10', start: '13:10', end: '13:20' },
+				{ text: '13:20', start: '13:20', end: '13:30' },
+				{ text: '13:30', start: '13:30', end: '13:40' },
+				{ text: '13:40', start: '13:40', end: '13:50' },
+				{ text: '13:50', start: '13:50', end: '14' },
+				{ text: '14:00', start: '14:00', end: '14:10' },
+				{ text: '14:10', start: '14:10', end: '14:20'},
+				{ text: '14:20', start: '14:20', end: '14:30'},
+				{ text: '14:30', start: '14:30', end: '14:40' },
+				{ text: '14:40', start: '14:40', end: '14:50' },
+				{ text: '14:50', start: '14:50', end: '15' },
+				{ text: '15:00', start: '15:00', end: '15:10' },
+				{ text: '15:10', start: '15:10', end: '15:20' },
+				{ text: '15:20', start: '15:20', end: '15:30' },
+				{ text: '15:30', start: '15:30', end: '15:40' },
+				{ text: '15:40', start: '15:40', end: '15:50' },
+				{ text: '15:50', start: '15:50', end: '16' },
+				
+				{ text: '16:00', start: '16:00', end:'16:10' },
+				{ text: '16:10', start: '16:10', end:'16:20' },
+				{ text: '16:20', start: '16:20', end:'16:30' },
+				{ text: '16:30', start: '16:30', end: '16:40' },
+				{ text: '16:40', start: '16:40', end: '16:50' },
+				{ text: '16:50', start: '16:50', end: '17' },
+				
+				{ text: '17:00', start: '17:00', end: '17:10' },
+				{ text: '17:10', start: '17:10', end: '17:20' },
+				{ text: '17:20', start: '17:20', end: '17:30' },
+				{ text: '17:30', start: '17:30', end: '17:40' },
+				{ text: '17:40', start: '17:40', end: '17:50' },
+				{ text: '17:50', start: '17:50', end: '18' },
+				
+				{ text: '18:00', start: '18:00', end: '18:10' },
+				{ text: '18:10', start: '18:10', end: '18:20' },
+				{ text: '18:20', start: '18:20', end: '18:30' },
+				{ text: '18:30', start: '18:30', end: '18:40' },
+				{ text: '18:40', start: '18:40', end: '18:50' },
+				{ text: '18:50', start: '18:50', end: '19' },
+				
+				{ text: '19:00', start: '19:00', end: '19:10' },
+				{ text: '19:10', start: '19:10', end: '19:20' },
+				{ text: '19:20', start: '19:20', end: '19:30' },
+				{ text: '19:30', start: '19:30', end: '19:40' },
+				{ text: '19:40', start: '19:40', end: '19:50' },
+				{ text: '19:50', start: '19:50', end: '20' },
+				
+				{ text: '20:00', start: '20:00', end: '20:10' },
+				{ text: '20:10', start: '20:10', end: '20:20' },
+				{ text: '20:20', start: '20:20', end: '20:30' },
+				{ text: '20:30', start: '20:30', end: '20:40' },
+				{ text: '20:40', start: '20:40', end: '20:50' },
+				{ text: '20:50', start: '20:50', end: '21' },
+				
+				
+				{ text: '21:00', start: '21:00', end: '21:10' },
+				{ text: '21:10', start: '21:10', end: '21:20' },
+				{ text: '21:20', start: '21:20', end: '21:30' },
+				{ text: '21:30', start: '21:30', end: '21:40' },
+				{ text: '21:40', start: '21:40', end: '21:50' },
+				{ text: '21:50', start: '21:50', end: '22' },
+				
+				{ text: '22:00', start: '22:00', end: '22:10' },
+				{ text: '22:10', start: '22:10', end: '22:20' },
+				{ text: '22:20', start: '22:20', end: '22:30' },
+				{ text: '22:30', start: '22:30', end: '22:40' },
+				{ text: '22:40', start: '22:40', end: '22:50' },
+				{ text: '22:50', start: '22:50', end: '23' },
+				
+				{ text: '23:00', start: '23:00', end: '23:10' },
+				{ text: '23:10', start: '23:10', end: '23:20' },
+				{ text: '23:20', start: '23:20', end: '23:30' },
+				{ text: '23:30', start: '23:30', end: '23:40' },
+				{ text: '23:40', start: '23:40', end: '23:50' },
+				{ text: '23:50', start: '23:50', end: '0' },
+				// { text: '00:00', start: '0:00', end: '0' }
+				
 			],
+			
 			//今天的数组列表
 			timeList: [],
 			//发请求的时间参数
@@ -780,6 +921,25 @@ export default {
 		}
 	},
 	methods: {
+		async getQiniuToken(){
+			let res = await this.$fetch(this.$api.getQiniuToken,{},'POST','form')
+			console.log(res)
+			this.QNtoken = {
+				token: res.data.token
+			}	
+		},
+		UpLoaded (list) {
+			this.pics = []
+			list.forEach(item => {
+
+				this.pics.push(this.$api.baseLocation + item.response.hash)
+				
+			})
+		},
+		RemoveImg (index, lists) {
+			this.pics.splice(index, 1)
+		},
+		
 		// 关闭支付
 		closePay(data) {
 			clearInterval(this.countDown);
@@ -931,6 +1091,7 @@ export default {
 			this.helpBuyTextArea = ''
 			this.choiceMinunteStart = 0
 			this.rightIndex = 999
+			this.pics = []
 			// this.initAddress()
 			 // let addDetail = this.sendAddress.addressDetail
 			// if (index == 2) {
@@ -945,8 +1106,17 @@ export default {
 		},
 		//取件时间
 		pickTimer() {
+			let arrIndex = this.timer.findIndex(value => {
+				if (this.nowTime == value.start) {
+					return true;
+				}
+			});
+			//截取字符串
+			this.timeList = this.timer.slice(arrIndex + 3);
+			
+			
 			this.$refs.popup.open();
-
+			this.pickerTimerShow = true
 			this.handleDayIndex(this.dayIndex);
 		},
 		//更换取件时间
@@ -963,7 +1133,8 @@ export default {
 						return true;
 					}
 				});
-				this.timeList = this.timer.slice(arrIndex + 1);
+		
+				this.timeList = this.timer.slice(arrIndex + 3);
 			} else if (index === 1) {
 				this.dayTimer = this.$dayjs()
 					.add(1, 'day')
@@ -1028,6 +1199,7 @@ export default {
 			
 			if (this.appraisement <= 0 && uni.getStorageSync('shopInfo') == true) {
 								this.appraisement = 1				uni.showToast({					title: '商品预估价最低1元',					icon: 'none'				})							} else if (this.appraisement > 500) {				this.appraisement = 500				uni.showToast({					title: '商品预估价最高500元',					icon: 'none'				})			} 
+			this.shopInfo.pics = JSON.stringify(this.pics)
 			if (this.helpBuyTextArea.trim()) {
 				this.shopInfo.main = this.helpBuyTextArea
 			}
@@ -1415,9 +1587,9 @@ export default {
 									{
 										buyAddressType: 1,
 										// buyAddressType: this.assignIndex,
-										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude }),
+										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude, extensionNumber: this.endAddress.extensionNumber}),
 										tip: this.giveGrant,
-										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 										distance: this.riderSide,
 										type: this.scrollIndex,
 										pickUpType: 0,
@@ -1444,10 +1616,10 @@ export default {
 									{
 										buyAddressType: 0,
 										// buyAddressType: this.assignIndex,
-										startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude }),
-										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude }),
+										startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude, extensionNumber: this.sendAddress.extensionNumber }),
+										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude, extensionNumber: this.endAddress.extensionNumber  }),
 										tip: this.giveGrant,
-										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 										distance: this.distance,
 										type: this.scrollIndex,
 										pickUpType: 0,
@@ -1475,10 +1647,10 @@ export default {
 							this.$api.orderCalculation,
 							{
 								buyAddressType: this.assignIndex,
-								startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude }),
-								endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude }),
+								startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude, extensionNumber: this.sendAddress.extensionNumber }),
+								endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude, extensionNumber: this.endAddress.extensionNumber }),
 								tip: this.giveGrant,
-								goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+								goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 								distance: this.distance,
 								type: this.scrollIndex,
 								pickUpType: 0,
@@ -1510,9 +1682,9 @@ export default {
 										buyAddressType: 1,
 										// buyAddressType: this.assignIndex,
 										// startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude }),
-										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude }),
+										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude, extensionNumber: this.endAddress.extensionNumber }),
 										tip: this.giveGrant,
-										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 										distance: this.riderSide,
 										type: this.scrollIndex,
 										pickUpType: 0,
@@ -1538,10 +1710,10 @@ export default {
 									{
 										buyAddressType: 0,
 										// buyAddressType: this.assignIndex,
-										startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude }),
-										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude }),
+										startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude, extensionNumber: this.sendAddress.extensionNumber }),
+										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude, extensionNumber: this.endAddress.extensionNumber }),
 										tip: this.giveGrant,
-										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 										distance: this.distance,
 										type: this.scrollIndex,
 										pickUpType: 0,
@@ -1568,10 +1740,10 @@ export default {
 								this.$api.orderCalculation,
 								{
 									buyAddressType: this.assignIndex,
-									startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude }),
-									endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude }),
+									startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude, extensionNumber: this.sendAddress.extensionNumber }),
+									endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude, extensionNumber: this.endAddress.extensionNumber }),
 									tip: this.giveGrant,
-									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 									distance: this.distance,
 									type: this.scrollIndex,
 									pickUpType: 0,
@@ -1606,9 +1778,9 @@ export default {
 									{
 										buyAddressType: 1,
 										// startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude }),
-										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude }),
+										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude, extensionNumber: this.endAddress.extensionNumber }),
 										tip: this.giveGrant,
-										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 										distance: this.riderSide,
 										type: this.scrollIndex,
 										pickUpType: 1,
@@ -1634,10 +1806,10 @@ export default {
 									this.$api.orderCalculation,
 									{
 										buyAddressType: 0,
-										startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude }),
-										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude }),
+										startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude, extensionNumber: this.sendAddress.extensionNumber }),
+										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude, extensionNumber: this.endAddress.extensionNumber }),
 										tip: this.giveGrant,
-										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 										distance: this.riderSide,
 										type: this.scrollIndex,
 										pickUpType: 1,
@@ -1665,10 +1837,10 @@ export default {
 								this.$api.orderCalculation,
 								{
 									buyAddressType: this.assignIndex,
-									startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude }),
-									endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude }),
+									startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude, extensionNumber: this.sendAddress.extensionNumber }),
+									endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude, extensionNumber: this.endAddress.extensionNumber }),
 									tip: this.giveGrant,
-									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 									distance: this.distance,
 									type: this.scrollIndex,
 									pickUpType: 1,
@@ -1699,9 +1871,9 @@ export default {
 									{
 										buyAddressType: 1,
 										// startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude }),
-										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude }),
+										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude, extensionNumber: this.endAddress.extensionNumber }),
 										tip: this.giveGrant,
-										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 										distance: this.riderSide,
 										type: this.scrollIndex,
 										pickUpType: 1,
@@ -1729,10 +1901,10 @@ export default {
 									this.$api.orderCalculation,
 									{
 										buyAddressType: 0,
-										startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude }),
-										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude }),
+										startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude, extensionNumber: this.sendAddress.extensionNumber }),
+										endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude , extensionNumber: this.endAddress.extensionNumber }),
 										tip: this.giveGrant,
-										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+										goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 										distance: this.riderSide,
 										type: this.scrollIndex,
 										pickUpType: 1,
@@ -1762,10 +1934,10 @@ export default {
 								this.$api.orderCalculation,
 								{
 									buyAddressType: this.assignIndex,
-									startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude }),
-									endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude }),
+									startAddress: JSON.stringify({ addressDetail: startAddress, latitude: this.sendAddress.latitude, extensionNumber: this.sendAddress.extensionNumber  }),
+									endAddress: JSON.stringify({ addressDetail: endAddress, latitude: this.endAddress.latitude, extensionNumber: this.endAddress.extensionNumber  }),
 									tip: this.giveGrant,
-									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 									distance: this.distance,
 									type: this.scrollIndex,
 									pickUpType: 1,
@@ -1888,7 +2060,7 @@ export default {
 				if (this.scrollIndex === 2) {
 					goodsPredictAmount = 50
 				}
-					console.log(this.choiceTime + '&&&&&&&&&&&')
+				
 				//发送计算订单请求
 				//当是立即取件时
 				if (this.rightIndex === 999) {
@@ -1907,7 +2079,8 @@ export default {
 										name: initendressName,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									
 									endAddress: JSON.stringify({
@@ -1917,10 +2090,11 @@ export default {
 										name: initendressName,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									tip: this.giveGrant,
-									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 									distance: this.riderSide,
 									type: this.scrollIndex,
 									pickUpType: 0,
@@ -1963,7 +2137,8 @@ export default {
 										name: initsendressName,
 										detail: initsendressDetail,
 										userName: this.sendAddress.name,
-										mobile: this.sendAddress.mobile
+										mobile: this.sendAddress.mobile,
+										extensionNumber: this.sendAddress.extensionNumber
 									}),
 									endAddress: JSON.stringify({
 										addressDetail: endAddress,
@@ -1972,10 +2147,11 @@ export default {
 										title: initendressTitle,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									tip: this.giveGrant,
-									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 									distance: this.distance,
 									type: this.scrollIndex,
 									pickUpType: 0,
@@ -2003,7 +2179,8 @@ export default {
 										name: initsendressName,
 										detail: initsendressDetail,
 										userName: this.sendAddress.name,
-										mobile: this.sendAddress.mobile
+										mobile: this.sendAddress.mobile,
+										extensionNumber: this.sendAddress.extensionNumber
 									}),
 									endAddress: JSON.stringify({
 										addressDetail: endAddress,
@@ -2012,10 +2189,11 @@ export default {
 										title: initendressTitle,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									tip: this.giveGrant,
-									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 									distance: this.distance,
 									type: this.scrollIndex,
 									pickUpType: 0,
@@ -2061,7 +2239,8 @@ export default {
 										name: initendressName,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									
 									endAddress: JSON.stringify({
@@ -2071,10 +2250,11 @@ export default {
 										name: initendressName,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									tip: this.giveGrant,
-									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 									distance: this.riderSide,
 									type: this.scrollIndex,
 									pickUpType: 0,
@@ -2118,7 +2298,8 @@ export default {
 										name: initsendressName,
 										detail: initsendressDetail,
 										userName: this.sendAddress.name,
-										mobile: this.sendAddress.mobile
+										mobile: this.sendAddress.mobile,
+										extensionNumber: this.sendAddress.extensionNumber
 									}),
 									endAddress: JSON.stringify({
 										addressDetail: endAddress,
@@ -2127,10 +2308,11 @@ export default {
 										name: initendressName,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									tip: this.giveGrant,
-									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 									distance: this.distance,
 									type: this.scrollIndex,
 									pickUpType: 0,
@@ -2185,7 +2367,8 @@ export default {
 										name: initendressName,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									endAddress: JSON.stringify({
 										addressDetail: endAddress,
@@ -2194,10 +2377,11 @@ export default {
 										name: initendressName,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									tip: this.giveGrant,
-									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 									distance: this.riderSide,
 									type: this.scrollIndex,
 									pickUpType: 1,
@@ -2236,7 +2420,8 @@ export default {
 										name: initsendressName,
 										detail: initsendressDetail,
 										userName: this.sendAddress.name,
-										mobile: this.sendAddress.mobile
+										mobile: this.sendAddress.mobile,
+										extensionNumber: this.sendAddress.extensionNumber
 									}),
 									endAddress: JSON.stringify({
 										addressDetail: endAddress,
@@ -2245,10 +2430,11 @@ export default {
 										name: initendressName,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									tip: this.giveGrant,
-									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 									distance: this.distance,
 									type: this.scrollIndex,
 									pickUpType: 1,
@@ -2299,7 +2485,8 @@ export default {
 										name: initendressName,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									endAddress: JSON.stringify({
 										addressDetail: endAddress,
@@ -2308,10 +2495,11 @@ export default {
 										name: initendressName,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									tip: this.giveGrant,
-									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 									distance: this.riderSide,
 									type: this.scrollIndex,
 									pickUpType: 1,
@@ -2352,7 +2540,8 @@ export default {
 										name: initsendressName,
 										detail: initsendressDetail,
 										userName: this.sendAddress.name,
-										mobile: this.sendAddress.mobile
+										mobile: this.sendAddress.mobile,
+										extensionNumber: this.sendAddress.extensionNumber
 									}),
 									endAddress: JSON.stringify({
 										addressDetail: endAddress,
@@ -2361,10 +2550,11 @@ export default {
 										name: initendressName,
 										detail: initendressDetail,
 										userName: this.endAddress.name,
-										mobile: this.endAddress.mobile
+										mobile: this.endAddress.mobile,
+										extensionNumber: this.endAddress.extensionNumber
 									}),
 									tip: this.giveGrant,
-									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main }),
+									goodsInventory: JSON.stringify({ weight: this.shopInfo.weight, cost: this.shopInfo.price, goods: this.shopInfo.main, pics: this.shopInfo.pics }),
 									distance: this.distance,
 									type: this.scrollIndex,
 									pickUpType: 1,
@@ -2472,6 +2662,59 @@ export default {
 				title: '正在下单中....'
 			});
 			this.payFlag = false
+			
+			//起点
+			let initsendress = null;
+			let initsendressTitle = null;
+			let initsendressDetail = null;
+			let initsendressName = null;
+			//结束地址
+			let initendressTitle = null;
+			let initendressDetail = null;
+			let initendressName = null;
+			
+			
+			
+			if (this.sendAddress.addressDetail instanceof Array) {
+				
+				initsendress = this.sendAddress.addressDetail[0] + ''  + this.sendAddress.addressDetail[1];
+			
+				initsendressDetail = this.sendAddress.addressDetail[1];
+				initsendressTitle = this.sendAddress.addressDetail[2];
+				initsendressName = this.sendAddress.addressDetail[0];
+			
+				initendressTitle = this.endAddress.editAddress.name;
+				initendressDetail = this.endAddress.addressDetail;
+				initendressName = this.endAddress.editAddress.address;
+				
+				
+			} else {
+			
+				initsendress = this.sendAddress.editAddress.address + '' + this.sendAddress.addressDetail;
+				initsendressDetail = this.sendAddress.addressDetail;
+				initsendressTitle = this.sendAddress.editAddress.name;
+				initsendressName = this.sendAddress.editAddress.address;
+			
+				initendressTitle = this.endAddress.editAddress.name;
+				initendressDetail = this.endAddress.addressDetail;
+				initendressName = this.endAddress.editAddress.address;
+				
+				
+			}
+			let startAddress = initsendress;
+			let startIndex = initsendress.indexOf('市')
+			
+			startAddress = initsendress.substring(startIndex + 1,startIndex+initsendress.length)
+			
+			// let endAddress = this.endAddress.editAddress.address + '' + this.endAddress.editAddress.name + '' + this.endAddress.addressDetail;
+			let endAddress = this.endAddress.editAddress.address + '' + this.endAddress.addressDetail;
+			let endIndex = endAddress.indexOf('市')
+			
+			endAddress = endAddress.substring(endIndex + 1,endIndex+endAddress.length)
+			
+			
+			
+			
 			if (this.circleShow === 0) {
 				let res = await this.$fetch(this.$api.orderPay, { orderId: this.orderId, payType: this.circleShow }, 'POST', 'form');
 				console.log(res)
@@ -2491,6 +2734,45 @@ export default {
 					this.$refs.popupPay.close();
 					
 					uni.setStorageSync('userSelect',1)
+					
+					
+					
+					
+					
+					
+					if (this.scrollIndex == 0) {
+						console.log(this.sendAddress)
+	
+						uni.setStorageSync('helpMeBuy',  JSON.stringify({
+							addressDetail: this.sendAddress.addressDetail,
+							latitude: this.sendAddress.latitude,
+							title: initsendressTitle,
+							name: initsendressName,
+							detail: initsendressDetail,
+							userName: this.sendAddress.name,
+							mobile: this.sendAddress.mobile,
+							editAddress: JSON.stringify(this.sendAddress.editAddress),
+							name: initsendressName,
+							mobile: this.sendAddress.mobile,
+							extensionNumber: this.sendAddress.extensionNumber
+						}))
+					
+					} else if (this.scrollIndex == 1) {
+						console.log(this.endAddress)
+
+						uni.setStorageSync('helpMeGet', JSON.stringify({
+							addressDetail: this.endAddress.addressDetail,
+							latitude: this.endAddress.latitude,
+							name: initendressName,
+							title: initendressTitle,
+							detail: initendressDetail,
+							userName: this.endAddress.name,
+							mobile: this.endAddress.mobile,
+							editAddress: JSON.stringify(this.endAddress.editAddress),
+							extensionNumber: this.endAddress.extensionNumber
+						}))
+	
+					}
 					setTimeout(() => {
 						// uni.redirectTo({
 						// 	url:'./storage?car=' + this.car
@@ -3329,7 +3611,7 @@ page {
 					height: 140rpx;
 					line-height: 140rpx;
 					font-family: PingFangSC-Regular;
-					font-size: 14px;
+					font-size: 16px;
 					color: rgba(9, 2, 62, 0.3);
 					&.afterday {
 						width: 230rpx;
@@ -3339,7 +3621,7 @@ page {
 						background: #ffffff;
 						border-radius: 7px 0 0 0;
 						font-family: PingFangSC-Regular;
-						font-size: 14px;
+						font-size: 16px;
 						color: #09023e;
 						box-sizing: border-box;
 					}
@@ -3368,14 +3650,20 @@ page {
 					}
 					.item-left {
 						font-family: PingFangSC-Regular;
-						font-size: 14px;
-						color: rgba(9, 2, 62, 0.3);
+						font-size: 20px;
+						color: rgba(9, 2, 62, 0.7);
+						flex: 1;
+						text-align: center;
+						
 						&.acitve {
 							font-family: PingFangSC-Regular;
-							font-size: 14px;
+							font-size: 20px;
 							color: #5468ff;
 						}
 						&.second-left {
+							flex: 1;
+							font-size: 16px;
+							text-align: center;
 						}
 					}
 					image {
@@ -3668,7 +3956,9 @@ page {
 	}
 	.helpBuyTextArea{
 		width: 700rpx;
-		height: 240rpx;
+		// height: 240rpx;
+		// height: 400rpx;
+		height: 360rpx;
 		background-color: rgb(255, 255, 255);
 		border-color: rgb(187, 187, 187);
 		border-width: 1px;
@@ -3687,10 +3977,20 @@ page {
 	.textArea-box{
 		transform: translateX(24rpx);
 		position: relative;
+		.upload-box{
+			// position: absolute;
+			// left: 30rpx;
+			// bottom: 10rpx;
+			// font-size: 14px;
+			// color: rgba(145, 145, 145, 1);
+			// display: flex;
+			// align-items: center;
+			// z-index: 999;
+		}
 		.needxiaopiao{
 			position: absolute;
 			right: 90rpx;
-			bottom: 10rpx;
+			bottom: 30rpx;
 			font-size: 14px;
 			color: rgba(145, 145, 145, 1);
 			display: flex;
@@ -3814,4 +4114,7 @@ page {
 		}
 	}
 }
+</style>
+<style>
+
 </style>

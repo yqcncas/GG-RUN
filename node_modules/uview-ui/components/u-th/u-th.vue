@@ -21,11 +21,6 @@
 				default: ''
 			}
 		},
-		data() {
-			return {
-
-			};
-		},
 		inject: ['uTable'],
 		computed: {
 			thStyle() {
@@ -43,6 +38,8 @@
 </script>
 
 <style lang="scss" scoped>
+	@import "../../libs/css/style.components.scss";
+	
 	.u-th {
 		display: flex;
 		flex-direction: column;

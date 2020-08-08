@@ -1,12 +1,14 @@
 <template>
 
-	<view class="edit-address">
+	<view class="edit-address" >
 		<view class="edit-header">
 			<input class="header-name"  placeholder="姓名" v-model="userName" placeholder-style='font-family: PingFangSC-Regular;font-size: 14px;color: rgba(9,2,62,0.30);'></input>
 			<view class="header-right">
 				<input class="phone" @blur="checkPhoneNumber" maxlength="11" placeholder="电话" type="number" v-model="userPhone"
-				 placeholder-style='font-family: PingFangSC-Regular;font-size: 14px;color: rgba(9,2,62,0.30);'></input>
-				<image src="../../static/img/index/lianxiren.png" mode="aspectFill" @tap="getContacts"></image>
+				 placeholder-style='font-family: PingFangSC-Regular;font-size: 14px;color: rgba(9,2,62,0.30);' style="border-right: 2rpx solid #000000;"></input>
+				 <input class="phone" style="padding-left: 20rpx"  maxlength="4" placeholder="分机号" type="number" v-model="extensionNumber"
+				  placeholder-style='font-family: PingFangSC-Regular;font-size: 14px;color: rgba(9,2,62,0.30);'></input>
+				<image src="../../static/img/index/lianxiren.png" mode="widthFix" @tap="getContacts"></image>
 			</view>
 		</view>
 		<view class="edit-center" @tap="openMap">
@@ -30,20 +32,55 @@
 			<view class="save-right" @tap="clearForm">清空当前信息</view>
 		</view>
 		<textarea class="copy-address" @blur="autoFillFn" v-model="autoFill" @focus='focusAutoFill' 
-		 :placeholder="holder" placeholder-style="font-family: PingFangSC-Regular;font-size: 14px;color: #A3A3A3;"></textarea>
-		<view class="submit" @tap="submitAddress">提交</view>
+			:placeholder="holder" placeholder-style="font-family: PingFangSC-Regular;font-size: 14px;color: #A3A3A3;">
+		 </textarea>
+		 
+		 <view class="say-speak"  >
+			 <view class="say-left" @click="clearTextAreaValue">清空</view>
+			 <view class="say-button"  >
+				 <!-- <view class="say-button-top" v-if="showSpeak">正在说话...</view> -->
+				  <!-- <image src="../../static/img/index/say.png" mode="aspectFill" @longpress = "sayFn" @touchend = "endSay"></image> -->
+				  <image src="../../static/img/index/say.png" mode="aspectFill" @click="saySpeak"></image>
+			 </view>
+			  <view class="say-right" @click="shibieYuYin">识别</view>
+			
+		 </view>
+		 <view class="say-tip">
+			 <image src="../../static/img/tanhao.png" mode="aspectFill"></image>
+			 <view>语音识别地址时,需要说出当地<span style = "font-weight: bold; color: #4246cd;">县级名称</span></view>
+		 </view>
+		 <view class="say-button-tip">请按顺序说出名字、电话、县级名称、地址</view>
+		 <view class="say-button-tip">例如: 王先生13888888888宁海紫金花园x幢x单元</view>
+		 
+		 
+		 
+		<view class="submit" @click="submitAddress">提交</view>
 	<!-- 	<view class="shibie-box" @click="shibieImg">
 			<image src="../../static/icon/26.png" mode=""></image>
 		</view> -->
+		<u-popup v-model="saySpeakPopFlag" mode="center" border-radius="14" width="70%" height="500rpx" :mask-close-able = "false">
+			<view class="saySpeakPopFlag-box">
+				<image src="../../static/voice.gif" mode="aspectFill" style="width: 100%;height: 300rpx;"></image>
+				<view class="say-button-over" @click="saveOver">说完了</view>
+			</view>
+				
+		</u-popup>
+		
 
 	</view>
 
 </template>
 <script>
+	import permision from "@/common/permission.js"
 	export default {
 		onLoad(options) {
-			//判断从是起点进还是终点进
 		
+			let platInfo = uni.getSystemInfoSync();
+			console.log(platInfo)
+			this.platInfoOS = platInfo.platform 
+			// android
+			
+			//判断从是起点进还是终点进
 			if (options.addressDetail == undefined) {
 				options.addressDetail = ""
 			}
@@ -113,6 +150,7 @@
 				this.area = this.addressInfo.area
 				this.addressLongitude = this.addressInfo.latitude
 				this.orderId = this.addressInfo.id
+				this.extensionNumber = this.addressInfo.extensionNumber
 			}
 			
 			if(options.ftSendAddress !== "") {
@@ -129,6 +167,9 @@
 			}
 
 
+			 
+			
+
 		},
 		onUnload() {
 			uni.hideKeyboard()
@@ -136,6 +177,10 @@
 
 		data() {
 			return {
+				showSpeak: false,
+				voicePath: '',
+				platInfoOS: '',
+				value: '',
 				//判断是起点终点编辑 0 起点 1 终点 2编辑
 				addressStatus: '',
 				newAddressStatus: '',
@@ -172,10 +217,119 @@
 				autoFillLatitude: '',
 				holder: '粘贴整段发货信息，系统会智能识别并且填写地址姓名电话。',
 				//
-				nstartSendAddress: {}
+				nstartSendAddress: {},
+				baseAudio: '',
+				accessToken: '',
+				saySpeakPopFlag: false,
+				saySpeakText: '',
+				extensionNumber: ''
 			}
 		},
 		methods: {
+			clearTextAreaValue() {
+				this.autoFill = ""
+				this.saySpeakText = ''
+			},
+			ceshiDemo () {
+				console.log('1231313213123213213')
+				
+			},
+
+			saveOver () {
+				uni.showLoading({
+					title: '识别中'
+				})
+				setTimeout(() => {
+					plus.speech.stopRecognize();
+					this.autoFill += this.saySpeakText
+					this.saySpeakPopFlag = false
+					uni.hideLoading()
+				}, 1500)
+				
+			},
+			async saySpeak () {
+					// this.holder = '请说出姓名、电话、地址'
+					this.saySpeakPopFlag = true
+				    // #ifdef APP-PLUS
+				    let status = await this.checkPermission();
+				    if (status !== 1) {
+				        return;
+				    }
+				    // #endif
+				
+				    // TODO ios 在没有请求过权限之前无法得知是否有相关权限，这种状态下需要直接调用语音，会弹出正在识别的toast
+					var options = {};
+					var that = this;
+					// that.autoFill = ""
+					options.engine = 'baidu';
+					// that.autoFill = "";
+					options.continue = true
+					options.userInterface = false
+					
+					plus.speech.addEventListener('recognizing', function(e){
+						// console.log(e)
+						that.saySpeakText = e.partialResult;
+					});
+					
+					
+					
+					plus.speech.startRecognize(options, function (s) {
+						
+						console.log(s);
+						if (s != that.saySpeakText) {
+							that.saySpeakText = ''
+							that.saySpeakText += s;
+						}
+						// 
+						// that.autoFillFn()
+					}, function (e) {
+						console.log("语音识别失败：" + e.message);
+					});
+				
+			},
+			
+			async checkPermission() {
+			    let status = permision.isIOS ? await permision.requestIOS('record') :
+			        await permision.requestAndroid('android.permission.RECORD_AUDIO');
+			
+			    if (status === null || status === 1) {
+			        status = 1;
+			    } else if (status === 2) {
+			        uni.showModal({
+			            content: "系统麦克风已关闭",
+			            confirmText: "确定",
+			            showCancel: false,
+			            success: function(res) {
+			            }
+			        })
+			    } else {
+			        uni.showModal({
+			            content: "需要麦克风权限",
+			            confirmText: "设置",
+			            success: function(res) {
+			                if (res.confirm) {
+			                    permision.gotoAppSetting();
+			                }
+			            }
+			        })
+			    }
+			    return status;
+			},
+			
+			
+			sayFn () {
+				console.log('111111')
+				this.showSpeak = true
+				recorderManager.start();
+			},
+			endSay () {
+				console.log('2222')
+				this.showSpeak = false
+				recorderManager.stop();
+			},
+			shibieYuYin () {
+				this.autoFillFn()
+			},
 			//保存地址簿
 			saveAddress() {
 				this.circleIndex = !this.circleIndex
@@ -300,16 +454,50 @@
 
 			},
 
+			insertStr(soure, start, newStr){   
+			   return soure.slice(0, start) + newStr + soure.slice(start);
+			},
 			//自动填充
 			autoFillFn() {
-				
+				console.log(this.autoFill.indexOf('1'))
+				if(this.autoFill.indexOf('1') != -1) {
+					let autoFill = this.autoFill.indexOf('1')
+					let isPhone = this.autoFill.substring(autoFill, autoFill + 11)
+					// let newArrList = this.autoFill
+					// let nnArrList = this.insertStr(newArrList,autoFill, "\xa0")
+					// console.log(nnArrList)
+					
+					// console.log(isPhone)
+					// console.log(this.$u.test.mobile(isPhone))
+					
+					this.autoFill = this.insertStr(this.autoFill,autoFill, " ")
+					this.autoFill = this.insertStr(this.autoFill,autoFill + 12, " ")
+					
+					// if (this.$u.test.mobile(isPhone)) {
+					// 	console.log(autoFill)
+					// 	let newMain = this.autoFill
+					// 	// console.log(newMain.split(','))
+					// 	let newMainTitle = newMain.substr(0, autoFill)
+					// 	// console.log(newMain.splice(autoFill, 0 , ','))
+					// 	console.log(newMainTitle + ',')
+					// 	let newMainCenter = newMain.substr(autoFill, autoFill + 9)
+					// 	console.log(newMainCenter + ",")
+					// 	let newMainEnd = newMain.substr(autoFill + 11, newMain.length)
+					// 	console.log(newMainEnd)
+					// 	this.autoFill = newMainTitle + '\xa0' + newMainCenter + "\xa0" + newMainEnd+ '\xa0'
+					// 	// this.autoFill = newMainTitle + newMainCenter  + newMainEnd
+						
+					// }
+			
+				}
 				let strLength = 0
+				console.log(this.autoFill)
 				let res = this.smartParse(this.autoFill)
 				console.log(res)
 				//姓名
 				if (this.autoFill.trim() !== "") {
 					this.userName = res.name
-					this.userPhone = res.phone
+					this.userPhone = '' +  res.phone + ''
 					this.province = res.province
 					this.city = res.city
 					this.area = res.county
@@ -324,6 +512,13 @@
 							'&output=JSON&key=6223011d1e55de8ee9d00617ee5270c2',
 						method: 'GET',
 						success: (res) => {
+							console.log(res)
+							if (res.data.geocodes.length == 0) {
+								return uni.showToast({
+									icon: 'none',
+									title: '暂未识别到地址'
+								})
+							}
 							this.autoFillLatitude = res.data.geocodes[0].location
 							this.editAddress = {}
 							uni.request({
@@ -402,25 +597,41 @@
 			},
 			//新增地址
 			async submitAddress() {
-				if (this.checkPhone) {
-					uni.showToast({
+				// if (this.checkPhone) {
+				// 	return uni.showToast({
+				// 		icon: 'none',
+				// 		title: '手机号码填写错误，请检查'
+				// 	})
+					
+				// }
+				uni.removeStorageSync('helpMeBuy')				uni.removeStorageSync('helpMeGet')
+				if (!this.$u.test.mobile(this.userPhone)) {
+					return uni.showToast({
 						icon: 'none',
 						title: '手机号码填写错误，请检查'
 					})
-					return
 				}
-
-				if (this.userName == "" || this.userPhone == "" || this.editAddress.name == "") {
-					uni.showToast({
-						icon: 'none',
-						title: '姓名/手机/地址必须填写'
-					})
-					return
-				}
+				
 				if (this.userName.trim() == '') {
 					return uni.showToast({
 						icon: 'none',
 						title: '请填写姓名'
+					})
+				}
+				
+				if (this.userName == "" || this.userPhone == "" || this.editAddress.name == "") {
+					return uni.showToast({
+						icon: 'none',
+						title: '姓名/手机/地址必须填写'
+					})
+					
+				}
+				
+				
+				if (this.userPhone.trim() == '') {
+					return uni.showToast({
+						icon: 'none',
+						title: '请填写手机号'
 					})
 				}
 
@@ -446,7 +657,8 @@
 							latitude: this.addressLongitude,
 							mobile: this.userPhone,
 							name: this.userName,
-							province: this.province
+							province: this.province,
+							extensionNumber: this.extensionNumber
 						}, "POST", "form")
 					
 
@@ -461,13 +673,15 @@
 								editAddress: this.editAddress,
 								city: this.city,
 								area: this.area,
-								orderId: this.orderId
+								orderId: this.orderId,
+								extensionNumber: this.extensionNumber
 							}
 							
 
 							if (this.status != 0) {
 								console.log('1')
 								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress))
+								uni.setStorageSync('clickAddressFlag', true)
 							}
 
 
@@ -486,7 +700,8 @@
 								editAddress: this.editAddress,
 								city: this.city,
 								area: this.area,
-								orderId: this.orderId
+								orderId: this.orderId,
+								extensionNumber: this.extensionNumber
 							}
 							
 
@@ -511,11 +726,13 @@
 								editAddress: this.editAddress,
 								city: this.city,
 								area: this.area,
-								orderId: this.orderId
+								orderId: this.orderId,
+								extensionNumber: this.extensionNumber
 							}
 							
 							console.log('2')
 							uni.setStorageSync('sendAddress', JSON.stringify(sendAddress))
+							uni.setStorageSync('clickAddressFlag', true)
 
 						}
 						//若是终点进来
@@ -532,7 +749,8 @@
 								editAddress: this.editAddress,
 								city: this.city,
 								area: this.area,
-								orderId: this.orderId
+								orderId: this.orderId,
+								extensionNumber: this.extensionNumber
 							}
 							
 
@@ -562,7 +780,8 @@
 							mobile: this.userPhone,
 							name: this.userName,
 							province: this.province,
-							id: this.orderId
+							id: this.orderId,
+							extensionNumber: this.extensionNumber
 						}, "POST", "form")
 						if (res.code == 0) {
 							
@@ -582,11 +801,12 @@
 									editAddress: this.editAddress,
 									city: this.city,
 									area: this.area,
-									orderId: this.orderId
+									orderId: this.orderId,
+									extensionNumber: this.extensionNumber
 								}
 								console.log('3')
 								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress))
-								
+								uni.setStorageSync('clickAddressFlag', true)
 							}
 							//若是终点进来
 							if (this.status == 1) {
@@ -602,7 +822,8 @@
 									editAddress: this.editAddress,
 									city: this.city,
 									area: this.area,
-									orderId: this.orderId
+									orderId: this.orderId,
+									extensionNumber: this.extensionNumber
 								}
 
 								uni.setStorageSync('endAddress', JSON.stringify(endAddress))
@@ -624,7 +845,8 @@
 									latitude: this.addressLongitude,
 									mobile: this.userPhone,
 									name: this.userName,
-									province: this.province
+									province: this.province,
+									extensionNumber: this.extensionNumber
 								}, "POST", "form")
 
 								if (this.status == 0) {
@@ -637,13 +859,16 @@
 										editAddress: this.editAddress,
 										city: this.city,
 										area: this.area,
-										orderId: this.orderId
+										orderId: this.orderId,
+										extensionNumber: this.extensionNumber
 									}
 									
 									console.log('4')
 									console.log(uni.getStorageSync('noSetSend'))
 									if (!uni.getStorageSync('noSetSend')) {
 										uni.setStorageSync('sendAddress', JSON.stringify(sendAddress))
+										uni.setStorageSync('newAddressFlag', true)
+										uni.setStorageSync('clickAddressFlag', true)
 										uni.removeStorageSync('noSetSend')
 									}
 									
@@ -665,7 +890,8 @@
 										editAddress: this.editAddress,
 										city: this.city,
 										area: this.area,
-										orderId: this.orderId
+										orderId: this.orderId,
+										extensionNumber: this.extensionNumber
 									}
 									
 
@@ -691,12 +917,13 @@
 									editAddress: this.editAddress,
 									city: this.city,
 									area: this.area,
-									orderId: this.orderId
+									orderId: this.orderId,
+									extensionNumber: this.extensionNumber
 								}
 								
 								console.log('5')
 								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress))
-								
+								uni.setStorageSync('clickAddressFlag', true)
 							}
 							//若是终点进来
 							if (this.status == 1) {
@@ -712,7 +939,8 @@
 									editAddress: this.editAddress,
 									city: this.city,
 									area: this.area,
-									orderId: this.orderId
+									orderId: this.orderId,
+									extensionNumber: this.extensionNumber
 								}
 								
 
@@ -726,6 +954,8 @@
 
 
 				}
+				
+				// console.log(uni.setStorageSync('sendAddress'))
 
 				uni.navigateBack({
 					delta: 1
@@ -789,9 +1019,9 @@
 			}
 
 			.header-right {
-				width: 508rpx;
+				// width: 508rpx;
 				padding-left: 30rpx;
-				padding-right: 36rpx;
+				// padding-right: 36rpx;
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
@@ -805,9 +1035,9 @@
 				}
 
 				image {
-					width: 44rpx;
-					height: 44rpx;
-
+					width: 50rpx;
+					height: 50rpx;
+					margin-right: 36rpx;
 				}
 			}
 		}
@@ -824,10 +1054,11 @@
 			background-color: #fff;
 
 			.center-left {
-				width: 100%;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
+				flex: 1;
+				// width: 100%;
+				// overflow: hidden;
+				// text-overflow: ellipsis;
+				// white-space: nowrap;
 
 				.center-top {
 					font-family: PingFangSC-Semibold;
@@ -845,10 +1076,10 @@
 					box-sizing: border-box;
 					font-family: PingFangSC-Regular;
 					font-size: 14px;
-					color: rgba(9, 2, 62, 0.30);
-					white-space: nowrap;
-					text-overflow: ellipsis;
-					overflow: hidden;
+					color: rgba(9, 2, 62);
+					// white-space: nowrap;
+					// text-overflow: ellipsis;
+					// overflow: hidden;
 				}
 
 				.center-center {
@@ -860,11 +1091,17 @@
 			}
 
 			.center-right {
-				transform: scale(0.5);
-
+				width: 100rpx;
+				height: 100%;
+				text-align: center;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				// transform: scale(0.5);
+				
 				image {
-					width: 56rpx;
-					height: 56rpx;
+					width: 32rpx;
+					height: 52rpx;
 				}
 			}
 		}
@@ -940,14 +1177,69 @@
 			margin-top: 30rpx;
 			box-sizing: border-box;
 			background-color: #fff;
-			font-size: 14px;
+			font-size: 18px;
+			// font-weight: bold;
 		}
 
 		.textarea-font {
-			color: rgba(9,2,62,0.30) !important;
+			color: rgba(9,2,62,0.80) !important;
 			
 		}
-
+		
+		.say-speak{
+			width: 100%;
+			text-align: center;
+			padding-top: 30rpx;
+			display: flex;
+			align-items: center;
+			// justify-content: center;
+			.say-left{
+				
+				font-size: 20px;
+				padding-left: 170rpx;
+				padding-right: 70rpx;
+				// padding-right: 40rpx;
+				// transform: translateX(-40rpx);
+			}
+			.say-right{
+				font-size: 20px;
+				padding-left: 70rpx;
+				color: #5468FF;
+			}
+			.say-button{
+				// width: 100%;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				
+				.say-button-top{
+					font-size: 14px;
+					color: rgba(9,2,62,0.30);
+					padding-bottom: 15rpx;
+				}
+			}
+			image{
+				width: 128rpx;
+				height: 128rpx;
+			}
+		}
+		.say-tip{
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding-top: 20rpx;
+			box-sizing: border-box;
+			image{
+				width: 32rpx;
+				height: 32rpx;
+				margin-right: 10rpx;
+			}
+			view{
+				color: #fd8439;
+			}
+		}
 		.submit {
 			width: 100%;
 			height: 90rpx;
@@ -963,6 +1255,33 @@
 			position: fixed;
 			bottom: 0;
 			left: 0;
+		}
+		.saySpeakPopFlag-box{
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			.say-button-over{
+				margin-top: 40rpx;
+				padding: 20rpx;
+				padding-left: 86rpx;
+				padding-right: 86rpx;
+				box-sizing: border-box;
+				font-family: PingFangSC-Regular;
+				font-size: 18px;
+				color: #FFFFFF;
+				background: #5468FF;
+				border-radius: 60rpx;
+				text-align: center;
+			}
+		}
+		.say-button-tip{
+			font-size: 16px;
+			font-weight: bold;
+			text-align: center;
+			color: #d92134;
+			padding-top: 10rpx;
+			// letter-spacing: -1px;
 		}
 	}
 </style>

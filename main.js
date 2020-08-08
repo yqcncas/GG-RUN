@@ -26,6 +26,11 @@ dayjs.locale('zh-cn') // 引入中文
 dayjs.extend(relativeTime)
 Vue.prototype.$dayjs = dayjs // 放入原型中
 
+import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"
+import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue"
+Vue.component('mescroll-body', MescrollBody)
+Vue.component('mescroll-uni', MescrollUni)	
+
 import uView from "uview-ui";
 Vue.use(uView);
 

@@ -4,7 +4,16 @@
 		height: height + 'rpx',
 		backgroundColor: inactiveColor
 	}">
-		<view :class="{'u-striped': striped, 'u-striped-active': striped && stripedActive}" class="u-active" :style="[progressStyle]">{{showPercent ? percent + '%' : ''}}</view>
+		<view :class="[
+			type ? `u-type-${type}-bg` : '',
+			striped ? 'u-striped' : '',
+			striped && stripedActive ? 'u-striped-active' : ''
+		]" class="u-active" :style="[progressStyle]">
+			<slot v-if="$slots.default" />
+			<block v-else-if="showPercent">
+				{{percent + '%'}}
+			</block>
+		</view>
 	</view>
 </template>
 
@@ -81,9 +90,7 @@
 			progressStyle() {
 				let style = {};
 				style.width = this.percent + '%';
-				if (['success', 'error', 'info', 'primary', 'warning'].indexOf(this.type) >= 0) style.backgroundColor = this.$u.color[
-					this.type];
-				else style.backgroundColor = this.activeColor;
+				if(this.activeColor) style.backgroundColor = this.activeColor;
 				return style;
 			}
 		},
@@ -94,6 +101,8 @@
 </script>
 
 <style lang="scss" scoped>
+	@import "../../libs/css/style.components.scss";
+	
 	.u-progress {
 		overflow: hidden;
 		height: 15px;

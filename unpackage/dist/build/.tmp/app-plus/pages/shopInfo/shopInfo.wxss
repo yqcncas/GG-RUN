@@ -1,6 +1,9 @@
 page {
   background-color: #f7f7fa;
 }
+.shop-info {
+  padding-bottom: 140rpx;
+}
 .shop-info .shop-header {
   width: 100%;
   padding: 30rpx;
@@ -282,9 +285,10 @@ page {
 .shop-info .shop-button {
   width: 100%;
   height: 90rpx;
-  position: absolute;
+  position: fixed;
   left: 0;
   bottom: 0;
+  z-index: 99999;
   text-align: center;
   line-height: 90rpx;
   background: #5468FF;

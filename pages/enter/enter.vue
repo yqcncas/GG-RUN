@@ -25,13 +25,19 @@
 						<view class="password-icon">
 							<image src="../../static/img/index/slock2.png" mode="widthFix"></image>
 						</view>
-						<view class="password-title">密码</view>
+						<view class="password-title">{{isYzm ? '验证码' : '密码'}}</view>
 					</view>
-					<input type="password" v-model="pwd" class="password-input" placeholder="请输入您的密码" placeholder-style="font-family: PingFangSC-Regular;font-size: 14px;color: rgba(9,2,62,0.30);"/>
+					<view class="enter-password-box">
+						<input type="password" v-model="pwd" class="password-input" :placeholder="isYzmPlaceHoler" placeholder-style="font-family: PingFangSC-Regular;font-size: 14px;color: rgba(9,2,62,0.30);"/>
+						<view class="getQrCode" v-show="isYzm" :class="{ getQrCodeing: !getYzm }" @click="handleGetYzm">{{getYzm ? '获取验证码' : countTimer + 's'}}</view>
+										
+					</view>
+					
 				</view>
 			</view>
 			<view class="enter-center">
 				<view class="center-left" @tap="goToForgetPwd">忘记密码</view>
+				<view class="center-left" @tap="yzmLogin">{{isYzm ? '密码登录' : '验证码登录'}}</view>
 				<view class="center-right" @tap="goToRegister">注册账号</view>
 			</view>
 			<view class="enter-login">
@@ -49,8 +55,10 @@
 </template>
 
 <script>
+	import jsencrypt from '@/js_sdk/jsencrypt-Rsa/jsencrypt/jsencrypt.vue';
 	export default {
 		onLoad() {
+			
 			// uni.setStorageSync('loginFlag', 1)
 			if(uni.getStorageSync('user_phone')) {
 				this.phone = uni.getStorageSync('user_phone')
@@ -75,13 +83,37 @@
 				uniId: '',
 				nickName: '',
 				avatarUrl: '',
-				platform: ''
+				platform: '',
+				isYzm: false,
+				isYzmPlaceHoler: '请输入您的密码',
+				getYzm: true, // 判断是否点击获取验证码
+				countTimer: 60,
 			}
 		},
 		methods: {
 			handleScrollList(scrollIndex){
 				this.scrollIndex = scrollIndex
 				this.pwd = ""
+			},
+			async handleGetYzm () {
+				if(!this.$u.test.mobile(this.phone)) return uni.showToast({icon:'none',title:'请输入正确的手机号'})
+				if (!this.getYzm) return
+				console.log(this.phone)
+				var pubblicData = jsencrypt.setEncrypt(this.$api.publiukey, this.phone);
+				
+			
+				let res = await this.$fetch(this.$api.customerPhone,{mobile:pubblicData}, 'GET', 'form')
+				console.log(res);
+				this.countTimer = 60
+				this.getYzm = false
+				const timer = setInterval(() => {
+					if (this.countTimer <= 0) {
+						clearInterval(timer)
+						this.getYzm = true
+					} else {
+						this.countTimer--
+					}
+				}, 1000)
 			},
 			//到注册页面
 			goToRegister () {
@@ -95,6 +127,15 @@
 					url:'../my/changePwd?status=0'
 				})
 			},
+			// 验证码登录
+			yzmLogin () {
+				this.isYzm = !this.isYzm
+				if (this.isYzm) {
+					this.isYzmPlaceHoler = '请输入您的验证码'
+				} else {
+					this.isYzmPlaceHoler = '请输入您的密码'
+				}
+			},
 			//登录
 			async login () {
 				
@@ -106,7 +147,12 @@
 					return
 				}
 				this.cid = plus.push.getClientInfo().clientid
-				let res = await this.$fetch(this.$api.customerLogin,{loginName: this.phone,password: this.pwd,cid:this.cid},'POST',"Form")
+				let res
+				if (this.isYzm) {
+					res = await this.$fetch(this.$api.customer_mobile_login,{loginName: this.phone,checkCode : this.pwd,cid:this.cid},'POST',"Form")
+				} else {
+					res = await this.$fetch(this.$api.customerLogin,{loginName: this.phone,password: this.pwd,cid:this.cid},'POST',"Form")
+				}
 				this.resMsg = res.msg
 				if (res.code == 0) {
 					uni.setStorageSync('token',res.data.token)
@@ -287,6 +333,10 @@
 						box-sizing: border-box;
 					}
 				}
+				.enter-password-box{
+					display: flex;
+					justify-content: space-between;
+				}
 				.password-input{
 					width: 100%;
 					margin-bottom: 20rpx;
@@ -294,6 +344,23 @@
 					padding-left: 60rpx;
 					box-sizing: border-box;
 					font-size: 16px;
+					position: relative;
+				}
+				.getQrCode{
+					width: 180rpx;
+					height: 48rpx;
+					text-align: center;
+					line-height: 48rpx;
+					font-family: PingFangSC-Regular;
+					font-size: 12px;
+					color: #5468FF;
+					border: 2rpx solid #5468FF;
+					border-radius: 2px;
+					
+					&.getQrCodeing{
+						color: #909399;
+						border: 2rpx solid #909399;
+					}
 				}
 			}
 		}

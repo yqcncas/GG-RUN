@@ -20,13 +20,18 @@
 			"path": "pages/order/order",
 			"style": {
 				"app-plus":{
-					"titleNView":false
+					"titleNView":false,
+					"pullToRefresh": {
+						 "support": true,
+						 "style": "default"
+					}
 				},
 				"h5":{
 				    "titleNView":false
 				},
 				"navigationBarTitleText": "",
 				"navigationStyle":"custom"
+
 			}
 		},{
 			"path": "pages/my/my",
@@ -301,13 +306,23 @@
 			"style": {
 				"navigationBarTitleText": "备注"
 			}
+		},
+		{
+			"path": "pages/orderDetail/shopInfoImg",
+			"style": {
+				"navigationBarTitleText": "商品图片"
+			}
 		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "",
 		"navigationBarBackgroundColor": "#FFFFFF",
-		"backgroundColor": "#F8F8F8"
+		"backgroundColor": "#F8F8F8",
+		"app-plus": {
+			"bounce": "none",
+			"scrollIndicator": "none"
+		}
 	},
 	"tabBar": {
 		"borderStyle": "white",

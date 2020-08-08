@@ -8,11 +8,11 @@
 		<view class="invite-middle" >
 			<view class="invite-middle-left">
 				<view class="invite-middle-left-top">
-					<text>您已成功推荐:</text>
+					<text>推荐:</text>
 					<text>{{subNum}}人</text>
 				</view>
 				<view class="invite-middle-left-bottom">
-					<text>推荐返佣收入:</text>
+					<text>收入:</text>
 					<text>{{subAmount}}元</text>
 				</view>
 			</view>
@@ -29,7 +29,7 @@
 				</view>
 				<view class="header-right">
 					<view class="user-name">{{userName}}</view>
-					<view class="user-award">好友完成订单，您可获得好友支付金额的提成奖励，奖励计入钱包余额。</view>
+					<view class="user-award">好友完成订单，奖励计入钱包余额。</view>
 				</view>
 			</view>
 			<image :src="qrcode" mode="aspectFill" style="margin: 0 auto; display: block;" class="qrcode"></image>

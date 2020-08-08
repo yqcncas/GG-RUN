@@ -1,8 +1,8 @@
 // 请在此对象写后端的请求接口列表
 export default {
 	// 此处写开发调试地址--自动生效
-	// dev: 'http://192.168.8.5:8093/',
-	// dev:'http://101.132.115.48:8093/',
+	// dev: 'http://192.168.8.8:8093/',
+	// pro: 'http://192.168.8.8:8093/',
 	dev:'https://admin.gglaisong.com/',
 	// 此处写线上环境地址--自动生效
 	pro: 'https://admin.gglaisong.com/',
@@ -15,6 +15,10 @@ export default {
 	customerForget: '/notoken/user/customer_forget_pwd',//客户忘记密码
 	customerPhone: '/notoken/user/mobile_verification_code', //获取手机验证码
 	customerWx: "/notoken/user/customer_login_by_unionId",//客户微信登录
+	customer_mobile_login: "/notoken/user/customer_mobile_login", // 客户手机号登录
+	publiukey: '-----BEGIN PUBLIC KEY-----'+ 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCsxn3Y/II4ahUQBPbQmGnpPuoJZEAogxaYUMPcRv60tTlrHbzKjQ3Av+ipKZ8cGboLqCcCGoe0FcxQUiXI6zZZRvuiA6qRKOw1f8QBFH8YZRcmMZhCM/cK5+EMTRuOjekDRJiZqHo2UwfBixH/8zYy5pV3v4P6UZt83c7LDVyhVQIDAQAB' +'-----END PUBLIC KEY-----',
+
+
 
 	/**
 	 * 用户
@@ -45,6 +49,9 @@ export default {
 	msgIsReader: "/token/user/new_msg_is_read",//查看是否有未读消息
 	infoRedDot: "/token/user/info_red_dot", //红点信息
 	chantReadFlag: "/token/user/upd_chant_read_flag", //聊天已读更新
+	newNoticeMsg: "/notoken/user/new_notice_msg", // 查看最新的滚动消息
+	
+	
 	
 	
 
@@ -54,6 +61,9 @@ export default {
 	/**
 	 * 上传
 	 */
+	baseLocation: 'https://img.bajiaostar.com/', 
+	unloadLocation: 'https://upload.qiniup.com/', 
+	getQiniuToken:  "/token/user/get_qiniu_token", // 获取七牛云上传token
 	upLoad: "token/file/upload",//上传文件
 	changeAvatar: "/token/user/upd_avatar",//修改头像
 	changeBirthday: "/token/user/upd_user_detail",//用户生日性别修改

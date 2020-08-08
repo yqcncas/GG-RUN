@@ -16,6 +16,7 @@
 <script>
 	import pwdModel from '@/components/pwdModel/pwdModel.vue'
 	import phoneModel from '@/components/verification/verification.vue'
+	import jsencrypt from '@/js_sdk/jsencrypt-Rsa/jsencrypt/jsencrypt.vue';
 	export default {
 		onLoad () {
 			
@@ -42,7 +43,8 @@
 			//用手机号
 			async goToChangPhone () {
 				this.phoneModelShow = true
-				let res = await this.$fetch(this.$api.customerPhone,{mobile:this.phone,length:6},'GET','form')
+				var pubblicData= jsencrypt.setEncrypt(this.$api.publiukey,this.phone);
+				let res = await this.$fetch(this.$api.customerPhone,{mobile:pubblicData,length:6},'GET','form')
 				console.log(res);
 				if (res.code == 0) {
 					// this.phoneYzm = res.msg

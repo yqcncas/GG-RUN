@@ -123,7 +123,7 @@
 						<view class="pickup-right">{{orderDetailInfo.pickUpCode}}</view>
 						<image src="../../static/img/order/fuzhi.png" mode="aspectFill"></image>
 					</view>
-					<view class="already-tip">确认骑手收费后，将取货码给其收货确认收货。</view>
+					<view class="already-tip">确认骑手取货后，将取货码给其收货确认收货。</view>
 				</view>
 			</view>
 			
@@ -135,7 +135,7 @@
 						<view class="pickup-right">{{orderDetailInfo.signForCode}}</view>
 						<image src="../../static/img/order/fuzhi.png" mode="aspectFill"></image>
 					</view>
-					<view class="already-tip">确认骑手收费后，将取货码给其收货确认收货。</view>
+					<view class="already-tip">确认骑手送达后，将取货码给其收货确认收货。</view>
 				</view>
 			</view>
 			
@@ -178,9 +178,10 @@
 				<view>物品重量:</view>
 				<view>{{orderDetailInfo.goodsInventory.weight?orderDetailInfo.goodsInventory.weight:1}}kg内</view>
 			</view>
-			<view class="main-item">
+			<view class="main-item" @click.stop="showImgPage">
 				<view >物品信息:</view>
 				<view>{{orderDetailInfo.goodsInventory.goods}}</view>
+				<image src="../../static/img/my/right.png" mode=""></image>
 			</view>
 			<view class="main-item" v-if="elseInfo">
 				<view>其他属性:</view>
@@ -263,6 +264,22 @@
 				</view>
 			</view>
 		</view>
+		<view class="line-30"></view>
+		<view class="order-status-box" v-if="orderStatus && orderStatus < 6">
+			<!-- <u-steps :list="numList" :current="stepIndex" :direction = "'column'"></u-steps> -->
+			<uni-steps :options="numList" direction="column" :active="stepIndex" :active-color = "'#007AFF'"></uni-steps>
+			<view class="order-status-ul">
+				<view class="order-status-ul-li">{{orderDetailInfo.createTime}}</view>
+				<view class="order-status-ul-li" :class="{liHidden: !orderDetailInfo.receiptTime}">{{orderDetailInfo.receiptTime}}</view>
+				<view class="order-status-ul-li" :class="{liHidden: !orderDetailInfo.actualPickUpTime}" >{{orderDetailInfo.actualPickUpTime }}</view>
+				<view class="order-status-ul-li" :class="{liHidden: !orderDetailInfo.actualPickUpTime}" >{{orderDetailInfo.pickUpCode}}</view>
+				<view class="order-status-ul-li" :class="{liHidden: !orderDetailInfo.actualEstimatedTime}" >{{orderDetailInfo.actualEstimatedTime}}</view>
+				<view class="order-status-ul-li" :class="{liHidden: !orderDetailInfo.actualEstimatedTime}" >{{orderDetailInfo.signForCode}}</view>
+				<view class="order-status-ul-li" :class="{liHidden: !orderDetailInfo.evaluationTime}" >{{orderDetailInfo.evaluationTime}}</view>
+			</view>
+		</view>
+		
+		
 		<view class="detail-footer" v-if="orderStatus != 5" :class="{pdleft: orderStatus == 0}">
 			<view class="cancel-button" @tap.stop="goToCancelOrder(orderDetailInfo.orderId)" v-if="orderStatus == 0 || orderStatus == 1  || orderStatus == 2  || orderStatus == 3">取消订单</view>
 			<view class="pay-now" @tap="nowpayOrder" v-if="orderStatus == 0">立即支付</view>
@@ -270,6 +287,8 @@
 			<view class="pay-now" v-if="orderStatus == 3" @tap="commitDelivery">确认收货</view>
 			<view class="pay-now" v-if="orderStatus == 6" @tap="goToStorage(orderDetailInfo)">重新发单</view>
 		</view>
+		
+		
 		
 		<view class="orderCancelModel" v-if="showCancelButton" @click.stop="closeCancelModel">
 					<view class="orderCancelModel-Wrapper">
@@ -325,14 +344,51 @@
 	import uniPopup from "@/components/uni-popup/uni-popup.vue"
 	import orderDetailMap from '@/components/orderDetailMap.nvue'
 	import baseURL from '../../config/index.js'
+	import uniSteps from '@/components/uni-steps/uni-steps.vue'
 	export default {
 		onLoad(options) {
 			this.cancelModelProp()
 			console.log(options)
-			
 			this.orderStatus = options.currentIndex
+			switch (this.orderStatus) {
+				case "1":
+					this.stepIndex = 0
+					break;
+				case "2": 
+					this.stepIndex = 1
+					break;
+				case "3":
+					this.stepIndex = 3
+					break;
+				case "4":
+					this.stepIndex = 5
+					break;
+				case "5":
+					this.stepIndex = 6
+					break;
+			}
+			
+			console.log(this.stepIndex)
+			if (this.stepIndex == 6) {
+				// numList: [{
+				// 	title: '发布订单'
+				// }, {
+				// 	title: '已接单'
+				// }, {
+				// 	title: '已收件'
+				// }, {
+				// 	title: '收件码'
+				// }, {
+				// 	title: '已送达'
+				// },{
+				// 	title: '签收码'
+				// },{
+				// 	title: '未评价'
+				// },],
+				this.numList[6].title = '已评价'
+			}
 			this.payPrice = options.payAmount
-			console.log(JSON.parse(options.orderDetail))
+			// console.log(JSON.parse(options.orderDetail))
 			let orderDetailInfo = JSON.parse(options.orderDetail)
 
 			orderDetailInfo.startAddress = JSON.parse(orderDetailInfo.startAddress)
@@ -435,10 +491,12 @@
 		},
 		components: {
 			uniPopup,
-			orderDetailMap
+			orderDetailMap,
+			uniSteps
 		},
 		data() {
 			return {
+				stepIndex: 0,
 				//收藏
 				collect: false,
 				//屏蔽
@@ -502,7 +560,22 @@
 				cancelPrice: 0,
 				showCancelButton: false,
 				// 立即支付 还是重新发单 0 立即1
-				refreshOrder: 0
+				refreshOrder: 0,
+				numList: [{
+					title: '发布订单'
+				}, {
+					title: '已接单'
+				}, {
+					title: '已收件'
+				}, {
+					title: '收件码'
+				}, {
+					title: '已送达'
+				},{
+					title: '签收码'
+				},{
+					title: '未评价'
+				},],
 			}
 		},
 		computed: {
@@ -842,6 +915,13 @@
 				uni.navigateTo({
 					url: '../freightDeatail/freightDeatail?freightInfo=' + JSON.stringify(this.orderDetailInfo) + "&status=" + index
 				});
+			},
+			// 去展示图片
+			showImgPage () {
+				
+				uni.navigateTo({
+					url: './shopInfoImg?imgList=' + this.orderDetailInfo.goodsInventory.pics
+				})
 			},
 			//确认收货
 			commitDelivery() {
@@ -2065,5 +2145,53 @@
 			}
 		}
 
+	}
+	.line-30{
+		width: 100%;
+		height: 30rpx;
+		background-color: rgb(247, 247, 250);
+	}
+	.order-status-box{
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background-color: #fff;
+		padding-left: 30rpx;
+		padding-right: 30rpx;
+		box-sizing: border-box;
+		.order-status-ul{
+			height: 100%;
+			// padding-top: 34rpx;
+			// padding-top: 36rpx;
+			box-sizing: border-box;
+			display: flex;
+			flex-direction: column;
+			transform: translateY(12rpx);
+			
+			.order-status-ul-li{
+				font-family: PingFangSC-Regular;
+				font-size: 14px;
+				color: #09023E;
+				letter-spacing: -0.34px;
+				// padding-bottom: 46rpx;
+				// padding-top: 30rpx;
+				box-sizing: border-box;
+				min-height: 80rpx;
+				// line-height: 79rpx;
+				&.liHidden{
+					visibility:  hidden;
+				}
+			}
+		}
+	}
+</style>
+<style>
+	.u-steps__item--column{
+		/* min-height: 80rpx !important; */
+	}
+	.uni-steps__column-text{
+		border-bottom: 0 !important;
+		min-height: 80rpx !important;
 	}
 </style>

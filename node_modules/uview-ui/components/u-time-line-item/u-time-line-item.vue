@@ -51,6 +51,8 @@
 </script>
 
 <style lang="scss" scoped>
+	@import "../../libs/css/style.components.scss";
+	
 	.u-time-axis-item {
 		display: flex;
 		flex-direction: column;
@@ -68,7 +70,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		z-index: 100;
+		z-index: 1;
 		font-size: 24rpx;
 	}
 

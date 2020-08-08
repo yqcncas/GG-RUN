@@ -3,44 +3,52 @@
 		<view class="status" :style="{ height: statusHeight }"></view>
 	
 		
-		<view class="nheader" :style="{ paddingTop: statusHeight }" v-if="nheaderFlag">
-			<view class="nheader-left" @tap="openAddres">
-				<text style="font-size: 17px;">{{ headerCity? headerCity : '宁波市'  }}</text>
-				<!-- <image src="../../static/img/index/down.png" mode="" style="width: 24rpx;height: 16rpx;"></image> -->
-			</view>
-			<view class="header-center">
-				<!-- <transition name="fade"> -->
-				<view class="center-left" @tap.stop="handleChoiceCar(0)">
-					<image v-if="choiceCar == 0" src="../../static/img/index/kuaidi.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
-					<image v-if="choiceCar == 1" src="../../static/img/index/kuaidic.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
-					<view class="center-font" :class="{on:choiceCar == 0}">
-						<text class="font-color">普通派送</text>
-					</view>
-						<view class="carLine"  :class="{carLineActive: choiceCar == 0}"></view>
+		<!-- <view class="nheader" :style="{ paddingTop: statusHeight }" v-if="nheaderFlag"> -->
+		<view class="nheader" :style="{ paddingTop: statusHeight }" >
+			<view class="nheader-t">
+				<view class="nheader-left" @tap="openAddres">
+					<text style="font-size: 17px;">{{ headerCity? headerCity : '宁波市'  }}</text>
+					<!-- <image src="../../static/img/index/down.png" mode="" style="width: 24rpx;height: 16rpx;"></image> -->
 				</view>
+				<view class="header-center">
+					<!-- <transition name="fade"> -->
+					<view class="center-left" @tap.stop="handleChoiceCar(0)">
+						<image v-if="choiceCar == 0" src="../../static/img/index/kuaidi.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
+						<image v-if="choiceCar == 1" src="../../static/img/index/kuaidic.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
+						<view class="center-font" :class="{on:choiceCar == 0}">
+							<text class="font-color">普通派送</text>
+						</view>
+							<view class="carLine"  :class="{carLineActive: choiceCar == 0}"></view>
+					</view>
+					<!-- </transition> -->
+					<!-- <transition name="fadecar"> -->
+					<view class="center-right" @tap.stop="handleChoiceCar(1)">
+						<image v-if="choiceCar == 1" src="../../static/img/index/carActice.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
+						<image v-if="choiceCar == 0" src="../../static/img/index/car.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
+						<view class="center-font" :class="{on:choiceCar == 1}">
+							<text class="font-color">特殊派送</text>
+						</view>
+						<view class="carLine"  :class="{carLineActive: choiceCar == 1}"></view>
+					</view>
 				<!-- </transition> -->
-				<!-- <transition name="fadecar"> -->
-				<view class="center-right" @tap.stop="handleChoiceCar(1)">
-					<image v-if="choiceCar == 1" src="../../static/img/index/carActice.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
-					<image v-if="choiceCar == 0" src="../../static/img/index/car.png" mode="aspectFill" style="width: 60rpx;height: 60rpx;"></image>
-					<view class="center-font" :class="{on:choiceCar == 1}">
-						<text class="font-color">特殊派送</text>
-					</view>
-					<view class="carLine"  :class="{carLineActive: choiceCar == 1}"></view>
 				</view>
-			<!-- </transition> -->
-			</view>
-			<view class="index-header-right" @tap.stop="goToNews">
+				<view class="index-header-right" @tap.stop="goToNews">
 				<image src="../../static/img/index/xiaoxi.png" mode="aspectFill" class="lingdang"></image>
 				<view class="redCircle" v-if="newsReaderFlag == 0" ref="redCircle"></view>
 			</view>
+			</view>
+			<view class="tongzhi" >
+				<uni-notice-bar :speed = "gdSpeed"  scrollable single background-color = "rgba(0,0,0,0.3)"  color = "#e34a48" :text= "gundongText" style="height: 80rpx;"></uni-notice-bar>
+			</view>
 		</view>
-		
+		<!-- <view class="tongzhi" style="padding-top: 220rpx; background-color: transparent;position: relative;" >
+			<uni-notice-bar scrollable="true" single="true" text="[单行] 这是 NoticeBar 通告栏，这是 NoticeBar 通告栏，这是 NoticeBar 通告栏"></uni-notice-bar>
+		</view> -->
 	
-		
 		
 
 		<view class="map-box">
+		
 			<!-- <map id="map1" ref="map1" v-if="covers[0].latitude" :style="{width: 750 + 'rpx', height: 1434 + 'rpx'}" -->
 			<!-- <map
 				id="maps"
@@ -84,66 +92,109 @@
 			<text class="button-line"></text>
 			<text class="button-right" @tap.stop="goToStorage(1)">特殊派送</text>
 		</view> -->
-		
-		<view class="footer-box" ref="footerBox">
-			<view class="footer-scroll" v-if="choiceCar === 0">
-				<text class="ft-item" :class="{ftItemActive:index == ftItemIndex }" v-for="(item,index) in ftScroll" :key= 'index' @tap.stop="handleFTIndex(index)">{{item}}</text>
-				
-			</view>
-			<view class="footer-scroll" v-if="choiceCar === 1">
-				<text class="ft-item" :class="{ftItemActive:index == ftItemIndex }" v-for="(item,index) in ftScrollCar" :key= 'index' @tap.stop="handleFTIndex(index)">{{item}}</text>
-			</view>
+		<view class="footer-main">
 			
-			<view class="footer-center">
-				<view class="center-sendAddress">
-					<view class="center-sendAddress-left">
-						<view class="sendAddress-left-circle" style="background-color: #2642e1;">
+			<view class="footer-box" ref="footerBox">
+				<view class="footer-scroll" v-if="choiceCar === 0">
+					<text class="ft-item" :class="{ftItemActive:index == ftItemIndex }" v-for="(item,index) in ftScroll" :key= 'index' @tap.stop="handleFTIndex(index)">{{item}}</text>
+					
+				</view>
+				<view class="footer-scroll" v-if="choiceCar === 1">
+					<text class="ft-item" :class="{ftItemActive:index == ftItemIndex }" v-for="(item,index) in ftScrollCar" :key= 'index' @tap.stop="handleFTIndex(index)">{{item}}</text>
+				</view>
+				
+				<view class="footer-center">
+					<view class="center-sendAddress">
+						<view class="center-sendAddress-left">
+							<view class="sendAddress-left-circle" style="background-color: #2642e1;">
+								
+								<text style="font-size: 12px; font-weight: bold; color: #FFFFFF;" v-if="ftItemIndex == 2">买</text>
+								<text style="font-size: 12px; font-weight: bold; color: #FFFFFF;" v-else>取</text>
+							</view>
+						</view>
+						<view class="center-sendAddress-right" @click.stop="goToEdit(sendAddress, 0, sendAddress.id)">
+							<text class="sendAddress-right-top">{{ftSendAddress.titleName ? ftSendAddress.titleName : '从哪里取货'}}</text>
+							<text class="sendAddress-right-bottom">{{ftSendAddress.addressname ? ftSendAddress.addressname : '点击输入取货地址'}}</text>
+							<view class="center-sendAddress-right-text" v-if="userStartUserPhone">
+								<text class="center-sendAddress-right-text-t right-text-t-marginr" v-if="userStartUserName && userStartUserName.length != 11">{{userStartUserName}}</text>
+								<text class="center-sendAddress-right-text-t" v-if="userStartUserPhone">{{userStartUserPhone}}</text>
+							</view>
+							<view class="center-sendAddress-right-text" v-if="!userStartUserPhone">
+								<text class="center-sendAddress-right-text-t" style="color: #e34a48;font-weight: bold;">点击完善取货信息</text>
+							</view>
 							
-							<text style="font-size: 12px; font-weight: bold; color: #FFFFFF;" v-if="ftItemIndex == 2">买</text>
-							<text style="font-size: 12px; font-weight: bold; color: #FFFFFF;" v-else>取</text>
+							<view class="next-address" v-if="ftItemIndex == 0 && helpMeBuyFlag" > 
+								<view class="next-address-left" @click.stop="handleBuyAddress($event)">
+									<text class="sendAddress-right-top" style="color: #fff; width: 250rpx; text-overflow: ellipsis;lines: 1;">{{helpMeBuy.title}}</text>
+									<view class="center-sendAddress-right-text">
+										<text class="center-sendAddress-right-text-t right-text-t-marginr" style="color: #fff; width: 100rpx; text-overflow: ellipsis;lines: 1;">{{helpMeBuy.userName}}</text>
+										<text class="center-sendAddress-right-text-t" style="color: #fff;">{{helpMeBuy.mobile}}</text>
+									</view>
+								</view>
+								<view class="closeAddressIcon-box" @click.stop="handleHelpMeBuyFlag($event)">
+									<image src="../../static/img/my/36.png" mode="" class="closeAddressIcon"></image>
+								</view>
+							</view>
+							
+						</view>
+						<view class="center-sendAddress-address"  @tap.stop="goToAddress(0)">
+							
+							
+							<text style="font-size: 14px; color: #2642e1; padding-left: 20rpx;padding-right: 20rpx; flex: 1;text-align: center; border-left-width: 2rpx; border-color: #CCCCCC; height: 60rpx; line-height: 60rpx;" >地址簿</text>
+						</view>
+					</view> 
+					<view class="center-sendAddress" style="padding-top: 20rpx;">
+						<view class="center-sendAddress-left">
+							<view class="sendAddress-left-circle" style="background-color: #ff6200;">
+								<text style="font-size: 12px; font-weight: bold;color: #FFFFFF;" v-if="ftItemIndex == 2">收</text>
+								<text style="font-size: 12px; font-weight: bold;color: #FFFFFF;" v-else>达</text>
+							</view>
+						</view>
+						<view class="center-sendAddress-right" @tap.stop="goToEdit(endAddress, 1, endAddress.id)">
+							<text class="sendAddress-right-top">{{endAddress.editAddress.name ? endAddress.editAddress.name:'要送到哪里'}}</text>
+							<text class="sendAddress-right-bottom">{{endAddress.editAddress.address ? endAddress.editAddress.address:'点击输入送达地址'}}</text>
+							<view class="center-sendAddress-right-text">
+								<text class="center-sendAddress-right-text-t right-text-t-marginr" v-if="userEndUserName && userEndUserName.length != 11">{{userEndUserName}}</text>
+								<text class="center-sendAddress-right-text-t" v-if="userEndUserPhone">{{userEndUserPhone}}</text>
+							</view>
+							
+							<view class="next-address" v-if="ftItemIndex == 1 && helpMeGetFlag">
+								<view class="next-address-left" @click.stop="handleHelpMeGetAddress">
+									<text class="sendAddress-right-top" style="color: #fff; width: 250rpx; text-overflow: ellipsis;lines: 1;">{{helpMeGet.title}}</text>
+									<view class="center-sendAddress-right-text">
+										<text class="center-sendAddress-right-text-t right-text-t-marginr" style="color: #fff; width: 100rpx;text-overflow: ellipsis;lines: 1;">{{helpMeGet.userName}}</text>
+										<text class="center-sendAddress-right-text-t" style="color: #fff;">{{helpMeGet.mobile}}</text>
+									</view>
+								</view>
+								<view class="closeAddressIcon-box" @click.stop="handleHelpMeGetFlag($event)">
+									<image src="../../static/img/my/36.png" mode="" class="closeAddressIcon"></image>
+								</view>
+							</view>
+							
+						</view>
+						<view class="center-sendAddress-address"  @tap.stop="goToAddress(1)">	
+							<text style="font-size: 14px; color: #2642e1; padding-left: 20rpx; flex: 1; padding-right: 20rpx;text-align: center; border-left-width: 2rpx; border-color: #CCCCCC; height: 60rpx; line-height: 60rpx;" >地址簿</text>
 						</view>
 					</view>
-					<view class="center-sendAddress-right" @tap.stop="goToEdit(sendAddress, 0, sendAddress.id)">
-						<text class="sendAddress-right-top">{{ftSendAddress.titleName ? ftSendAddress.titleName : '从哪里取货'}}</text>
-						<text class="sendAddress-right-bottom">{{ftSendAddress.addressname ? ftSendAddress.addressname : '点击输入取货地址'}}</text>
-						<view class="center-sendAddress-right-text">
-							<text class="center-sendAddress-right-text-t right-text-t-marginr" v-if="userStartUserName && userStartUserName.length != 11">{{userStartUserName}}</text>
-							<text class="center-sendAddress-right-text-t" v-if="userStartUserPhone">{{userStartUserPhone}}</text>
-						</view>
-					</view>
-					<view class="center-sendAddress-address"  @tap.stop="goToAddress(0)">
-						<text style="font-size: 14px; color: #2642e1; padding-left: 20rpx;flex: 1;" >地址簿</text>
-					</view>
-				</view> 
-				<view class="center-sendAddress" style="padding-top: 20rpx;">
-					<view class="center-sendAddress-left">
-						<view class="sendAddress-left-circle" style="background-color: #ff6200;">
-							<text style="font-size: 12px; font-weight: bold;color: #FFFFFF;" v-if="ftItemIndex == 2">收</text>
-							<text style="font-size: 12px; font-weight: bold;color: #FFFFFF;" v-else>达</text>
-						</view>
-					</view>
-					<view class="center-sendAddress-right" @tap.stop="goToEdit(endAddress, 1, endAddress.id)">
-						<text class="sendAddress-right-top">{{endAddress.editAddress.name ? endAddress.editAddress.name:'要送到哪里'}}</text>
-						<text class="sendAddress-right-bottom">{{endAddress.editAddress.address ? endAddress.editAddress.address:'点击输入送达地址'}}</text>
-						<view class="center-sendAddress-right-text">
-							<text class="center-sendAddress-right-text-t right-text-t-marginr" v-if="userEndUserName && userEndUserName.length != 11">{{userEndUserName}}</text>
-							<text class="center-sendAddress-right-text-t" v-if="userEndUserPhone">{{userEndUserPhone}}</text>
-						</view>
-					</view>
-					<view class="center-sendAddress-address"  @tap.stop="goToAddress(1)">	
-						<text style="font-size: 14px; color: #2642e1; padding-left: 20rpx; flex: 1; " >地址簿</text>
-					</view>
+					<view class="footer-bottom" @tap.stop="goToStorage(choiceCar)">
+						<text style="font-size: 14px;color: #FFFFFF;">下一步</text>
+					</view>	
+				</view>
+				
+			<!-- 	<view class="footer-bottom" @tap.stop="goToStorage(choiceCar)">
+					<text style="font-size: 14px;color: #FFFFFF;">下一步</text>
+				</view>	 -->
+				
+				<view class="zuobiao" @click.stop="restoration"  v-if="true">
+					<image src="../../static/img/index/zuobiao.png" mode="" class="zuobiao-img" ></image>
 				</view>
 			</view>
-			
-			<view class="footer-bottom" @tap.stop="goToStorage(choiceCar)">
-				<text style="font-size: 14px;color: #FFFFFF;">下一步</text>
-			</view>	
 		</view>
+		
 		<!-- <view class="zuobiao" @click.stop="restoration" :style="{bottom: platform == 'ios' ? 530 + 'rpx' : 390 + 'rpx'}" v-if="mapShow"> -->
-		<view class="zuobiao" @click.stop="restoration" :style="{bottom: platform == 'ios' ? 400 + 'rpx' : 390 + 'rpx'}" v-if="mapShow">
+		<!-- <view class="zuobiao" @click.stop="restoration" :style="{bottom: platform == 'ios' ? 400 + 'rpx' : 390 + 'rpx'}" v-if="mapShow">
 			<image src="../../static/img/index/zuobiao.png" mode="" class="zuobiao-img" ></image>
-		</view>
+		</view> -->
 		
 		<simple-address ref="simpleAddress" @onConfirm.stop="onConfirm" themeColor="#007AFF" :pickerValueDefault="cityPickerValueDefault"></simple-address>
 	</view>
@@ -155,12 +206,15 @@ import permision from '@/js_sdk/wa-permission/permission.js';
 import simpleAddress from '@/components/simple-address/simple-address.nvue';
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime' // 引入相对时间
+import uniNoticeBar from '@/components/uni-notice-bar/uni-notice-bar.vue'
 import 'dayjs/locale/zh-cn' // 引入中文
 dayjs.locale('zh-cn') // 引入中文
 dayjs.extend(relativeTime)
 export default {
 	data() {
 		return {
+			gdSpeed: 50,
+			noticeList: '',
 			statusHeight: 0,
 			mapheight: 0,
 			mapwidth: 0,
@@ -246,11 +300,18 @@ export default {
 			openFlag: 1,
 			// 地区编码
 			adcode: 0,
-			handleFWInco: false
+			handleFWInco: false,
+			gundongText: '',
+			newAddressTitle: '',
+			helpMeBuy: {},
+			helpMeGet: {},
+			helpMeBuyFlag: false,
+			helpMeGetFlag: false
 		};
 	},
 	components: {
-		simpleAddress
+		simpleAddress,
+		uniNoticeBar
 	},
 	onHide () {
 		// this.endAddress = {}
@@ -261,7 +322,13 @@ export default {
 		this.choiceCar = 0
 	},
 	onLoad() {
+		if (uni.getStorageSync('gundongSpeed')) {
+			this.gdSpeed = uni.getStorageSync('gundongSpeed')
+		}
 		
+		if (uni.getStorageSync("gundongText")) {
+			this.gundongText = uni.getStorageSync("gundongText")
+		}
 		// 解决头部图标可能出不来
 		setTimeout(() => {
 			this.nheaderFlag = true
@@ -295,8 +362,27 @@ export default {
 		setTimeout(()=>{
 			this.getLocation()
 		},1500)
+		
 	},
 	onShow() {
+		if (uni.getStorageSync('helpMeBuy')) {
+			this.helpMeBuy = JSON.parse(uni.getStorageSync('helpMeBuy'))
+			this.helpMeBuy.editAddress = JSON.parse(this.helpMeBuy.editAddress)
+			this.helpMeBuyFlag = true
+			// uni.removeStorageSync('helpMeBuy')
+			
+			
+		}
+		if (uni.getStorageSync('helpMeGet')) {
+			this.helpMeGet = JSON.parse(uni.getStorageSync('helpMeGet'))
+			console.log(this.helpMeGet)
+			this.helpMeGet.editAddress = JSON.parse(this.helpMeGet.editAddress)
+			this.helpMeGetFlag = true
+			this.endAddress = this.helpMeGet
+			// uni.removeStorageSync('helpMeGet')
+		}
+		
+		
 		this.distance = 0
 		uni.setStorageSync('loginFlag', 1)
 		this.routeFlag = true;
@@ -363,7 +449,7 @@ export default {
 		}
 		if (uni.getStorageSync('sendAddress')) {
 			this.sendAddress = JSON.parse(uni.getStorageSync('sendAddress')) 
-			// console.log(this.sendAddress)
+			console.log(this.sendAddress)
 			this.userStartUserName = this.sendAddress.name
 			this.userStartUserPhone = this.sendAddress.mobile
 			this.ftSendAddress = {}
@@ -643,10 +729,50 @@ export default {
 	
 	},
 	methods: {
+		handleHelpMeBuyFlag (event) {
+			this.helpMeBuyFlag = false
+			 event.stopPropagation();
+		},
+		
+		handleHelpMeGetFlag (event){
+			this.helpMeGetFlag = false
+			event.stopPropagation();
+		},
+		handleBuyAddress (event) {
+			this.sendAddress = this.helpMeBuy
+			console.log(this.sendAddress)
+			this.helpMeBuyFlag = false
+			this.sendAddress.name = this.sendAddress.userName
+			this.userStartUserName = this.sendAddress.userName
+			
+			this.userStartUserPhone = this.sendAddress.mobile
+			this.ftSendAddress = {}
+			this.ftSendAddress.titleName = this.sendAddress.editAddress.name
+			this.ftSendAddress.addressname = this.sendAddress.editAddress.address
+			uni.setStorageSync('sendAddress',JSON.stringify(this.helpMeBuy))
+			uni.setStorageSync('clickAddressFlag', true)
+			this.handleMap(this.sendAddress.editAddress.latitude,this.sendAddress.editAddress.longitude)
+			event.stopPropagation();
+		},
+
+		handleHelpMeGetAddress (event) {
+			this.endAddress = this.helpMeGet
+			this.endAddress.name = this.endAddress.userName
+			this.helpMeGetFlag = false
+			uni.setStorageSync('clickAddressFlag', true)
+			uni.setStorageSync('endAddress', JSON.stringify(this.endAddress))
+		
+			this.userEndUserName = this.endAddress.userName
+			this.userEndUserPhone = this.endAddress.mobile
+			this.plusReady()
+			event.stopPropagation();
+		},
+		
 		//显示picker
 		openAddres() {
 			this.$refs.simpleAddress.open();
 		},
+		
 		setRefreshMarkTitle () {
 			if (this.horseManTotal <= 0 ) {
 				this.covers = [
@@ -809,6 +935,7 @@ export default {
 							let latitude = this.longitude + ',' + this.latitude;
 							if (res.data.regeocode.aois.length != 0) {
 								this.ftSendAddress = {}
+								console.log("77777777")
 								this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
 								this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
 								this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
@@ -970,7 +1097,8 @@ export default {
 			uni.showLoading({
 			    title: '加载中'
 			});
-			
+			uni.removeStorageSync('helpMeBuy')
+			uni.removeStorageSync('helpMeGet')
 			//防抖处理
 			this.timerId && clearTimeout(this.timerId);
 			this.timerId = setTimeout(() => {
@@ -1047,10 +1175,10 @@ export default {
 										}
 										
 										if (this.distanceTipFlag) {
-											if (this.distance > 10 && !this.choiceCar) {
+											if (this.distance > 20 && !this.choiceCar) {
 												uni.showModal({
 												    title: '提示',
-												    content: '您的下单距离已超过10公里，是否使用特殊派送',
+												    content: '您的下单距离已超过20公里，是否使用特殊派送',
 												    success: res => {
 												        if (res.confirm) {
 												           uni.navigateTo({
@@ -1110,10 +1238,10 @@ export default {
 											
 											this.routeFlag = false;
 											if (this.distanceTipFlag) {
-												if (this.distance > 10 && !this.choiceCar) {
+												if (this.distance > 20 && !this.choiceCar) {
 													uni.showModal({
 													    title: '提示',
-													    content: '您的下单距离已超过10公里，是否使用特殊派送',
+													    content: '您的下单距离已超过20公里，是否使用特殊派送',
 													    success: res => {
 													        if (res.confirm) {
 													           uni.navigateTo({
@@ -1142,10 +1270,10 @@ export default {
 											this.routeFlag = false;
 											
 											if (this.distanceTipFlag) {
-												if (this.distance > 10 && !this.choiceCar) {
+												if (this.distance > 20 && !this.choiceCar) {
 													uni.showModal({
 													    title: '提示',
-													    content: '您的下单距离已超过10公里，是否使用特殊派送',
+													    content: '您的下单距离已超过20公里，是否使用特殊派送',
 													    success: res => {
 													        if (res.confirm) {
 													           uni.navigateTo({
@@ -1229,6 +1357,7 @@ export default {
 							if (res.data.regeocode.aois.length != 0) {
 								if (this.handleFWInco) {
 									this.ftSendAddress = {}
+									console.log("11111")
 									this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
 									this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
 									this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
@@ -1264,6 +1393,7 @@ export default {
 							} else if (res.data.regeocode.pois.length != 0) {
 								if (this.handleFWInco) {
 									this.ftSendAddress = {}
+									console.log("22222222")
 									this.$set(this.ftSendAddress,'titleName',res.data.regeocode.pois[0].name)
 									this.$set(this.ftSendAddress,'location',res.data.regeocode.pois[0].location)
 									this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
@@ -1768,7 +1898,7 @@ export default {
 				this.longitude = Number(lati).toFixed(5);
 			
 			}else {
-				console.log(typeof e === "object")
+				// console.log(typeof e === "object")
 				this.latitude = Number(e.detail.latitude).toFixed(6);
 				
 				this.longitude = Number(e.detail.longitude).toFixed(5);
@@ -1792,21 +1922,53 @@ export default {
 					if (res.data.regeocode.aois.length != 0) {
 						console.log(e)
 						if (typeof e !== "string") {
-							
+							console.log('11111')
+							console.log(this.sendAddress)
 							this.ftSendAddress = {}
-							this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
+							if (uni.getStorageSync('newAddressFlag')) {
+								this.$set(this.ftSendAddress,'titleName',this.sendAddress.editAddress.name)
+								this.newAddressTitle = this.sendAddress.editAddress.name
+								// uni.removeStorageSync('newAddressFlag')
+							} else {
+								this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
+							}
+							
+							// this.$set(this.ftSendAddress,'titleName',this.sendAddress.editAddress.address)
 							this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
 							this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+							uni.removeStorageSync('newAddressFlag')
 						} else {
-							
+							console.log('22222')
 							this.ftSendAddress = {}
-							this.$set(this.ftSendAddress,'titleName', this.sendAddress.editAddress.name)
+							console.log(this.sendAddress.editAddress.name)
+							// this.$set(this.ftSendAddress,'titleName', this.sendAddress.editAddress.name)
+							// this.$set(this.ftSendAddress,'titleName', this.newAddressTitle)
+							if (uni.getStorageSync('clickAddressFlag')) {
+								this.$set(this.ftSendAddress,'titleName', this.sendAddress.editAddress.name)
+								console.log('131313')
+							} else {
+								// this.$set(this.ftSendAddress,'titleName', this.newAddressTitle)
+								this.$set(this.ftSendAddress,'titleName', this.newAddressTitle)
+								console.log(this.newAddressTitle)
+							}
+							
 							this.$set(this.ftSendAddress,'location', res.data.regeocode.aois[0].location)
 							this.$set(this.ftSendAddress,'addressname', this.sendAddress.editAddress.address)
+							uni.removeStorageSync('newAddressFlag')
 						}
 						
+						console.log('33333')
+						// this.editAddress.name = res.data.regeocode.aois[0].name;
+						if (uni.getStorageSync('newAddressFlag')) { 
+							this.editAddress.name = this.newAddressTitle;
+							uni.removeStorageSync('newAddressFlag')
+						} else {
+							this.editAddress.name = res.data.regeocode.aois[0].name;
+						}
 						
-						this.editAddress.name = res.data.regeocode.aois[0].name;
+						// uni.removeStorageSync('newAddressFlag')
+						// uni.removeStorageSync('clickAddressFlag')
+						
 						this.editAddress.address = res.data.regeocode.formatted_address;
 						this.editAddress.longitude = this.longitude;
 						this.editAddress.latitude = this.latitude;
@@ -1862,13 +2024,15 @@ export default {
 						if (typeof e !== "string") {
 							
 							this.ftSendAddress = {}
-							
+							// console.log("5555555")
+							// console.log(res.data.regeocode)
 							this.$set(this.ftSendAddress,'titleName',res.data.regeocode.pois[0].name)
 							this.$set(this.ftSendAddress,'location',res.data.regeocode.pois[0].location)
 							this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
 						} else {
 							
 							this.ftSendAddress = {}
+							// console.log("6666666")
 							this.$set(this.ftSendAddress,'titleName', this.sendAddress.editAddress.name)
 							this.$set(this.ftSendAddress,'location', res.data.regeocode.pois[0].location)
 							this.$set(this.ftSendAddress,'addressname', this.sendAddress.editAddress.address)
@@ -1992,6 +2156,7 @@ export default {
 		},
 		//去地址簿
 		goToAddress(index) {
+			uni.removeStorageSync('helpMeBuy')			uni.removeStorageSync('helpMeGet')
 			uni.navigateTo({
 				url: '../address/address?address=' + index
 			});
@@ -2268,13 +2433,21 @@ export default {
 
 .nheader{
 	width: 750rpx;
+	/* height: 190rpx; */
+	/* background-color: #FFFFFF; */
+	/* justify-content: center; */
+	/* align-items: center; */
+	/* flex-direction: row; */
+	/* padding-left: 40rpx; */
+	position: fixed;
+}
+.nheader-t{
+	width: 750rpx;
 	height: 190rpx;
 	background-color: #FFFFFF;
-	/* justify-content: center; */
 	align-items: center;
 	flex-direction: row;
 	padding-left: 40rpx;
-	position: fixed;
 }
 
 .nheader-left{
@@ -2344,23 +2517,30 @@ export default {
 .footer-box{ 
 	width: 700rpx;
 	/* height: 420rpx; */
-	background-color: #fff;
+	/* background-color: #fff; */
 	position: fixed;
 	align-items: center;
 	bottom: 10rpx;
 	left: 26rpx;
-	border-radius: 20rpx;
-	padding: 30rpx;
-	border-width: 1px;  
-	border-style: solid;  
-	border-color: #F5F5F5;  
-	/* box-shadow: 0 4px 8px 0 rgba(57, 67, 142, 0.05), 0 2px 4px 0 rgba(23, 30, 80, 0.07); */
 	
+	border-radius: 20rpx;
+	
+	padding: 30rpx;
+	padding-top: 110rpx;
+	/* border-width: 1px;  
+	border-style: solid;  
+	border-color: #F5F5F5;  */
+	/* box-shadow: 0 4px 8px 0 rgba(57, 67, 142, 0.05), 0 2px 4px 0 rgba(23, 30, 80, 0.07); */
+	/* background-color: #fff; */
 }
 
 .footer-scroll{
 	width: 700rpx;
+	padding-top: 30rpx;
 	flex-direction: row;
+	background-color: #fff;
+	border-top-left-radius: 16rpx;
+	border-top-right-radius: 16rpx;
 }
 
 .ft-item{
@@ -2383,6 +2563,8 @@ export default {
 	flex-direction: row;
 	align-items: center;
 	padding: 20rpx;
+	/* padding-top: 0; */
+	padding-right: 0;
 	border-bottom-width: 2rpx;
 	border-bottom-color: #f7f7fa;
 }
@@ -2400,7 +2582,10 @@ export default {
 	/* left: 90%; */
 	/* top: 30rpx; */
 	/* top: 5rpx; */
+	
 	margin-top: 15rpx;
+	margin-left: 196rpx;
+	/* margin-left: 30rpx; */
 }
 
 .sendAddress-right-top{
@@ -2435,11 +2620,13 @@ export default {
 .center-sendAddress-address{
 /* 	width: 40rpx;
 	height: 40rpx; */
-	height: 40rpx;
+	flex: 1;
+	height: 80rpx;
+	line-height: 80rpx;
 	flex-direction: row;
 	justify-content: flex-end;
-	border-left-width: 2rpx;
-	border-color: #CCCCCC;
+	/* border-left-width: 2rpx;
+	border-color: #CCCCCC; */
 /* 	padding: -10rpx 0;
 	margin: 10rpx 0; */
 	/* transform: translateY(-12rpx); */
@@ -2456,15 +2643,21 @@ export default {
 
 .center-sendAddress-right{
 	width: 460rpx;
+	height: 120rpx;
+	justify-content: center;
 	text-overflow: ellipsis;
 	overflow:hidden;
-
+	position: relative;
+}
+.footer-main{
+	position: relative;
 }
 .zuobiao{
 	width: 52rpx;
 	height: 52rpx;
 	position: absolute;
-	right: 40rpx;
+	right: 10rpx;
+	top:0;
 	/* top: -40rpx; */
 	/* bottom: 400rpx; */
 	z-index:100000;
@@ -2476,17 +2669,52 @@ export default {
 	height: 52rpx;
 }
 .center-sendAddress-right-text{
+/* 	flex-direction: row;
+	justify-content: flex-start; */
 	flex-direction: row;
 	
 }
 .center-sendAddress-right-text-t{
+	/* width: 300rpx; */
+	text-overflow: ellipsis;
+	
 	font-size: 14px;
 }
 .right-text-t-marginr{
 	margin-right: 10rpx;
 }
 
+.footer-center{
+	width: 700rpx;
+	background-color: #fff !important;
+}
 
+.next-address{
+	/* height: 100rpx; */
+	text-overflow: ellipsis;
+	position: absolute;
+	right: 0;
+	background-color: #000;
+	/* padding: 20rpx; */
+	padding-left: 20rpx;
+	
+	/* padding-right: 20rpx; */
+	border-radius: 12rpx;
+	/* padding-bottom: 20rpx; */
+	padding-top: 20rpx;
+	flex-direction: row;
+	align-items: center;
+	z-index: 999;
+}
+.closeAddressIcon{
+	width: 36rpx;
+	height: 36rpx;
+}
+.closeAddressIcon-box{
+	height: 80rpx;
+	/* align-items: center; */
+	justify-content: center;
+}
 
 </style>
 

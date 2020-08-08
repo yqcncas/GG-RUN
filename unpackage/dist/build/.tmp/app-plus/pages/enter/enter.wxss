@@ -128,6 +128,14 @@
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
 }
+.enter .enter-main .enter-password .enter-password-box {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+}
 .enter .enter-main .enter-password .password-input {
   width: 100%;
   margin-bottom: 20rpx;
@@ -135,6 +143,22 @@
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   font-size: 16px;
+  position: relative;
+}
+.enter .enter-main .enter-password .getQrCode {
+  width: 180rpx;
+  height: 48rpx;
+  text-align: center;
+  line-height: 48rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 12px;
+  color: #5468FF;
+  border: 2rpx solid #5468FF;
+  border-radius: 2px;
+}
+.enter .enter-main .enter-password .getQrCode.getQrCodeing {
+  color: #909399;
+  border: 2rpx solid #909399;
 }
 .enter .enter-center {
   width: 100%;

@@ -454,13 +454,15 @@ page {
 }
 .order .orderCancelModel .orderCancelModel-Wrapper {
   width: 600rpx;
-  background-color: #f2eaea;
+  background-color: #fff;
   position: absolute;
   left: 50%;
   top: 50%;
   -webkit-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
   padding: 30rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
 }
@@ -502,20 +504,19 @@ page {
   -webkit-box-align: center;
   -webkit-align-items: center;
           align-items: center;
-  padding-top: 10rpx;
+  padding-top: 15rpx;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
 }
 .order .orderCancelModel .orderCancelModel-Wrapper .cancelModel-center .cancelModel-center-top {
   font-family: PingFangSC;
   font-weight: 400;
-  font-size: 14px;
-  color: #7d7d81;
+  font-size: 16px;
 }
 .order .orderCancelModel .orderCancelModel-Wrapper .cancelModel-center .cancelModel-center-bottom {
   font-family: PingFangSC;
-  font-weight: 400;
-  font-size: 20px;
+  font-weight: bold;
+  font-size: 16px;
   color: #101010;
 }
 .order .orderCancelModel .orderCancelModel-Wrapper .cancelModel-center .cancelModel-center-bottom ._span {
@@ -689,5 +690,12 @@ page {
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: -0.34px;
+}
+.order .pullDownPage {
+  width: 100%;
+  padding-top: 220rpx;
+  padding-bottom: 10rpx;
+  text-align: center;
+  font-size: 14px;
 }
 

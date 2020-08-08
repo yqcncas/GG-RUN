@@ -14,6 +14,10 @@
 					>
 				</view>
 			</view>
+			<view class="upload-box" style="padding-top: 20rpx;box-sizing: border-box;">
+				<u-upload ref = "uUploadRef" @on-list-change = "changList" :action="action" :file-list="fileList" :form-data = "QNtoken" :show-progress = "false" :max-count = "3" @on-uploaded = "UpLoaded" @on-remove = "RemoveImg"></u-upload>
+				<view>物品外形拍照,保留物品完整证据</view>
+			</view>
 		</view>
 		<view class="shop-middle">
 			<view class="middle-left">
@@ -60,6 +64,9 @@
 
 <script>
 	export default {
+		onLoad() {
+			this.$refs.uUploadRef.clear()
+		},
 		onShow(){
 			
 			if (uni.getStorageSync('shopInfo')) {
@@ -67,6 +74,16 @@
 				this.currentIndex = this.shopInfo.index
 				this.weight = this.shopInfo.weight
 				this.price = this.shopInfo.price
+				this.pics = JSON.parse(this.shopInfo.pics)
+				this.fileList = []
+				if (this.pics.length) {
+				
+					// this.fileList.push({url: this.shopInfo.pics})
+					this.pics.forEach(item => {
+						this.fileList.push({url: item})
+					})
+				}
+				console.log(this.pics)
 				if(this.shopInfo.status == 0) {
 					this.choiceElese()
 					this.elseShop = this.shopInfo.main
@@ -89,16 +106,56 @@
 				showElse: false,
 				//选中的内容
 				shopInfoMain: '',
-				shopInfo: {}
+				shopInfo: {},
+				action: 'https://upload.qiniup.com/',
+				fileList: [],
+				QNtoken: {},
+				pics: [],
 			}
 		},
 		onLoad(){
+			this.getQiniuToken()
 			this.initGoodsInfo()
 		},
 		onUnload() {
 			uni.hideKeyboard()
 		},
 		methods: {
+			UpLoaded (list) {
+				uni.showLoading({
+					title: '上传中'
+				})
+				this.pics = []
+				
+				list.forEach(item => {
+					console.log(item)
+					if (item.response != undefined) {
+						this.pics.push(this.$api.baseLocation + item.response.hash)
+					} else {
+						this.pics.push(item.url)
+					}
+				})
+				setTimeout(() => {
+					uni.hideLoading()
+				}, 2500)
+				
+			},
+			RemoveImg (index, lists) {
+				
+				
+				this.pics.splice(index, 1)
+		
+			},
+			changList (lists) {
+				console.log(lists)
+			},
+			async getQiniuToken(){
+				let res = await this.$fetch(this.$api.getQiniuToken,{},'POST','form')
+				console.log(res)
+				this.QNtoken = {
+					token: res.data.token
+				}	
+			},
 			//更改下标
 			handleCurrent (item,index) {
 				// console.log(item)
@@ -208,6 +265,7 @@
 					this.shopInfo.weight = this.weight
 					this.shopInfo.price = this.price
 					this.shopInfo.status = 0
+					this.shopInfo.pics = JSON.stringify(this.pics)
 					uni.setStorageSync('shopInfo',this.shopInfo)
 				} else {
 					let shopInfo = {}
@@ -215,6 +273,7 @@
 					this.shopInfo.weight = this.weight
 					this.shopInfo.price = this.price
 					this.shopInfo.status = 1
+					this.shopInfo.pics = JSON.stringify(this.pics)
 					uni.setStorageSync('shopInfo',this.shopInfo)
 				}
 				
@@ -277,12 +336,14 @@
 		background-color: rgb(247,247,250);
 	}
 	.shop-info{
+		padding-bottom: 140rpx;
 		.shop-header{
 			width: 100%;
 			// height: 440rpx;
 			padding: 30rpx;
 			box-sizing: border-box;
 			background-color: #fff;
+			
 			.header-title{
 				font-family: PingFangSC-Semibold;
 				font-size: 17px;
@@ -430,6 +491,7 @@
 			display: flex;
 			justify-content: space-between;
 			padding: 30rpx;
+			// padding-bottom: 120rpx;
 			margin-top: 30rpx;
 			box-sizing: border-box;
 			.footer-left{
@@ -516,9 +578,10 @@
 		.shop-button{
 			width: 100%;
 			height: 90rpx;
-			position: absolute;
+			position: fixed;
 			left: 0;
 			bottom: 0;
+			z-index: 99999;
 			text-align: center;
 			line-height: 90rpx;
 			background: #5468FF;

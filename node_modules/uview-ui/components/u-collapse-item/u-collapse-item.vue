@@ -1,19 +1,23 @@
 <template>
-	<view class="u-collapse-item">
+	<view class="u-collapse-item" :style="[itemStyle]">
 		<view :hover-stay-time="200" class="u-collapse-head" @tap.stop="headClick" :hover-class="hoverClass" :style="[headStyle]">
-			<view class="u-collapse-title u-line-1" :style="[{ textAlign: align ? align : 'left' }, 
-				isShow && activeStyle && !arrow ? activeStyle : '']">
-				{{ title }}
-			</view>
-			<view class="u-icon-wrap">
-				<u-icon v-if="arrow" :color="arrowColor ? arrowColor : $u.color.tipsColor" :class="{ 'u-arrow-down-icon-active': isShow }"
-				 class="u-arrow-down-icon" name="arrow-down"></u-icon>
-			</view>
+			<block v-if="!$slots['title-all']">
+				<view v-if="!$slots['title']" class="u-collapse-title u-line-1" :style="[{ textAlign: align ? align : 'left' },
+					isShow && activeStyle && !arrow ? activeStyle : '']">
+					{{ title }}
+				</view>
+				<slot v-else name="title" />
+				<view class="u-icon-wrap">
+					<u-icon v-if="arrow" :color="arrowColor" :class="{ 'u-arrow-down-icon-active': isShow }"
+					 class="u-arrow-down-icon" name="arrow-down"></u-icon>
+				</view>
+			</block>
+			<slot v-else name="title-all" />
 		</view>
 		<view class="u-collapse-body" :style="[{
 				height: isShow ? height + 'px' : '0'
-			}, bodyStyle]">
-			<view class="u-collapse-content" :id="elId">
+			}]">
+			<view class="u-collapse-content" :id="elId" :style="[bodyStyle]">
 				<slot></slot>
 			</view>
 		</view>
@@ -84,14 +88,13 @@
 				height: 0, // body内容的高度
 				headStyle: {}, // 头部样式，对象形式
 				bodyStyle: {}, // 主体部分样式
-				arrowColor: '',
+				//itemStyle: {}, // 每个item的整体样式
+				arrowColor: '', // 箭头的颜色
 				hoverClass: '', // 头部按下时的效果样式类
 			};
 		},
 		mounted() {
-			this.$nextTick(() => {
-				this.queryRect();
-			});
+			this.init();
 		},
 		watch: {
 			open(val) {
@@ -102,17 +105,28 @@
 			arrow() {
 				return this.uCollapse.arrow;
 			},
+			itemStyle() {
+				return this.uCollapse.itemStyle;
+			}
 		},
 		created() {
+			// 获取u-collapse的信息，放在u-collapse是为了方便，不用每个u-collapse-item写一遍
 			this.isShow = this.open;
 			this.nameSync = this.name ? this.name : this.uCollapse.childrens.length;
 			this.uCollapse.childrens.push(this);
+			//this.itemStyle = this.uCollapse.itemStyle;
 			this.headStyle = this.uCollapse.headStyle;
 			this.bodyStyle = this.uCollapse.bodyStyle;
 			this.arrowColor = this.uCollapse.arrowColor;
 			this.hoverClass = this.uCollapse.hoverClass;
 		},
 		methods: {
+			// 异步获取内容，或者动态修改了内容时，需要重新初始化
+			init() {
+				this.$nextTick(() => {
+					this.queryRect();
+				});
+			},
 			// 点击collapsehead头部
 			headClick() {
 				if (this.disabled) return;
@@ -131,54 +145,46 @@
 					index: this.index,
 					show: this.isShow
 				})
-
 				// 只有在打开时才发出事件
 				if (this.isShow) this.uCollapse.onChange();
 				this.$forceUpdate();
 			},
 			// 查询内容高度
 			queryRect() {
-				const query = uni.createSelectorQuery().in(this);
-				query
-					.select('#' + this.elId)
-					.boundingClientRect(data => {
-						if (!data.height) {
-							setTimeout(() => {
-								this.queryRect();
-							}, 10);
-							return;
-						}
-						this.height = data.height;
-					})
-					.exec();
+				// $uGetRect为uView自带的节点查询简化方法，详见文档介绍：https://www.uviewui.com/js/getRect.html
+				// 组件内部一般用this.$uGetRect，对外的为this.$u.getRect，二者功能一致，名称不同
+				this.$uGetRect('#' + this.elId).then(res => {
+					this.height = res.height;
+				})
 			}
 		}
 	};
 </script>
 
 <style lang="scss" scoped>
+	@import "../../libs/css/style.components.scss";
+	
 	.u-collapse-head {
 		position: relative;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		color: $u-main-color;
-	}
-
-	.u-collapse-title {
-		flex: 1;
-		overflow: hidden;
-		margin-right: 14rpx;
 		font-size: 30rpx;
-		color: $u-main-color;
 		line-height: 1;
 		padding: 24rpx 0;
 		text-align: left;
 	}
 
+	.u-collapse-title {
+		flex: 1;
+		overflow: hidden;
+	}
+
 	.u-arrow-down-icon {
 		transition: all 0.3s;
-		margin-right: 24rpx;
+		margin-right: 20rpx;
+		margin-left: 14rpx;
 	}
 
 	.u-arrow-down-icon-active {

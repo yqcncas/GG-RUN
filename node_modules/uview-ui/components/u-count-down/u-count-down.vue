@@ -1,6 +1,6 @@
 <template>
 	<view class="u-countdown">
-		<view class="u-countdown-item" :style="[itemStyle]" v-if="showDays">
+		<view class="u-countdown-item" :style="[itemStyle]" v-if="showDays && (hideZeroDay || (!hideZeroDay && d != '0'))">
 			<view class="u-countdown-time" :style="[letterStyle]">
 				{{ d }}
 			</view>
@@ -8,7 +8,7 @@
 		<view
 			class="u-countdown-colon"
 			:style="{fontSize: separatorSize + 'rpx', color: separatorColor, paddingBottom: separator == 'colon' ? '4rpx' : 0}"
-			v-if="showDays"
+			v-if="showDays && (hideZeroDay || (!hideZeroDay && d != '0'))"
 		>
 			{{ separator == 'colon' ? ':' : '天' }}
 		</view>
@@ -63,6 +63,7 @@
  * @property {String} separator-color 分隔符的颜色（默认#303133）
  * @property {String Number} font-size 倒计时字体大小，单位rpx（默认30）
  * @property {Boolean} show-border 是否显示倒计时数字的边框（默认false）
+ * @property {Boolean} hide-zero-day 当"天"的部分为0时，隐藏该字段 （默认true）
  * @property {String} border-color 数字边框的颜色（默认#303133）
  * @property {String} bg-color 倒计时数字的背景颜色（默认#ffffff）
  * @property {String} color 倒计时数字的颜色（默认#303133）
@@ -153,6 +154,11 @@ export default {
 			type: Boolean,
 			default: true
 		},
+		// 当"天"的部分为0时，不显示
+		hideZeroDay: {
+			type: Boolean,
+			default: false
+		}
 	},
 	watch: {
 		// 监听时间戳的变化
@@ -232,12 +238,13 @@ export default {
 			if(this.showDays) {
 				showHour = hour;
 			} else {
+				// 如果不显示天数，将“天”部分的时间折算到小时中去
 				showHour = Math.floor(seconds / (60 * 60));
 			}
 			minute = Math.floor(seconds / 60) - hour * 60 - day * 24 * 60;
 			second = Math.floor(seconds) - day * 24 * 60 * 60 - hour * 60 * 60 - minute * 60;
 			// 如果小于10，在前面补上一个"0"
-			hour = hour < 10 ? '0' + hour : hour;
+			showHour = showHour < 10 ? '0' + showHour : showHour;
 			minute = minute < 10 ? '0' + minute : minute;
 			second = second < 10 ? '0' + second : second;
 			this.d = day;
@@ -261,11 +268,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
+	@import "../../libs/css/style.components.scss";
+
 	.u-countdown {
 		display: inline-flex;
 		align-items: center;
 	}
-	
+
 	.u-countdown-item {
 		display: flex;
 		align-items: center;
@@ -275,13 +284,13 @@ export default {
 		white-space: nowrap;
 		transform: translateZ(0);
 	}
-	
+
 	.u-countdown-time {
 		margin: 0;
 		padding: 0;
 		line-height: 1;
 	}
-	
+
 	.u-countdown-colon {
 		display: flex;
 		justify-content: center;
@@ -290,7 +299,7 @@ export default {
 		align-items: center;
 		padding-bottom: 4rpx;
 	}
-	
+
 	.u-countdown-scale {
 		transform: scale(0.9);
 		transform-origin: center center;
