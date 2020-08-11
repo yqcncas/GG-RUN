@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "评价",
-  "navigationBarBackgroundColor": "#FFFFFF",
-  "usingComponents": {
-    "tui-rate": "/components/rate/rate"
-  }
-}

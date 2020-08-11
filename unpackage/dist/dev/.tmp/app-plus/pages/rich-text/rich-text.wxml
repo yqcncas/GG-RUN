@@ -1,1 +1,0 @@
-<view class="rich-text"><view><jyf-parser vue-id="96e3ce7c-1" html="{{richTextMain.articleContent}}" bind:__l="__l"></jyf-parser></view></view>

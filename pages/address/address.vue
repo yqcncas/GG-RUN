@@ -176,9 +176,13 @@
 			async initAddress () {
 			
 				let token = uni.getStorageSync('token')
+				console.log(token)
 				let res = await this.$fetch(this.$api.addressList,{token:token},"GET","Form")
 				
-				// console.log(res)
+				console.log(res)
+				if (res.code == 500) {
+					uni.hideLoading()
+				}
 				this.userAddress = res.data
 				this.userAddress.forEach(item => {
 					item.addressDetail = item.addressDetail.split(',')			

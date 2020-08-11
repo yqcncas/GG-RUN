@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "商品信息",
-  "navigationBarBackgroundColor": "#FFFFFF",
-  "usingComponents": {
-    "u-upload": "/node-modules/uview-ui/components/u-upload/u-upload"
-  }
-}

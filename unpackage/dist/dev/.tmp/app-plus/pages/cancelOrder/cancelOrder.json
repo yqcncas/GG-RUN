@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "取消订单",
-  "navigationBarBackgroundColor": "#FFFFFF",
-  "usingComponents": {
-    "parser": "/components/jyf-Parser/index"
-  }
-}

@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "充值",
-  "navigationBarBackgroundColor": "#FFFFFF",
-  "usingComponents": {
-    "uni-popup": "/components/uni-popup/uni-popup"
-  }
-}

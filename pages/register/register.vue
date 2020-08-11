@@ -116,7 +116,7 @@
 				},1000)
 				var pubblicData= jsencrypt.setEncrypt(this.$api.publiukey,this.userPhone);
 				let res = await this.$fetch(this.$api.customerPhone,{mobile:pubblicData},'GET','form')
-				
+				console.log(res)
 				this.yzm = res.msg
 			},
 			//提交

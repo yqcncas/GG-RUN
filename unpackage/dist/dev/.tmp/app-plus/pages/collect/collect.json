@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "我的收藏/屏蔽的骑手",
-  "navigationBarBackgroundColor": "#FFFFFF",
-  "usingComponents": {
-    "uni-load-more": "/components/uni-load-more/uni-load-more"
-  }
-}

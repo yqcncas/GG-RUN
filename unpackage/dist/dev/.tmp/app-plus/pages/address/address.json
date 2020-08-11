@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "地址簿",
-  "navigationBarBackgroundColor": "#FFFFFF",
-  "usingComponents": {
-    "u-empty": "/node-modules/uview-ui/components/u-empty/u-empty",
-    "uni-load-more": "/components/uni-load-more/uni-load-more"
-  }
-}

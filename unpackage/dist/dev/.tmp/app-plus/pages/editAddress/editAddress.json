@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "编辑地址填写",
-  "navigationBarBackgroundColor": "#FFFFFF",
-  "usingComponents": {
-    "u-popup": "/node-modules/uview-ui/components/u-popup/u-popup"
-  }
-}

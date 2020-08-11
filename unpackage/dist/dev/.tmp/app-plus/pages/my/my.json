@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "",
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "status": "/pages/components/status/status"
-  }
-}

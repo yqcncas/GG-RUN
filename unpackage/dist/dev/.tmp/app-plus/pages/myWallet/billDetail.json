@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "账单明细",
-  "navigationBarBackgroundColor": "#FFFFFF",
-  "usingComponents": {
-    "lyzml-datepicker": "/components/lyzml-datepicker/lyzml-datepicker",
-    "uni-load-more": "/components/uni-load-more/uni-load-more"
-  }
-}

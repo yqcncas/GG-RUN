@@ -1,1 +1,0 @@
-<view class="orderDertailmap _div"><view class="map _div"><map style="width:100%;height:476rpx;" latitude="{{$root.g0[1]}}" longitude="{{$root.g1[0]}}" markers="{{covers}}"></map></view></view>

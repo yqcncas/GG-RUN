@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "我的手机号",
-  "usingComponents": {
-    "pwd-model": "/components/pwdModel/pwdModel",
-    "phone-model": "/components/verification/verification"
-  }
-}
