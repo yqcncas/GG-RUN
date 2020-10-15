@@ -81,8 +81,8 @@
 					<image src="../../static/img/my/right.png" mode="" class="paotuiServerRight"></image>
 				</view>
 				<div class="orderDetailing-middle-item">
-					<text class="middle-left">取件时间:</text>
-					<text class="middle-right">{{orderDetailInfo.createTime}}</text>
+					<text class="middle-left">预计取件时间:</text>
+					<text class="middle-right">{{orderDetailInfo.pickUpTime}}</text>
 				</div>
 				<div class="orderDetailing-middle-item last-middle-item" v-if="orderDetailInfo.remark">
 					<text class="middle-left">用户备注:</text>
@@ -194,6 +194,7 @@
 			uniSteps
 		},
 		onLoad(options) {
+			uni.setStorageSync('starSetIntertFlag', true)
 			console.log(options)
 			this.enterFlag = options.currentIndex
 			
@@ -487,11 +488,12 @@
 						'content-type': 'application/x-www-form-urlencoded'
 					},
 					success: (res) => {
-						// console.log(res)
+						console.log(res)
 						this.horsemanInfo = res.data.data
 						this.covers[1].latitude = this.horsemanInfo.results[0].location.latitude
 						this.covers[1].longitude = this.horsemanInfo.results[0].location.longitude
-
+						this.$set(this.covers[1], 'latitude', this.horsemanInfo.results[0].location.latitude)
+						this.$set(this.covers[1], 'longitude', this.horsemanInfo.results[0].location.longitude)
 						// this.rotateDeg = this.privatedouble(this.covers[1].latitude, this.covers[1].longitude, this.covers[0].latitude,
 						// 	this.covers[0].longitude)
 						console.log(this.rotateDeg)

@@ -153,6 +153,7 @@
 					return
 				}
 				let res = await this.$fetch(this.$api.customerUser,{mobile: this.userPhone,checkCode: this.code,password: this.userPwd,inviteCode: this.inviteCode,cid:this.cid},'POST','form')
+				console.log(res)
 				if (res.code === 0) {
 					uni.showToast({
 						icon: 'success',

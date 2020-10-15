@@ -69,7 +69,7 @@
 				:latitude="latitude"
 				:longitude="longitude"
 				:markers="covers"
-				@tap="handleMap"
+				@tap="canClickflag && handleMap($event)"
 				:polyline = "polyline"
 				:include-points="points"
 				v-if="mapShow"
@@ -118,24 +118,29 @@
 							<view class="center-sendAddress-right-text" v-if="userStartUserPhone">
 								<text class="center-sendAddress-right-text-t right-text-t-marginr" v-if="userStartUserName && userStartUserName.length != 11">{{userStartUserName}}</text>
 								<text class="center-sendAddress-right-text-t" v-if="userStartUserPhone">{{userStartUserPhone}}</text>
+							<!-- 	<text class="center-sendAddress-right-text-t" style="padding-left: 15rpx;" v-if="sendAddress.extensionNumber && ftItemIndex == 1">分机号: {{sendAddress.extensionNumber}}</text>
+								 -->
 							</view>
 							<view class="center-sendAddress-right-text" v-if="!userStartUserPhone">
 								<text class="center-sendAddress-right-text-t" style="color: #e34a48;font-weight: bold;">点击完善取货信息</text>
 							</view>
-							
-							<view class="next-address" v-if="ftItemIndex == 0 && helpMeBuyFlag" > 
-								<view class="next-address-left" @click.stop="handleBuyAddress($event)">
-									<text class="sendAddress-right-top" style="color: #fff; width: 250rpx; text-overflow: ellipsis;lines: 1;">{{helpMeBuy.title}}</text>
-									<view class="center-sendAddress-right-text">
-										<text class="center-sendAddress-right-text-t right-text-t-marginr" style="color: #fff; width: 100rpx; text-overflow: ellipsis;lines: 1;">{{helpMeBuy.userName}}</text>
-										<text class="center-sendAddress-right-text-t" style="color: #fff;">{{helpMeBuy.mobile}}</text>
+					
+								<view class="next-address"  style="z-index: 9999999"> 
+									<view class="next-address-box" v-if="ftItemIndex == 0 && helpMeBuyFlag">
+										<view class="next-address-left" @click.stop="handleBuyAddress($event)">
+											<text class="sendAddress-right-top" style="color: #fff; width: 250rpx; text-overflow: ellipsis;lines: 1;">{{helpMeBuy.title}}</text>
+											<view class="center-sendAddress-right-text">
+												<text class="center-sendAddress-right-text-t right-text-t-marginr" style="color: #fff; width: 100rpx; text-overflow: ellipsis;lines: 1;">{{helpMeBuy.userName}}</text>
+												<text class="center-sendAddress-right-text-t" style="color: #fff;">{{helpMeBuy.mobile}}</text>
+											</view>
+										</view>
+										<view class="closeAddressIcon-box" @click.stop="handleHelpMeBuyFlag($event)">
+											<image src="../../static/img/my/36.png" mode="" class="closeAddressIcon"></image>
+										</view>
 									</view>
+									
 								</view>
-								<view class="closeAddressIcon-box" @click.stop="handleHelpMeBuyFlag($event)">
-									<image src="../../static/img/my/36.png" mode="" class="closeAddressIcon"></image>
-								</view>
-							</view>
-							
+						
 						</view>
 						<view class="center-sendAddress-address"  @tap.stop="goToAddress(0)">
 							
@@ -156,6 +161,8 @@
 							<view class="center-sendAddress-right-text">
 								<text class="center-sendAddress-right-text-t right-text-t-marginr" v-if="userEndUserName && userEndUserName.length != 11">{{userEndUserName}}</text>
 								<text class="center-sendAddress-right-text-t" v-if="userEndUserPhone">{{userEndUserPhone}}</text>
+								<text class="center-sendAddress-right-text-t" style="padding-left: 15rpx;" v-if="endAddress.extensionNumber">分机号: {{endAddress.extensionNumber}}</text>
+								
 							</view>
 							
 							<view class="next-address" v-if="ftItemIndex == 1 && helpMeGetFlag">
@@ -164,6 +171,7 @@
 									<view class="center-sendAddress-right-text">
 										<text class="center-sendAddress-right-text-t right-text-t-marginr" style="color: #fff; width: 100rpx;text-overflow: ellipsis;lines: 1;">{{helpMeGet.userName}}</text>
 										<text class="center-sendAddress-right-text-t" style="color: #fff;">{{helpMeGet.mobile}}</text>
+										
 									</view>
 								</view>
 								<view class="closeAddressIcon-box" @click.stop="handleHelpMeGetFlag($event)">
@@ -186,7 +194,7 @@
 				</view>	 -->
 				
 				<view class="zuobiao" @click.stop="restoration"  v-if="true">
-					<image src="../../static/img/index/zuobiao.png" mode="" class="zuobiao-img" ></image>
+					<image src="../../static/1.png" mode="aspectFill" class="zuobiao-img" ></image>
 				</view>
 			</view>
 		</view>
@@ -306,7 +314,8 @@ export default {
 			helpMeBuy: {},
 			helpMeGet: {},
 			helpMeBuyFlag: false,
-			helpMeGetFlag: false
+			helpMeGetFlag: false,
+			canClickflag: true
 		};
 	},
 	components: {
@@ -398,7 +407,7 @@ export default {
 		if (uni.getStorageSync('endAddress')) {
 
 			this.endAddress = JSON.parse(uni.getStorageSync('endAddress')) 
-			// console.log(this.endAddress)
+			console.log(this.endAddress)
 			this.userEndUserName = this.endAddress.name
 			this.userEndUserPhone = this.endAddress.mobile
 			// this.covers = []
@@ -450,16 +459,20 @@ export default {
 		if (uni.getStorageSync('sendAddress')) {
 			this.sendAddress = JSON.parse(uni.getStorageSync('sendAddress')) 
 			console.log(this.sendAddress)
+			
+			
 			this.userStartUserName = this.sendAddress.name
 			this.userStartUserPhone = this.sendAddress.mobile
-			this.ftSendAddress = {}
-			this.ftSendAddress.titleName = this.sendAddress.editAddress.name
-			this.ftSendAddress.addressname = this.sendAddress.editAddress.address
-			
 	
-			
-			this.handleMap(this.sendAddress.editAddress.latitude,this.sendAddress.editAddress.longitude)
-			
+			if (uni.getStorageSync('canClickflag')) {
+				this.canClickflag = false
+				this.ftSendAddress = {}
+				this.ftSendAddress.titleName = this.sendAddress.editAddress.name
+				this.ftSendAddress.addressname = this.sendAddress.editAddress.address
+				this.handleMap(this.sendAddress.editAddress.latitude,this.sendAddress.editAddress.longitude)
+				uni.removeStorageSync('canClickflag')
+			}
+	
 		
 			
 			if(uni.getStorageSync('endAddress')) {
@@ -513,6 +526,7 @@ export default {
 		}
 		if (this.distance) {
 			console.log(this.distance)
+			// this.canClickflag = false
 			this.covers = [
 				{
 					id: 1,
@@ -548,6 +562,8 @@ export default {
 					}
 				}
 			];
+		} else {
+			// this.canClickflag = true
 		}
 	
 	},
@@ -574,8 +590,14 @@ export default {
 			address: '',
 			editAddress: {}
 		}
+		this.canClickflag = true
+		this.ftSendAddress = {}
+		this.userStartUserName = ''
+		this.userStartUserPhone = ''
+		uni.removeStorageSync('sendAddress')
 		uni.removeStorageSync('endAddress')
 		this.distance = 0
+		// this.canClickflag = true
 		// 
 		// this.covers = [
 		// 	{
@@ -742,6 +764,7 @@ export default {
 			this.sendAddress = this.helpMeBuy
 			console.log(this.sendAddress)
 			this.helpMeBuyFlag = false
+			this.canClickflag = false
 			this.sendAddress.name = this.sendAddress.userName
 			this.userStartUserName = this.sendAddress.userName
 			
@@ -749,6 +772,7 @@ export default {
 			this.ftSendAddress = {}
 			this.ftSendAddress.titleName = this.sendAddress.editAddress.name
 			this.ftSendAddress.addressname = this.sendAddress.editAddress.address
+			console.log('改变。。。')
 			uni.setStorageSync('sendAddress',JSON.stringify(this.helpMeBuy))
 			uni.setStorageSync('clickAddressFlag', true)
 			this.handleMap(this.sendAddress.editAddress.latitude,this.sendAddress.editAddress.longitude)
@@ -759,6 +783,7 @@ export default {
 			this.endAddress = this.helpMeGet
 			this.endAddress.name = this.endAddress.userName
 			this.helpMeGetFlag = false
+			this.canClickflag = false
 			uni.setStorageSync('clickAddressFlag', true)
 			uni.setStorageSync('endAddress', JSON.stringify(this.endAddress))
 		
@@ -934,11 +959,11 @@ export default {
 							let userName = uni.getStorageSync('user_Name');
 							let latitude = this.longitude + ',' + this.latitude;
 							if (res.data.regeocode.aois.length != 0) {
-								this.ftSendAddress = {}
-								console.log("77777777")
-								this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
-								this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
-								this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+								// this.ftSendAddress = {}
+								// console.log("77777777")
+								// this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
+								// this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
+								// this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
 								
 								this.editAddress.name = res.data.regeocode.aois[0].name;
 								this.editAddress.address = res.data.regeocode.formatted_address;
@@ -960,6 +985,7 @@ export default {
 									area: this.area,
 									orderId: ''
 								};
+								console.log('改变1')
 								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
 							
 							}
@@ -1085,6 +1111,7 @@ export default {
 				return
 			}
 			
+			
 			console.log(this.sendAddress)
 			if (this.sendAddress.mobile.trim() == '' || this.sendAddress.name.trim() == '') {
 				uni.showToast({
@@ -1147,7 +1174,7 @@ export default {
 										})
 									}
 									if (res.data.regeocode.aois.length == 0 && res.data.regeocode.pois.length == 0) {
-										
+										console.log('执行')
 										this.editAddress.name = '';
 										this.editAddress.address = '';
 										this.editAddress.longitude = ''
@@ -1166,7 +1193,7 @@ export default {
 											orderId: ''
 										};
 										// console.log(this.sendAddress)
-									
+										console.log('改变2')
 										if (!uni.getStorageSync('sendAddress')) {
 											uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
 										}
@@ -1199,6 +1226,7 @@ export default {
 										}
 										
 									} else if (this.msgInfo == undefined && res.data.regeocode.aois.length) {
+										console.log('执行')
 										// console.log(res.data.regeocode)
 										this.editAddress.name = res.data.regeocode.aois[0].name;
 										this.editAddress.address = res.data.regeocode.formatted_address;
@@ -1225,7 +1253,7 @@ export default {
 										if(uni.getStorageSync('sendAddress')) {
 											 sendAddress = JSON.parse(uni.getStorageSync('sendAddress'))
 										}
-										
+										console.log('改变3')
 										if (!uni.getStorageSync('sendAddress')) {
 											uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
 										}
@@ -1356,11 +1384,11 @@ export default {
 							// console.log(res.data)
 							if (res.data.regeocode.aois.length != 0) {
 								if (this.handleFWInco) {
-									this.ftSendAddress = {}
-									console.log("11111")
-									this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
-									this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
-									this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+									// this.ftSendAddress = {}
+									// console.log("11111")
+									// this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
+									// this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
+									// this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
 								}
 								
 							
@@ -1387,16 +1415,16 @@ export default {
 								};
 								
 								this.sendAddress = sendAddress
-								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+								// uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
 								
 							
 							} else if (res.data.regeocode.pois.length != 0) {
 								if (this.handleFWInco) {
-									this.ftSendAddress = {}
-									console.log("22222222")
-									this.$set(this.ftSendAddress,'titleName',res.data.regeocode.pois[0].name)
-									this.$set(this.ftSendAddress,'location',res.data.regeocode.pois[0].location)
-									this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+									// this.ftSendAddress = {}
+									// console.log("22222222")
+									// this.$set(this.ftSendAddress,'titleName',res.data.regeocode.pois[0].name)
+									// this.$set(this.ftSendAddress,'location',res.data.regeocode.pois[0].location)
+									// this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
 								}
 								
 								
@@ -1422,9 +1450,9 @@ export default {
 									orderId: ''
 								};
 								this.sendAddress = sendAddress
-								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+								// uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
 							}else {
-								this.ftSendAddress.titleName = '未获取到地址'
+								// this.ftSendAddress.titleName = '未获取到地址'
 								this.ftSendAddress.addressname = ''
 							}
 						}
@@ -1883,7 +1911,7 @@ export default {
 			// 		this.mapShow = true
 			// 	}, 800)
 			// }
-		
+			console.log(e)
 			
 			if (typeof e === "string") {
 				
@@ -1924,36 +1952,36 @@ export default {
 						if (typeof e !== "string") {
 							console.log('11111')
 							console.log(this.sendAddress)
-							this.ftSendAddress = {}
+							// this.ftSendAddress = {}
 							if (uni.getStorageSync('newAddressFlag')) {
-								this.$set(this.ftSendAddress,'titleName',this.sendAddress.editAddress.name)
+								// this.$set(this.ftSendAddress,'titleName',this.sendAddress.editAddress.name)
 								this.newAddressTitle = this.sendAddress.editAddress.name
 								// uni.removeStorageSync('newAddressFlag')
 							} else {
-								this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
+								// this.$set(this.ftSendAddress,'titleName',res.data.regeocode.aois[0].name)
 							}
 							
 							// this.$set(this.ftSendAddress,'titleName',this.sendAddress.editAddress.address)
-							this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
-							this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+							// this.$set(this.ftSendAddress,'location',res.data.regeocode.aois[0].location)
+							// this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
 							uni.removeStorageSync('newAddressFlag')
 						} else {
 							console.log('22222')
-							this.ftSendAddress = {}
+							// this.ftSendAddress = {}
 							console.log(this.sendAddress.editAddress.name)
 							// this.$set(this.ftSendAddress,'titleName', this.sendAddress.editAddress.name)
 							// this.$set(this.ftSendAddress,'titleName', this.newAddressTitle)
 							if (uni.getStorageSync('clickAddressFlag')) {
-								this.$set(this.ftSendAddress,'titleName', this.sendAddress.editAddress.name)
+								// this.$set(this.ftSendAddress,'titleName', this.sendAddress.editAddress.name)
 								console.log('131313')
 							} else {
 								// this.$set(this.ftSendAddress,'titleName', this.newAddressTitle)
-								this.$set(this.ftSendAddress,'titleName', this.newAddressTitle)
+								// this.$set(this.ftSendAddress,'titleName', this.newAddressTitle)
 								console.log(this.newAddressTitle)
 							}
 							
-							this.$set(this.ftSendAddress,'location', res.data.regeocode.aois[0].location)
-							this.$set(this.ftSendAddress,'addressname', this.sendAddress.editAddress.address)
+							// this.$set(this.ftSendAddress,'location', res.data.regeocode.aois[0].location)
+							// this.$set(this.ftSendAddress,'addressname', this.sendAddress.editAddress.address)
 							uni.removeStorageSync('newAddressFlag')
 						}
 						
@@ -2001,20 +2029,28 @@ export default {
 						
 				
 						if( typeof e !== 'string') {
-							console.log(this.addressDetail)
-							let sendAddress = {
-								addressDetail: this.addressDetail,
-								latitude: latitude,
-								mobile: this.userStartUserPhone,
-								name: this.userStartUserName,
-								province: this.province,
-								editAddress: this.editAddress,
-								city: this.city,
-								area: this.area,
-								orderId: ''
-							};
-							this.sendAddress = sendAddress
-							uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+							if (uni.getStorageSync('clickAddressFlag')) {
+								
+							} else {
+								let sendAddress = {
+									addressDetail: this.addressDetail,
+									latitude: latitude,
+									mobile: this.userStartUserPhone,
+									name: this.userStartUserName,
+									province: this.province,
+									editAddress: this.editAddress,
+									city: this.city,
+									area: this.area,
+									orderId: ''
+								};
+								this.sendAddress = sendAddress
+								console.log('改变4')
+								console.log(this.sendAddress)
+								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+								
+							}
+						
+							
 						}
 						
 						
@@ -2023,19 +2059,19 @@ export default {
 					
 						if (typeof e !== "string") {
 							
-							this.ftSendAddress = {}
+							// this.ftSendAddress = {}
 							// console.log("5555555")
 							// console.log(res.data.regeocode)
-							this.$set(this.ftSendAddress,'titleName',res.data.regeocode.pois[0].name)
-							this.$set(this.ftSendAddress,'location',res.data.regeocode.pois[0].location)
-							this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
+							// this.$set(this.ftSendAddress,'titleName',res.data.regeocode.pois[0].name)
+							// this.$set(this.ftSendAddress,'location',res.data.regeocode.pois[0].location)
+							// this.$set(this.ftSendAddress,'addressname',res.data.regeocode.formatted_address)
 						} else {
 							
-							this.ftSendAddress = {}
+							// this.ftSendAddress = {}
 							// console.log("6666666")
-							this.$set(this.ftSendAddress,'titleName', this.sendAddress.editAddress.name)
-							this.$set(this.ftSendAddress,'location', res.data.regeocode.pois[0].location)
-							this.$set(this.ftSendAddress,'addressname', this.sendAddress.editAddress.address)
+							// this.$set(this.ftSendAddress,'titleName', this.sendAddress.editAddress.name)
+							// this.$set(this.ftSendAddress,'location', res.data.regeocode.pois[0].location)
+							// this.$set(this.ftSendAddress,'addressname', this.sendAddress.editAddress.address)
 						}
 						
 						this.editAddress.name = res.data.regeocode.pois[0].name;
@@ -2070,22 +2106,28 @@ export default {
 							this.sendAddress.addressDetail = ''
 						}
 						
+						if (uni.getStorageSync('clickAddressFlag')) {
+							
+						} else {
+							let sendAddress = {
+								addressDetail: this.addressDetail,
+								latitude: latitude,
+								mobile: this.userStartUserPhone,
+								name: this.userStartUserName,
+								province: this.province,
+								editAddress: this.editAddress,
+								city: this.city,
+								area: this.area,
+								orderId: ''
+							};
+							this.sendAddress = sendAddress
+							console.log('改变5')
+							uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+						}
 						
-						let sendAddress = {
-							addressDetail: this.addressDetail,
-							latitude: latitude,
-							mobile: this.userStartUserPhone,
-							name: this.userStartUserName,
-							province: this.province,
-							editAddress: this.editAddress,
-							city: this.city,
-							area: this.area,
-							orderId: ''
-						};
-						this.sendAddress = sendAddress
-						uni.setStorageSync('sendAddress', JSON.stringify(sendAddress));
+						
 					}else {
-						this.ftSendAddress.titleName = '未获取到地址'
+						// this.ftSendAddress.titleName = '未获取到地址'
 						this.ftSendAddress.addressname = ''
 					}
 					
@@ -2138,10 +2180,10 @@ export default {
 		},
 		//编辑
 		goToEdit(addressInfo, index, id) {
-		
+			console.log(uni.getStorageSync('sendAddress'))
 			if (index === 0 && !(uni.getStorageSync('sendAddress'))) {
 				console.log('123')
-				
+				uni.removeStorageSync('sendAddress')
 				uni.navigateTo({
 					url: '../editAddress/editAddress?addressInfo=' + JSON.stringify(addressInfo) + '&status=' + index + '&id=' + id + '&ftSendAddress=' + JSON.stringify(this.ftSendAddress)
 				});
@@ -2180,6 +2222,7 @@ export default {
 					success: (msg) => {
 						
 						// console.log(msg)
+						// this.canClickflag = false
 						setTimeout( () => {
 							// console.log('进入设置')
 							
@@ -2193,6 +2236,7 @@ export default {
 							// this.$set(this.covers,0,[])
 			
 							if (uni.getStorageSync('endAddress')) {
+								// this.canClickflag = false
 								this.covers = [
 									{
 										id: 1,
@@ -2653,8 +2697,8 @@ export default {
 	position: relative;
 }
 .zuobiao{
-	width: 52rpx;
-	height: 52rpx;
+	width: 90rpx;
+	height: 90rpx;
 	position: absolute;
 	right: 10rpx;
 	top:0;
@@ -2665,8 +2709,10 @@ export default {
 	/* transform: translateY(200rpx); */
 }
 .zuobiao-img{
-	width: 52rpx;
-	height: 52rpx;
+	/* width: 52rpx;
+	height: 52rpx; */
+	width: 90rpx;
+	height: 90rpx;
 }
 .center-sendAddress-right-text{
 /* 	flex-direction: row;
@@ -2689,12 +2735,21 @@ export default {
 	background-color: #fff !important;
 }
 
+.demo-box{
+	/* 
+	width: 100%;
+	height: 100%; */
+/* 	background-color: #f40;
+	position: absolute;
+	right: 0;
+	z-index: 9999; */
+}
 .next-address{
 	/* height: 100rpx; */
 	text-overflow: ellipsis;
 	position: absolute;
 	right: 0;
-	background-color: #000;
+	/* background-color: #000; */
 	/* padding: 20rpx; */
 	padding-left: 20rpx;
 	
@@ -2704,7 +2759,19 @@ export default {
 	padding-top: 20rpx;
 	flex-direction: row;
 	align-items: center;
-	z-index: 999;
+	z-index: 99999999;
+}
+.next-address-box{
+	text-overflow: ellipsis;
+/* 	position: absolute;
+	right: 0; */
+	background-color: #000;
+	padding-left: 20rpx;
+	border-radius: 12rpx;
+	padding-top: 20rpx;
+	flex-direction: row;
+	align-items: center;
+	/* z-index: 99999999; */
 }
 .closeAddressIcon{
 	width: 36rpx;

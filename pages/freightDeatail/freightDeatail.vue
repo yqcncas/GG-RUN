@@ -50,7 +50,8 @@
 				<view class="item-left">预付金:<p class = "item-left-bottom">(预付金金额与商品价值无关，多退少补，私下支付)</p></view>
 				<view class="item-right total-text">¥{{freightInfo.goodsPredictAmount}}</view>
 			</view>
-			<view class="freight-total" v-if="freightInfo.taskReward - freightInfo.payAmount + freightInfo.serviceCharge">
+			<!-- <view class="freight-total" v-if="freightInfo.taskReward - freightInfo.payAmount + freightInfo.serviceCharge"> -->
+			<view class="freight-total" v-if="freightInfo.taskReward - freightInfo.payAmount ">
 				<view class="item-left">优惠券:</view>
 				<view class="item-right total-text" v-if="status === '1'">-¥{{youhuiPrice}}</view>
 				<view class="item-right total-text" v-else>-¥{{newsyouhuiPrice}}</view>
@@ -79,14 +80,19 @@
 				status: 0
 			}
 		},
+		onNavigationBarButtonTap () {
+			this.goToRichText(37)
+		},
 		computed:{
 			youhuiPrice () {
-				let yhPrice = Number(this.freightInfo.goodsPredictAmount + this.freightInfo.taskReward - this.freightInfo.payAmount + this.freightInfo.serviceCharge).toFixed(2)
+				// let yhPrice = Number(this.freightInfo.goodsPredictAmount + this.freightInfo.taskReward - this.freightInfo.payAmount + this.freightInfo.serviceCharge).toFixed(2)
+				let yhPrice = Number(this.freightInfo.goodsPredictAmount + this.freightInfo.taskReward - this.freightInfo.payAmount ).toFixed(2)
 				console.log(yhPrice)
 				return yhPrice
 			},
 			newsyouhuiPrice () {
-				let yhPrice = Number(this.freightInfo.taskReward - this.freightInfo.payAmount + this.freightInfo.serviceCharge).toFixed(2)
+				// let yhPrice = Number(this.freightInfo.taskReward - this.freightInfo.payAmount + this.freightInfo.serviceCharge).toFixed(2)
+				let yhPrice = Number(this.freightInfo.taskReward - this.freightInfo.payAmount).toFixed(2)
 				console.log(yhPrice)
 				return yhPrice
 			},
@@ -97,6 +103,11 @@
 			}
 		},
 		methods:{
+			goToRichText(id) {
+				uni.navigateTo({
+					url: '../rich-text/rich-text?id=' + id
+				});
+			},
 			disposeSpecialTimePrice() {
 				
 				if (JSON.stringify(this.freightInfo) != "{}") {

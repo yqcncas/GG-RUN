@@ -2,11 +2,14 @@
     "name" : "GG来送",
     "appid" : "__UNI__E5FD5C0",
     "description" : "",
-    "versionName" : "1.0.42",
-    "versionCode" : 117,
+    "versionName" : "1.0.47",
+    "versionCode" : 122,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
+        "compatible" : {
+            "ignoreVersion" : true //true表示忽略版本检查提示框，HBuilderX1.9.0及以上版本支持  
+        },
         "usingComponents" : true,
         "nvueCompiler" : "uni-app",
         "kernel" : {

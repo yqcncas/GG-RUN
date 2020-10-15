@@ -24,7 +24,7 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-.u-mask.data-v-96775c10 {
+.u-mask.data-v-0bc5cb68 {
   position: fixed;
   top: 0;
   left: 0;
@@ -36,10 +36,10 @@
   transition: transform 0.3s;
   transition: transform 0.3s, -webkit-transform 0.3s;
 }
-.u-mask-show.data-v-96775c10 {
+.u-mask-show.data-v-0bc5cb68 {
   opacity: 1;
 }
-.u-mask-zoom.data-v-96775c10 {
+.u-mask-zoom.data-v-0bc5cb68 {
   -webkit-transform: scale(1.2, 1.2);
           transform: scale(1.2, 1.2);
 }

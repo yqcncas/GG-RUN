@@ -13,7 +13,8 @@
 		</view>
 		<view class="edit-center" @tap="openMap">
 			<view class="center-left">
-				<view class="center-center" v-if="!editAddress.name">请选择您的地址</view>
+				<view class="center-center" v-if="!editAddress.name" style="font-weight: bold;color: #858585;">请选择您的地址</view>
+				<view class="center-bottom" v-if="!editAddress.name" style="font-size: 14px;color: #848484;"><span style = "color: red;">注:</span> 地图搜索地址时, 如无法搜索到地址, 在地址后加上该路段名称(如: 时代悦府兴海路)</view>
 				<view class="center-top">{{editAddress.name}}</view>
 				<view class="center-bottom">{{editAddress.address}}</view>
 			</view>
@@ -51,7 +52,8 @@
 		 </view>
 		 <view class="say-button-tip">请按顺序说出名字、电话、县级名称、地址</view>
 		 <view class="say-button-tip">例如: 王先生13888888888宁海紫金花园x幢x单元</view>
-		 
+<!-- 		 <view>{{JSON.stringify(point.point)}}</view>
+		 <view>{{point.city +' '+ point.address + ' ' + point.name}}</view> -->
 		 
 		 
 		<view class="submit" @click="submitAddress">提交</view>
@@ -222,7 +224,56 @@
 				accessToken: '',
 				saySpeakPopFlag: false,
 				saySpeakText: '',
-				extensionNumber: ''
+				extensionNumber: '',
+				point:{
+					point:{},
+					city:'',
+					address:'',
+					name:''
+				}
+			}
+		},
+		watch:{
+			point:{ 
+				deep:true,		//深度监视  监视内部的变化如数组包对象，对象里的东西变化
+				handler: function (value) {   //value新的值
+					console.log(value)
+					this.editAddress = {}
+					console.log(this.editAddress)
+					this.$set(this.editAddress, 'longitude', value.point.longitude)
+					// this.editAddress.longitude = value.point.longitude
+					this.$set(this.editAddress, 'latitude', value.point.latitude)
+					this.$set(this.editAddress, 'name', value.name)
+					this.$set(this.editAddress, 'address', value.address)
+					// this.editAddress.latitude = value.point.latitude
+					console.log('更新', value)
+					uni.request({
+						url: 'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' + value.point.longitude + ',' +
+							value.point.latitude + '&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。
+						success: (res) => {
+							console.log(res)
+							// if (that.editAddress.name === '地图位置') {
+							// 	console.log(res.data.regeocode)
+							// 	if (res.data.regeocode.aois.length) {
+							// 		this.editAddress.name = res.data.regeocode.aois[0].name
+							// 	} else {
+							// 		this.editAddress.name = res.data.regeocode.pois[0].name
+							// 	}
+								
+							// }
+							
+							// this.$set(this.editAddress, 'name', value.name)
+							// this.$set(this.editAddress, 'address', res.data.regeocode.formatted_address)
+							
+							// this.editAddress.name = value.name
+							// this.editAddress.address = res.data.regeocode.formatted_address
+							this.province = res.data.regeocode.addressComponent.province
+							this.city = res.data.regeocode.addressComponent.city
+							this.area = res.data.regeocode.addressComponent.district
+							
+						}
+					});
+				}
 			}
 		},
 		methods: {
@@ -552,35 +603,39 @@
 			//获取位置
 			openMap() {
 				let that = this
-				uni.chooseLocation({
-					success: res => {
-						this.editAddress = res
-						if (that.editAddress) {
-							uni.request({
-								url: 'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' + that.editAddress.longitude + ',' +
-									that.editAddress.latitude + '&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。
-								success: (res) => {
+				uni.navigateTo({
+					url:"../choose-location/choose-location",
+					animationType:"slide-in-bottom",
+				})
+				// uni.chooseLocation({
+				// 	success: res => {
+				// 		this.editAddress = res
+				// 		if (that.editAddress) {
+				// 			uni.request({
+				// 				url: 'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' + that.editAddress.longitude + ',' +
+				// 					that.editAddress.latitude + '&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。
+				// 				success: (res) => {
 									
-									if (that.editAddress.name === '地图位置') {
-										console.log(res.data.regeocode)
-										if (res.data.regeocode.aois.length) {
-											that.editAddress.name = res.data.regeocode.aois[0].name
-										} else {
-											that.editAddress.name = res.data.regeocode.pois[0].name
-										}
+				// 					if (that.editAddress.name === '地图位置') {
+				// 						console.log(res.data.regeocode)
+				// 						if (res.data.regeocode.aois.length) {
+				// 							that.editAddress.name = res.data.regeocode.aois[0].name
+				// 						} else {
+				// 							that.editAddress.name = res.data.regeocode.pois[0].name
+				// 						}
 										
-									}
+				// 					}
 
-									that.editAddress.address = res.data.regeocode.formatted_address
-									that.province = res.data.regeocode.addressComponent.province
-									that.city = res.data.regeocode.addressComponent.city
-									that.area = res.data.regeocode.addressComponent.district
-								}
-							});
-						}
+				// 					that.editAddress.address = res.data.regeocode.formatted_address
+				// 					that.province = res.data.regeocode.addressComponent.province
+				// 					that.city = res.data.regeocode.addressComponent.city
+				// 					that.area = res.data.regeocode.addressComponent.district
+				// 				}
+				// 			});
+				// 		}
 
-					}
-				});
+				// 	}
+				// });
 			},
 
 			checkPhoneNumber() {
@@ -604,6 +659,7 @@
 				// 	})
 					
 				// }
+				console.log(this.userName)
 				uni.removeStorageSync('helpMeBuy')				uni.removeStorageSync('helpMeGet')
 				if (!this.$u.test.mobile(this.userPhone)) {
 					return uni.showToast({
@@ -611,7 +667,12 @@
 						title: '手机号码填写错误，请检查'
 					})
 				}
-				
+				if (this.userName == undefined){
+					return uni.showToast({
+						icon: 'none',
+						title: '请填写姓名'
+					})
+				}
 				if (this.userName.trim() == '') {
 					return uni.showToast({
 						icon: 'none',
@@ -634,7 +695,11 @@
 						title: '请填写手机号'
 					})
 				}
-
+				console.log(this.editAddress)
+				if (JSON.stringify(this.editAddress) == '{}') return uni.showToast({
+					icon: 'none',
+					title: '请先选择您的地址'
+				})
 				
 				this.addressLongitude = this.editAddress.longitude + "," + this.editAddress.latitude
 				this.allTitle = this.editAddress.address + ',' + this.detailAddress + ',' + this.editAddress.name
@@ -680,6 +745,7 @@
 
 							if (this.status != 0) {
 								console.log('1')
+								uni.setStorageSync('canClickflag', true)
 								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress))
 								uni.setStorageSync('clickAddressFlag', true)
 							}
@@ -731,6 +797,7 @@
 							}
 							
 							console.log('2')
+							uni.setStorageSync('canClickflag', true)
 							uni.setStorageSync('sendAddress', JSON.stringify(sendAddress))
 							uni.setStorageSync('clickAddressFlag', true)
 
@@ -805,6 +872,7 @@
 									extensionNumber: this.extensionNumber
 								}
 								console.log('3')
+								uni.setStorageSync('canClickflag', true)
 								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress))
 								uni.setStorageSync('clickAddressFlag', true)
 							}
@@ -866,6 +934,7 @@
 									console.log('4')
 									console.log(uni.getStorageSync('noSetSend'))
 									if (!uni.getStorageSync('noSetSend')) {
+										uni.setStorageSync('canClickflag', true)
 										uni.setStorageSync('sendAddress', JSON.stringify(sendAddress))
 										uni.setStorageSync('newAddressFlag', true)
 										uni.setStorageSync('clickAddressFlag', true)
@@ -922,6 +991,7 @@
 								}
 								
 								console.log('5')
+								uni.setStorageSync('canClickflag', true)
 								uni.setStorageSync('sendAddress', JSON.stringify(sendAddress))
 								uni.setStorageSync('clickAddressFlag', true)
 							}
@@ -1085,7 +1155,7 @@
 				.center-center {
 					box-sizing: border-box;
 					font-family: PingFangSC-Regular;
-					font-size: 14px;
+					font-size: 16px;
 					color: rgba(9,2,62,0.30);
 				}
 			}

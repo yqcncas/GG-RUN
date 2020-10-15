@@ -1,0 +1,313 @@
+<template>
+	<view class='container'>
+		<view :style="{height: height+'px'}"></view>
+		<uni-nav-bar leftIcon="closeempty" title="搜索位置" rightText="确定" :border="false" @clickLeft="navigateBack" @clickRight="bindConfirm" :statusBar = "true" :fixed = "true"></uni-nav-bar>
+		<map id="map" ref="map" class="map"
+			:latitude="latitude"
+			:longitude="longitude"
+			:markers="markers"
+			:show-location="true"
+			:style="{width: '750rpx',height: windowHeight-height-300+'px', transform: 'translate(' + 0 + ',' + -20 + 'px)'}"
+			@tap="mapTap">
+		</map>
+		<cover-image src="/static/icon-dingwei.png" class="dingwei" @click="getLocation"></cover-image>
+		<view class="search-box">
+			<scroll-view :scroll-y="true" class="scroll" @scrolltolower='refresh'>
+				<view class="list" v-for="(item, index) in list" :key="index" @click="bindPointClick(index)">
+					<view class="top">
+						<view class="left">
+							<view>
+								<text class="name">{{item.name}}</text>
+							</view>
+							<view>
+								<text class="detail">{{item.distance+'km|'+item.address}}</text>
+							</view>
+						</view>
+						<view v-if="item.checked">
+							<text class="hook">✔</text>
+						</view>
+					</view>
+					<view class="line"></view>
+				</view>
+			</scroll-view>
+			<view class="list">
+				<input class="input" type="text" placeholder="搜索地点" confirm-type="search" v-model="condition" @confirm="bindSearchClick"/>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import cityData from "@/utils/citys.js";
+	import * as turf from "@/utils/turf.min.js";
+	export default {
+		data() {
+			return {
+				sysInfo: null,
+				height:'',
+				windowHeight:'',
+				mapContext: null,
+				map: null,
+				searchObj: null,
+				searchCity:'',
+				latitude: '30',
+				longitude: '120',
+				myLocation:{},
+				myMarker:[],
+				pointMarker:[],
+				condition:'',
+				index:0,
+				list: [],
+				doMove: false,
+			}
+		},
+		onLoad() {
+			this.sysInfo = uni.getSystemInfoSync();
+			this.height = this.sysInfo.statusBarHeight;
+			this.windowHeight = this.sysInfo.windowHeight;
+		},
+		onReady() {
+			// 调用plus.map
+			this.mapContext = uni.createMapContext('map', this);
+			this.searchObj = new plus.maps.Search(this.mapContext);
+			let self = this;
+			this.searchObj.onPoiSearchComplete = function( state, result ){  
+				console.log("onPoiSearchComplete: "+state+" , "+result.currentNumber);  
+				let startPoint = turf.point([self.myLocation.longitude, self.myLocation.latitude]);
+				if ( state == 0 ) {
+					if ( result.currentNumber <= 0 ) {  
+						console.log( "没有检索到结果" );
+					}else{
+						let list = result.poiList;
+						for (let i = 0; i < list.length; i++) {
+							let endPoint = turf.point([list[i].point.longitude, list[i].point.latitude]);
+							list[i].distance = turf.distance(startPoint, endPoint).toFixed(1);
+						}
+						self.list = self.list.concat(list);
+						if(self.list.length>0&&self.index==0){
+							self.list[0].checked = true;
+							let path = '';
+							let point = self.list[0].point;
+							if(self.doMove){
+								self.moveToLocation(point);
+								self.doMove = false;
+							}
+						}
+						console.log(list);
+					}
+				} else {
+					console.log( "检索失败" );  
+				}  
+			}
+			this.getLocation();
+		},
+		computed:{
+			searchDatas() {// 判断输入的是否为城市名
+				var searchData = []
+				for (let i = 0; i < cityData.length; i++) {
+					if (cityData[i]['cityName'].indexOf(this.condition) !== -1) {
+						searchData.push({
+							data: cityData[i],
+							name: cityData[i]['cityName']
+						})
+					}
+				}
+				return searchData
+			},
+			markers() {
+				return [...this.myMarker, ...this.pointMarker];
+			},
+		},
+		watch:{
+			condition(){ // 根据城市搜索poi点
+				this.index = 0;
+				this.list = [];
+				if(this.condition!=''){
+					if(this.searchDatas.length==1){
+						this.searchCity = this.searchDatas[0].data.cityName;
+					}
+					this.getPoiInCity(this.searchCity, this.condition);
+				}else{
+					setTimeout(()=>{
+						this.getLocation();
+					}, 500)
+				}
+			}
+		},
+		methods: {
+			navigateBack() {
+				uni.navigateBack({
+					delta:1
+				})
+			},
+			bindSearchClick() {
+				this.index = 0;
+				this.list = [];
+				this.doMove = true;
+				if(this.condition!=''){
+					if(this.searchDatas.length==1){
+						this.searchCity = this.searchDatas[0].data.cityName;
+					}
+					this.getPoiInCity(this.searchCity, this.condition);
+				}else{
+					this.getLocation();
+				}
+			},
+			bindConfirm() { // 确认按钮的方法，可自定义上一页所需参数
+				let point = {};
+				this.list.forEach(v => {
+					if(v.checked){
+						point = v;
+					}
+				})
+				let pages = getCurrentPages();
+				let prevPage = pages[pages.length - 2].$vm;
+				prevPage.point = point;
+				uni.navigateBack({
+					delta:1
+				})
+			},
+			getLocation() { // 获取当前位置
+				let self = this;
+				this.index = 0;
+				this.list = [];
+				uni.getLocation({
+					type:"gcj02",
+					geocode:true,
+					success(res) {
+						console.log('getLocation:'+res.address.poiName)
+						self.longitude = res.longitude;
+						self.latitude = res.latitude;
+						self.myLocation = {
+							longitude: res.longitude,
+							latitude: res.latitude
+						}
+						self.doMove = true;
+						let point = new plus.maps.Point(res.longitude, res.latitude);
+						self.searchCity = res.address.city;
+						self.getNearbyPoi(point);
+					},
+					fail(res) {
+						console.log(res)
+					}
+				})
+			},
+			getNearbyPoi(point, index = 0){ // 获取附近poi
+			console.log(point, index)
+				this.searchObj.poiSearchNearBy('', point, 1000, index);
+			},
+			getPoiInCity(city, key, index = 0){ // 获取指定城市、指定关键词搜索的poi
+			console.log(city, key, index)
+				this.searchObj.poiSearchInCity("宁波市", key, index);
+			},
+			refresh(){
+				this.index += 10;
+				if(this.condition){
+					this.getPoiInCity(this.searchCity, this.condition, this.index);
+				}else{
+					let point = new plus.maps.Point(this.longitude, this.latitude);
+					this.getNearbyPoi(point, this.index);
+				}
+			},
+			bindPointClick(index){
+				let point = this.list[index].point;				this.moveToLocation(point);
+				this.list.forEach((v,i)=>{
+					if(index != i){
+						v.checked = false;
+					}else{
+						v.checked = true;
+					}
+				})
+				this.bindConfirm()
+			},
+			mapTap(e){
+				this.list = [];
+				let point = { longitude: e.detail.longitude, latitude: e.detail.latitude };
+				this.moveToLocation(point);
+				let plusPoint = new plus.maps.Point(e.detail.longitude, e.detail.latitude)
+				this.getNearbyPoi(plusPoint);
+			},
+			moveToLocation(point){
+				let path = '';
+				if(this.sysInfo.platform == 'ios'){
+					path = '/static/location32.png';
+				}else{
+					path = '/static/location64.png';
+				}
+				this.longitude = point.longitude;
+				this.latitude = point.latitude;
+				this.pointMarker = [{
+					id: 'pointMarker',
+					longitude: point.longitude,
+					latitude: point.latitude,
+					iconPath: path
+				}];
+			},
+		}
+	}
+</script>
+
+<style>
+	.dingwei{
+		width: 80rpx;
+		height: 80rpx;
+		position: fixed;
+		bottom: 660rpx;
+		right: 30rpx;
+	}
+	.search-box{
+		width: 750rpx;
+		height: 630rpx;
+		position: fixed;
+		left: 0;
+		bottom: 0;
+		background-color: #FFFFFF;
+		z-index: 99;
+		border-radius: 20rpx;
+		padding-left: 20rpx;
+		padding-right: 20rpx;
+		padding-top: 30rpx;
+	}
+	.input{
+		width: 690rpx;
+		height: 80rpx;
+		padding-left: 20rpx;
+		line-height: 34rpx;
+		margin-top: 30rpx;
+		margin-left: 10rpx;
+		font-size: 26rpx;
+		background-color: #ececec;
+		border-radius: 8rpx;
+	}
+	.scroll{
+		height: 480rpx;
+	}
+	.list{
+		flex-direction: column;
+	}
+	.top{
+		flex-direction: row;
+		align-items: center;
+	}
+	.left{
+		width: 650rpx;
+		flex-direction: column;
+	}
+	.name{
+		font-size: 28rpx;
+		margin-bottom: 10rpx;
+	}
+	.hook{
+		font-size: 26rpx;
+	}
+	.detail{
+		font-size: 24rpx;
+		color: #666666;
+		margin-bottom: 10rpx;
+	}
+	.line{
+		height: 1rpx;
+		background-color: #CCCCCC;
+		margin-bottom: 14rpx;
+	}
+</style>

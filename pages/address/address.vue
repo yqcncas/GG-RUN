@@ -135,6 +135,7 @@
 					}
 					uni.setStorageSync('sendAddress',JSON.stringify(sendAddress))
 					uni.setStorageSync('clickAddressFlag', true)
+					uni.setStorageSync('canClickflag', true)
 					uni.navigateBack({
 						delta:1
 					})
@@ -203,7 +204,7 @@
 				console.log(this.userAddress)
 				setTimeout(() => {
 					uni.hideLoading()
-				}, 1700)
+				}, 1000)
 			},
 			//删除地址
 			async delAddress (id) {

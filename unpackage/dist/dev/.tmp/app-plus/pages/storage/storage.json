@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "",
+  "navigationStyle": "custom",
+  "titleNView": false,
+  "usingComponents": {
+    "u-upload": "/node-modules/uview-ui/components/u-upload/u-upload",
+    "uni-popup": "/components/uni-popup/uni-popup",
+    "status": "/pages/components/status/status"
+  }
+}

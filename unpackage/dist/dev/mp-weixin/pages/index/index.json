@@ -1,9 +1,0 @@
-{
-  "navigationBarTitleText": "",
-  "navigationStyle": "custom",
-  "navigationBarTextStyle": "black",
-  "usingComponents": {
-    "uni-notice-bar": "/components/uni-notice-bar/uni-notice-bar",
-    "simple-address": "/components/simple-address/simple-address"
-  }
-}

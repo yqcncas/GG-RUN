@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "订单详情",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "usingComponents": {
+    "uni-steps": "/components/uni-steps/uni-steps",
+    "uni-popup": "/components/uni-popup/uni-popup",
+    "order-detail-map": "/components/orderDetailMap"
+  }
+}

@@ -347,6 +347,7 @@
 	import uniSteps from '@/components/uni-steps/uni-steps.vue'
 	export default {
 		onLoad(options) {
+			uni.setStorageSync('starSetIntertFlag', true)
 			this.cancelModelProp()
 			console.log(options)
 			this.orderStatus = options.currentIndex

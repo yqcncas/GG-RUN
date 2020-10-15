@@ -24,7 +24,7 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-.uni-popup.data-v-210e0efc {
+.uni-popup.data-v-dea76c1c {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -32,7 +32,7 @@
   right: 0;
   z-index: 999999;
 }
-.uni-popup__mask.data-v-210e0efc {
+.uni-popup__mask.data-v-dea76c1c {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -41,40 +41,40 @@
   background-color: rgba(0, 0, 0, 0.4);
   opacity: 0;
 }
-.mask-ani.data-v-210e0efc {
+.mask-ani.data-v-dea76c1c {
   -webkit-transition-property: opacity;
   transition-property: opacity;
   -webkit-transition-duration: 0.2s;
           transition-duration: 0.2s;
 }
-.uni-top-mask.data-v-210e0efc {
+.uni-top-mask.data-v-dea76c1c {
   opacity: 1;
 }
-.uni-bottom-mask.data-v-210e0efc {
+.uni-bottom-mask.data-v-dea76c1c {
   opacity: 1;
 }
-.uni-center-mask.data-v-210e0efc {
+.uni-center-mask.data-v-dea76c1c {
   opacity: 1;
 }
-.uni-popup__wrapper.data-v-210e0efc {
+.uni-popup__wrapper.data-v-dea76c1c {
   display: block;
   position: absolute;
 }
-.top.data-v-210e0efc {
+.top.data-v-dea76c1c {
   top: 0;
   left: 0;
   right: 0;
   -webkit-transform: translateY(-500px);
           transform: translateY(-500px);
 }
-.bottom.data-v-210e0efc {
+.bottom.data-v-dea76c1c {
   bottom: 0;
   left: 0;
   right: 0;
   -webkit-transform: translateY(500px);
           transform: translateY(500px);
 }
-.center.data-v-210e0efc {
+.center.data-v-dea76c1c {
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
@@ -96,11 +96,11 @@
           transform: scale(1.2);
   opacity: 0;
 }
-.uni-popup__wrapper-box.data-v-210e0efc {
+.uni-popup__wrapper-box.data-v-dea76c1c {
   display: block;
   position: relative;
 }
-.content-ani.data-v-210e0efc {
+.content-ani.data-v-dea76c1c {
   -webkit-transition-property: opacity, -webkit-transform;
   transition-property: opacity, -webkit-transform;
   transition-property: transform, opacity;
@@ -108,15 +108,15 @@
   -webkit-transition-duration: 0.2s;
           transition-duration: 0.2s;
 }
-.uni-top-content.data-v-210e0efc {
+.uni-top-content.data-v-dea76c1c {
   -webkit-transform: translateY(0);
           transform: translateY(0);
 }
-.uni-bottom-content.data-v-210e0efc {
+.uni-bottom-content.data-v-dea76c1c {
   -webkit-transform: translateY(0);
           transform: translateY(0);
 }
-.uni-center-content.data-v-210e0efc {
+.uni-center-content.data-v-dea76c1c {
   -webkit-transform: scale(1);
           transform: scale(1);
   opacity: 1;

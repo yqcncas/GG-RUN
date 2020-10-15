@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "",
+  "navigationStyle": "custom",
+  "titleNView": {
+    "backgroundColor": "#5468ff",
+    "titleColor": "#FFFFFF",
+    "titleText": "邀请有礼"
+  },
+  "usingComponents": {}
+}

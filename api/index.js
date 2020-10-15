@@ -1,11 +1,11 @@
 // 请在此对象写后端的请求接口列表
 export default {
 	// 此处写开发调试地址--自动生效
-	dev: 'http://192.168.8.8:8093/',
-	pro: 'http://192.168.8.8:8093/',
-	// dev:'https://admin.gglaisong.com/',
-	// // 此处写线上环境地址--自动生效
-	// pro: 'https://admin.gglaisong.com/',
+	// dev: 'http://192.168.8.8:8093/',
+	// pro: 'http://192.168.8.8:8093/',
+	dev:'https://admin.gglaisong.com/',
+	// 此处写线上环境地址--自动生效
+	pro: 'https://admin.gglaisong.com/',
 	
 	/**
 	 * 登录

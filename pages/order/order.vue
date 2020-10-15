@@ -78,7 +78,7 @@
 												<view class="bottom-title">{{item.endAddress.title}}</view>
 											</view>
 											<view class="right-bottom-center">{{item.endAddress.addressDetail}}</view>
-											<view class="right-bottom-footer" >{{item.endAddress.userName}} {{item.endAddress.mobile}}</view>
+											<view class="right-bottom-footer" >{{item.endAddress.userName}} {{item.endAddress.mobile}} <text style="padding-left: 15rpx;" v-if="item.endAddress.extensionNumber">分机号: {{item.endAddress.extensionNumber}}</text></view>
 										</view>
 									</view>
 								</view>
@@ -135,7 +135,8 @@
 								</view>
 								<view class="main-center">
 									<view class="center-left">
-										<view class="left-top" v-if="item.type == 2">买</view>										<view class="left-top" v-else>取</view>
+										<view class="left-top" v-if="item.type == 2">买</view>
+										<view class="left-top" v-else>取</view>
 										<view class="left-line">
 											<div class="content">
 											</div>
@@ -144,15 +145,27 @@
 										<view class="left-bottom" v-else>达</view>
 									</view>
 									<view class="center-right">
-										<view class="right-top" v-if="!item.buyAddressType">											<view class="right-top-header">												<view class="top-title">{{item.startAddress.title}}</view>											</view>											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>										</view>										<view class="right-top top-title-child" v-else>											就近购买										</view>
+										<view class="right-top" v-if="!item.buyAddressType">
+											<view class="right-top-header">	
+											<view class="top-title">{{item.startAddress.title}}</view>
+											</view>
+											<view class="right-top-center">{{item.startAddress.addressDetail}}</view>
+											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>
+											</view>										
+											<view class="right-top top-title-child" v-else>
+												就近购买	
+											</view>
+											<view class="buyTimerDJS" style="display: flex;align-items: center;" v-if="item.pickUpType == 0">接单后:<view><span style = "color: #5468FF;">{{item.pickUpNeedTime}}分钟</span>内{{item.type == 2 ? '购买' : '取件'}}</view></view>
+											<view class="buyTimerDJS" style="display: flex;align-items: center;" v-if="item.pickUpType == 1">送达:<view><span style = "color: #5468FF;">{{item.newPickUpTime}}</span></view></view>
 										<view class="right-bottom" :style="{paddingTop:item.startAddress.addressDetail.length < 27 ? 70 + 'rpx' : 48 + 'rpx'}">
 										<!-- <view class="right-bottom"> -->
 											<view class="right-bottom-header">
 												<view class="bottom-title">{{item.endAddress.title}}</view>
 											</view>
 											<view class="right-bottom-center">{{item.endAddress.addressDetail}}</view>
-											<view class="right-bottom-footer" >{{item.endAddress.userName}} {{item.endAddress.mobile}}</view>
+											<view class="right-bottom-footer" >{{item.endAddress.userName}} {{item.endAddress.mobile}} <text style="padding-left: 15rpx;" v-if="item.endAddress.extensionNumber">分机号: {{item.endAddress.extensionNumber}}</text></view>
 										</view>
+										<view class="buyTimerDJS" style = "color: #5468FF;" v-if="item.pickUpType == 0">接单后预计: <span style = "color: #d32928;">{{item.estimatedNeedTime}}分钟</span>内送达</view>
 									</view>
 								</view>
 								<view class="main-bottom">
@@ -226,10 +239,15 @@
 											<view class="right-top-footer" v-show="item.type !== 2">{{item.startAddress.userName}} {{item.startAddress.mobile}}</view>
 											</view>										
 											<view class="right-top top-title-child" v-else>就近购买</view>
-											<view class="buyTimerDJS" v-if="item.endPickTimer && !item.buyAddressType">取件倒计时: <span>{{item.endPickTimer}}分钟</span>内购买</view>	
-											<view class="buyTimerDJS" v-else-if = "item.endPickTimer <= 0 && !item.buyAddressType">取件倒计时: <span>已超时</span></view>
-											<view class="buyTimerDJS" v-if="item.endPickTimer && item.buyAddressType">购买倒计时: <span>{{item.endPickTimer}}分钟</span>内购买</view>
-											<view class="buyTimerDJS" v-else-if = "item.endPickTimer <= 0 && item.buyAddressType">购买倒计时: <span>已超时</span></view>
+											<view class="buyTimerDJS" v-if="item.endPickTimer && !item.buyAddressType && item.pickUpType == 0 && item.second != undefined">剩余时间: <span style = "color: #5468FF;">{{item.hour}}:{{item.minute}}:{{item.second}}</span>内{{item.type == 2 ? '购买' : '取件'}}</view>	
+											<view class="buyTimerDJS" v-else-if = "item.endPickTimer <= 0 && !item.buyAddressType && item.pickUpType == 0"><span>已超时</span></view>
+											<view class="buyTimerDJS" v-if="item.endPickTimer && item.buyAddressType && item.pickUpType == 0 && item.second != undefined">剩余时间: <span style = "color: #5468FF;">{{item.hour}}:{{item.minute}}:{{item.second}}</span>内{{item.type == 2 ? '购买' : '取件'}}</view>
+											<view class="buyTimerDJS" v-else-if = "item.endPickTimer <= 0 && item.buyAddressType && item.pickUpType == 0"><span>已超时</span></view>
+											
+											<view class="buyTimerDJS" v-if="item.endPickTimer && !item.buyAddressType && item.pickUpType == 1">预约: <text style = "color: #5468FF;margin-right: 50rpx;">{{item.newPickUpTime}}</text>     剩余: <span style = "color: #5468FF;">{{item.hour}}:{{item.minute}}:{{item.second}}</span></view>
+											<view class="buyTimerDJS" v-else-if = "item.endPickTimer <= 0 && !item.buyAddressType && item.pickUpType == 1"><span>已超时</span></view>
+											<view class="buyTimerDJS" v-if="item.endPickTimer && item.buyAddressType && item.pickUpType == 1">预约: <text style = "color: #5468FF;margin-right: 50rpx;">{{item.newEstimatedTime}}</text>  剩余: <span style = "color: #5468FF;">{{item.hour}}:{{item.minute}}:{{item.second}}</span></view>
+											<view class="buyTimerDJS" v-else-if = "item.endPickTimer <= 0 && item.buyAddressType && item.pickUpType == 1"><span>已超时</span></view>
 											
 											
 										<view class="right-bottom" :style="{paddingTop:item.startAddress.addressDetail.length < 27 ? 70 + 'rpx' : 48 + 'rpx'}">
@@ -238,8 +256,11 @@
 												<view class="bottom-title">{{item.endAddress.title}}</view>
 											</view>
 											<view class="right-bottom-center">{{item.endAddress.addressDetail}}</view>
-											<view class="right-bottom-footer" >{{item.endAddress.userName}} {{item.endAddress.mobile}}</view>
+											<view class="right-bottom-footer" >{{item.endAddress.userName}} {{item.endAddress.mobile}} <text style="padding-left: 15rpx;" v-if="item.endAddress.extensionNumber">分机号: {{item.endAddress.extensionNumber}}</text></view>
 											<!-- <view class="buyTimerDJS">送达倒计时: <span>18分钟</span>内购买</view> -->
+											<view class="buyTimerDJS" v-if="item.pickUpType == 0 && item.sendsecond != undefined" style = "color: #5468FF;">剩余时间:<span style = "color: #d32928;">{{item.sendhour}}:{{item.sendminute}}:{{item.sendsecond}}</span>内送达</view>
+											<view class="buyTimerDJS" v-if="item.pickUpType == 1 && item.sendsecond != undefined" style = "color: #5468FF;">预约: <text style = "color: #d32928;margin-right: 50rpx;">{{item.newEstimatedTime}}</text>  <span  style = "color: #5468FF">剩余:</span> <span style = "color: #d32928;">{{item.sendhour}}:{{item.sendminute}}:{{item.sendsecond}}</span></view>
+											<view class="buyTimerDJS"	v-if = "item.sendsecond == undefined"><span>已超时</span></view>
 										</view>
 									</view>
 								</view>
@@ -323,9 +344,9 @@
 												<view class="bottom-title">{{item.endAddress.title}}</view>
 											</view>
 											<view class="right-bottom-center">{{item.endAddress.addressDetail}}</view>
-											<view class="right-bottom-footer" >{{item.endAddress.userName}} {{item.endAddress.mobile}}</view>
-											<view class="buyTimerDJS" v-if="item.estimatedTimeDown > 0">送达倒计时: <span>{{item.estimatedTimeDown}}分钟</span>内送达</view>
-											<view class="buyTimerDJS" v-else-if="item.estimatedTimeDown <= 0">送达倒计时: <span>已超时</span></view>
+											<view class="right-bottom-footer" >{{item.endAddress.userName}} {{item.endAddress.mobile}} <text style="padding-left: 15rpx;" v-if="item.endAddress.extensionNumber">分机号: {{item.endAddress.extensionNumber}}</text></view>
+											<view class="buyTimerDJS" v-if="item.estimatedTimeDown > 0">剩余时间: <span >{{item.hour}}:{{item.minute}}:{{item.second}}</span>内送达</view>
+											<view class="buyTimerDJS" v-else-if="item.estimatedTimeDown <= 0"><span>已超时</span></view>
 										</view>
 									</view>
 								</view>
@@ -780,13 +801,43 @@
 			  }  
 			});
 			
+			
+			
 		},
+
 		onShow() {
+			if (this.currentIndex != 6) {
+				this.setTimer = setInterval(() => {
+					this.hasFlag = true
+					this.orderList = []
+					this.i = 0
+					this.orderArr = []
+					this.orderArrLength = 0
+					this.priceArr = []
+					this.initOrder()
+				}, 15000)
+			}
+			
+			
 			if(uni.getStorageSync('userSelect')){
 				this.currentIndex = uni.getStorageSync('userSelect')
 				
 				this.initOrder()
 				uni.removeStorageSync('userSelect')
+			}
+			if (uni.getStorageSync('starSetIntertFlag')) {
+				if (this.currentIndex != 6) {
+				this.setTimer = setInterval(() => {
+					this.hasFlag = true
+					this.orderList = []
+					this.i = 0
+					this.orderArr = []
+					this.orderArrLength = 0
+					this.priceArr = []
+					this.initOrder()
+				}, 15000)
+				uni.removeStorageSync('starSetIntertFlag')
+				}
 			}
 			uni.removeStorageSync('orderDetailInfo');
 			// 进入详情 会跳转到第一页 所以注释
@@ -818,10 +869,24 @@
 			uni.hideLoading()
 			this.showCancelModel = false
 			this.$refs.popupPay.close()
+			clearInterval(this.setTimer)
+			this.setTimer = null
 		},
 		onTabItemTap(e){
 		
 			this.initOrder()
+			if (this.setTimer) return
+			if (this.currentIndex != 6) {
+			this.setTimer = setInterval(() => {
+				this.hasFlag = true
+				this.orderList = []
+				this.i = 0
+				this.orderArr = []
+				this.orderArrLength = 0
+				this.priceArr = []
+				this.initOrder()
+			}, 15000)
+			}
 		},
 		
 		components:{
@@ -902,7 +967,8 @@
 					offset: 30
 				},
 				pickUpTimerFlag: [],
-				estimatedTimerFlag: []
+				estimatedTimerFlag: [],
+				setTimer: null
 			}
 		},
 		computed:{
@@ -932,7 +998,7 @@
 				
 			},
 			touchenditem (e) {
-				console.log(e)
+				// console.log(e)
 				// this.touchEndY = e.changedTouches[0].pageY
 				// // console.log(this.touchEndY - this.touchStartY)
 				// console.log(this.touchEnsdY)
@@ -1352,6 +1418,7 @@
 				// uni.showLoading({
 				// 	title:'加载中'
 				// })
+				
 				let res = await this.$fetch(this.$api.orderCustomer,{status:this.scrollList[this.currentIndex].value, displayFlag: 1},"POST")
 				// console.log(res)
 				this.resTotal = res.total
@@ -1366,7 +1433,7 @@
 				}
 				// 分页
 				if (this.orderList.length < res.total) {
-					
+					// console.log('执行')
 					this.hasFlag = true
 					this.orderArr = [] 
 					// this.priceArr = []
@@ -1388,7 +1455,7 @@
 					if(this.orderArrLength <= res.total) {
 						
 						this.orderList = [...this.orderList,...this.orderArr]
-						console.log(this.orderList)
+						// console.log(JSON.stringify(this.orderList))
 					
 						
 						if (this.currentIndex == 0) {
@@ -1399,6 +1466,14 @@
 							// })
 						}
 						if (this.currentIndex == 1) {
+							console.log(this.orderList)
+							this.orderList.forEach(item => {
+								if (item.pickUpType == 1) {
+									item.newPickUpTime = item.pickUpTime.slice(5)
+								} else {
+									item.newPickUpTime = ''
+								}
+							})
 							this.swiperItem2 = this.orderList
 							
 							// this.swiperItem2.forEach(item => {
@@ -1410,21 +1485,45 @@
 							if (this.orderList.length) {
 								this.orderList.forEach((item, index) => {
 									
-									item.endPickTimer = this.$dayjs(item.pickUpTime).diff(this.$dayjs(), "minute")
-								
+									item.endPickTimer = this.$dayjs(item.pickUpTime).diff(this.$dayjs(), "second")
+									item.estimatedTimeDown = this.$dayjs(item.estimatedTime).diff(this.$dayjs(), "second")
+									
+									item.newPickUpTime = item.pickUpTime.slice(5)
+									item.newEstimatedTime = item.estimatedTime.slice(5)
+									
+									
+									this.countDown(item.endPickTimer, index, item, 1)
+									this.countDown(item.estimatedTimeDown, index, item, 2)
+									
 									clearInterval(this.pickUpTimerFlag[index])
+									
 									this.pickUpTimerFlag[index] = null;
 									this.pickUpTimerFlag[index] = setInterval(() => {
-										console.log('1111')
 										// item.endPickTimer = --item.endPickTimer
-										this.$set(this.orderList[index], "endPickTimers", --item.endPickTimer)
-										console.log(item.endPickTimer)
+										// this.$set(this.orderList[index], "endPickTimers", --item.endPickTimer)
+										item.endPickTimer--
+										item.estimatedTimeDown--
+										// console.log(item.endPickTimer)
 										if (item.endPickTimer <= 0) {
+											item.hour = 0
+										    item.minute = 0
+										    item.second = 0
 											item.endPickTimer = 0
 											this.endOfTime(index)
 											return
 										}
-									}, 60000)
+										if (item.estimatedTimeDown <= 0) {
+											item.sendhour = 0
+										    item.sendminute = 0
+										    item.sendsecond = 0
+											item.estimatedTimeDown = 0
+											this.endOfTime(index)
+											return
+										}
+										
+										this.countDown(item.endPickTimer, index, item, 1)
+										this.countDown(item.estimatedTimeDown, index, item, 2)
+									}, 1000)
 								})
 							}
 							
@@ -1441,26 +1540,28 @@
 							if (this.orderList.length) {
 								this.orderList.forEach((item, index) => {
 									
-									item.estimatedTimeDown = this.$dayjs(item.pickUpTime).diff(this.$dayjs(), "minute")
-								
+									item.estimatedTimeDown = this.$dayjs(item.estimatedTime).diff(this.$dayjs(), "second")
+									this.countDown(item.estimatedTimeDown, index, item, 1)
 									clearInterval(this.estimatedTimerFlag[index])
 									this.estimatedTimerFlag[index] = null;
 									this.estimatedTimerFlag[index] = setInterval(() => {
-										console.log('1111')
+										
 										// item.endPickTimer = --item.endPickTimer
-										this.$set(this.orderList[index], "estimatedTimeDowns", --item.estimatedTimeDown)
-										console.log(item.estimatedTimeDown)
+										// this.$set(this.orderList[index], "estimatedTimeDowns", --item.estimatedTimeDown)
+										item.estimatedTimeDown--
+										// console.log(item.estimatedTimeDown)
 										if (item.estimatedTimeDown <= 0) {
 											item.estimatedTimeDown = 0
 											this.endOfTime(index)
 											return
 										}
-									}, 60000)
+										this.countDown(item.estimatedTimeDown, index, item, 1)
+									}, 1000)
 								})
 							}
 							
 							this.swiperItem4 = this.orderList
-							console.log(this.orderList)
+							// console.log(this.orderList)
 							// this.swiperItem4.forEach(item => {
 							// 	// this.priceArr4.push((item.payAmount - item.goodsPredictAmount).toFixed(2))
 							// })
@@ -1504,7 +1605,7 @@
 						uni.hideLoading()
 					},500)
 				} else {
-					
+					// console.log('执行')
 					
 					if (this.orderList.length == 0 && this.currentIndex == 0) {
 						
@@ -1536,6 +1637,54 @@
 			
 			
 				
+			},
+			// 倒计时处理 传入的是秒数
+			countDown(seconds, i, item, type){
+				// console.log(seconds)
+			    //如果传递的值大于0
+				
+			    if (seconds > 0) {
+			        //转换时间
+					if (type === 1) {
+						this.$set(item, 'hour',  Math.floor(seconds / (60 * 60)))
+										
+						this.$set(item, 'minute', Math.floor(seconds / 60) - (item.hour * 60))
+										
+						this.$set(item, 'second', Math.floor(seconds) - (item.hour * 60 * 60) - (item.minute * 60))
+									
+						   //判断时间是否大于10 
+						    if (item.hour < 10) {
+						    	item.hour = "0" + item.hour
+						    }
+						    if (item.minute < 10) {
+						    	item.minute = "0" + item.minute
+						    }
+						    if (item.second < 10) {
+						    	item.second = "0" + item.second
+						    }
+					} else {
+						this.$set(item, 'sendhour',  Math.floor(seconds / (60 * 60)))
+										
+						this.$set(item, 'sendminute', Math.floor(seconds / 60) - (item.sendhour * 60))
+										
+						this.$set(item, 'sendsecond', Math.floor(seconds) - (item.sendhour * 60 * 60) - (item.sendminute * 60))
+									
+						   //判断时间是否大于10 
+						    if (item.sendhour < 10) {
+						    	item.sendhour = "0" + item.sendhour
+						    }
+						    if (item.sendminute < 10) {
+						    	item.sendminute = "0" + item.sendminute
+						    }
+						    if (item.sendsecond < 10) {
+						    	item.sendsecond = "0" + item.sendsecond
+						    }
+					}
+					
+			    } else {
+			        //结束时间
+			    	this.endOfTime(i)
+			    }
 			},
 			// 清除定时器
 			endOfTime (i) {

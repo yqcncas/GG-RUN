@@ -40,7 +40,8 @@
  					<view class="address-left">
 						<view class="circle" v-if="scrollIndex !== 2 ">取</view>
 						<view class="circle" v-else>买</view>
-						<view class="fillInfo" @tap="goToEdit(0)" v-if="sendAddressShow">请详细填写取件人、地址信息</view>
+						<view class="fillInfo" @tap="goToEdit(0)" v-if="sendAddressShow  && assignIndex == 1 && scrollIndex == 2">请详细填写取件人、地址信息</view>
+						<view class="fillInfo" @tap="goToEdit(0)" v-if="sendAddressShow && scrollIndex != 2">请详细填写取件人、地址信息</view>
 						<view class="address-center" @tap="goToEdit(sendAddress, 0, sendAddress.id)" v-else :class="{'bdr' : scrollIndex === 2 }">
 							<view class="center-top" v-if="assignIndex === 0 && scrollIndex !== 2">
 								<!-- <view class="user-name" :class="{'user-name-change' : sendAddress.editAddress.name.length > 9}">{{ sendAddress.editAddress.name }}</view> -->
@@ -64,9 +65,11 @@
 							</view>
 							
 							<view class="center-bottom" v-if="scrollIndex !== 2 || assignIndex !== 0">{{ sendAddress.editAddress.address || sendAddress.addressDetail[0] }}</view>
+							
 							<view class="center-bottom-user"  v-if="scrollIndex !== 2">
 								<view class="user-phone" style="margin-right:20rpx ;">{{ sendAddress.name }}</view>
 								<view class="user-phone" v-if=" sendAddress.name != sendAddress.mobile" >{{ sendAddress.mobile }}</view>
+							
 							</view>
 						</view>
 					</view>
@@ -95,6 +98,8 @@
 							<view class="center-bottom-user">
 								<view class="user-phone" style="margin-right:20rpx ;">{{ endAddress.name }}</view>
 								<view class="user-phone"  v-if=" endAddress.name != endAddress.mobile">{{ endAddress.mobile }}</view>
+								<view class="user-phone" style="padding-left: 15px;" v-if=" endAddress.extensionNumber">分机号: {{ endAddress.extensionNumber }}</view>
+								
 							</view>
 						</view>
 					</view>
@@ -135,7 +140,7 @@
 					</view>
 				</view>
 				
-				<view class="storage-item baojia" @tap="goToShopInfo" v-else>
+				<view class="storage-item baojia" @tap="goToShopInfo" v-else  style="position: relative;">
 				<!-- 	<view class="item-left"><image src="../../static/img/order/shopinfo.png" mode=""></image>商品信息</view>
 					<view class="item-right">
 						<view class="place" v-if="JSON.stringify(shopInfo) == '{}'" style="color: rgba(9,2,62,0.30);">请填写</view>
@@ -150,7 +155,12 @@
 						<view class="item-left-top"><image src="../../static/img/order/shopinfo.png" mode=""></image>商品信息</view>
 						<view class="item-left-bottom">请认真填写包裹信息</view>
 					</view>
-					<view class="item-right item-right-shopInfo">
+					<view class="item-right item-right-shopInfo"> 
+						<!-- <image src="../../static/img/qp.png" mode="aspectFill" style="width: 302rpx;height: 88rpx; position: absolute; top: -20rpx; left: 25%;"></image> -->
+						<view class="qp-box" v-if="JSON.stringify(qpInfo) != '{}'" @click.stop="handleHelpQpInfo">
+							{{qpInfo.main + ',' + qpInfo.weight + '公斤内,' + qpInfo.price + '元' }}
+							<image src="../../static/icon/36.png" mode="aspectFill" style="width: 36rpx; height: 36rpx;transform: translateY(8rpx);" @click.stop="handleQnBox"></image>
+						</view>
 						<view class="place" v-if="JSON.stringify(shopInfo) == '{}'" style="color: rgba(9,2,62,0.30);"><span style = "color: #ef392b; display: inline-block;padding-right: 8rpx;font-size: 16px;">*必填</span>请填写</view>
 						<view class="place" v-else-if="scrollIndex == 2">{{ shopInfo.main + ',' + shopInfo.price + '元' }}</view>
 						<view class="place item-right-shopInfo" v-else>{{ shopInfo.main + ',' + shopInfo.weight + '公斤内,' + shopInfo.price + '元' }}</view>
@@ -402,7 +412,7 @@
 				</view>
 			</view>
 			<view class="popups-footer">
-				<view class="popups-footer-left">
+		<!-- 		<view class="popups-footer-left">
 					<view class="footer-left-top">
 						<view class="flt-left">
 							<view class="flt-left-total">总计：</view>
@@ -414,8 +424,8 @@
 						</view>
 					</view>
 					<view class="footer-left-bottom">3公里内：30分钟内送达</view>
-				</view>
-				<view class="popups-footer-right" @tap="handlePopPay">确认下单</view>
+				</view> -->
+				<view class="popups-footer-right" @tap="handlePopPay">去支付</view>
 			</view>
 		</uni-popup>
 		
@@ -450,24 +460,12 @@
 import uniPopup from '@/components/uni-popup/uni-popup.vue';
 export default {
 	onLoad(option) {
-		this.getQiniuToken()
-		console.log(option.assignIndex)
-		this.car = option.car;
-		this.scrollIndex = Number(option.scrollIndex)
-		console.log(this.scrollIndex)
-		//默认地址
-		this.initAddress();
-		//获取保价金
-		this.initorderProperty();
-		//富文本
-		this.initRichText();
-		//获取当前时间
-		// let nowTime = this.$dayjs().hour();
 		let nowTime = this.$dayjs().format('HH:mm');
-
+		console.log("(***************)")
 		nowTime = nowTime.substring(0, nowTime.length - 1) + '0'
-	
-		this.nowTime = nowTime;
+			
+		this.nowTime = nowTime; 
+		
 		
 		//更改数组
 		///找到对应的下标
@@ -482,6 +480,32 @@ export default {
 		console.log(arrIndex)
 		//截取字符串
 		this.timeList = this.timer.slice(arrIndex + 3);
+		this.getQiniuToken()
+		console.log(option.assignIndex)
+		this.car = option.car;
+		this.scrollIndex = Number(option.scrollIndex)
+		console.log(this.scrollIndex)
+		//默认地址
+		this.initAddress();
+		//获取保价金
+		this.initorderProperty();
+		//富文本
+		this.initRichText();
+		
+		// if (uni.getStorageSync('helpMeShopInfo')) {
+			
+		// }
+		if (uni.getStorageSync('helpMeShopInfo') != '{}') {
+			let shopInfo = JSON.parse(uni.getStorageSync('helpMeShopInfo'))
+			console.log(uni.getStorageSync('helpMeShopInfo'))
+			console.log(shopInfo)
+			this.qpInfo = shopInfo
+			uni.removeStorageSync('helpMeShopInfo')
+			console.log(this.qpInfo)
+		}
+		//获取当前时间
+		// let nowTime = this.$dayjs().hour();
+
 		
 		//获取余额
 		// this.payInfo[0].sectext =  "(" + uni.getStorageSync('user_amount') + ')'
@@ -588,7 +612,7 @@ export default {
 			fileList: [],
 			QNtoken: {},
 			pics: '',
-			
+			qpInfo: {},
 			pickerTimerShow: false,
 			pickerTimerList: [1,2,3,4,6,7],
 			
@@ -833,13 +857,68 @@ export default {
 			//小票圆
 			xiaopiaoCircle : false,
 			newAddPrice: 0,
-			adcode: ''
+			adcode: '',
+			point:{
+				point:{},
+				city:'',
+				address:'',
+				name:''
+			}
 		};
 	},
 	components: {
 		uniPopup
 	},
 	watch: {
+		point:{
+			deep:true,		//深度监视  监视内部的变化如数组包对象，对象里的东西变化
+			handler: function (value) {   //value新的值
+				console.log(value)
+				
+				uni.request({
+					url:
+						'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' +
+						value.point.longitude +
+						',' +
+						value.point.latitude +
+						'&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。
+					success: res => {
+						this.sendAddressShow = false
+						// if (that.name === '地图位置') {
+						// 	that.name = res.data.regeocode.aois[0].name;
+						// }
+						// that.address = res.data.regeocode.formatted_address;
+				
+						if (this.sendAddress.addressDetail instanceof Array) {
+							
+							this.sendAddress.addressDetail[0] = value.address;
+							this.sendAddress.addressDetail[1] = '';
+							this.sendAddress.addressDetail[2] = value.name;
+							this.sendAddress.latitude = value.point.longitude + ',' + value.point.latitude;
+							
+							
+						} else {
+							
+							this.sendAddress.editAddress = {
+								address: value.address,
+								latitude: value.point.latitude,
+								name: value.name,
+								longitude: value.point.longitude
+							};
+				
+							this.sendAddress.latitude =  value.point.longitude + ',' + value.point.latitude
+									
+							
+						}
+						
+						console.log(JSON.stringify(this.sendAddress))
+						uni.setStorageSync('sendAddress',JSON.stringify(this.sendAddress))
+						this.isComputedDistanceFunc();
+						this.isInitOrderPriceAjax();
+					}
+				});
+			}
+		},
 		sendAddress(value, oldvalue) {
 			if (value != oldvalue) {
 				this.sendAddressShow = false;
@@ -928,6 +1007,10 @@ export default {
 				token: res.data.token
 			}	
 		},
+		// 隐藏帮买后的信息弹框
+		handleQnBox () {
+			this.qpInfo = {}
+		},
 		UpLoaded (list) {
 			this.pics = []
 			list.forEach(item => {
@@ -955,6 +1038,18 @@ export default {
 						url: '../order/order'
 					})
 				}
+			}
+		},
+		handleHelpQpInfo() {
+			this.shopInfo = this.qpInfo
+			this.qpInfo = {}
+			if (this.isComputedDistance) {
+				this.isComputedDistanceFunc();
+			}
+			
+			//订单计算初始请求
+			if (this.isInitOrderPrice) {
+				this.isInitOrderPriceAjax();
 			}
 		},
 		//返回
@@ -1022,54 +1117,59 @@ export default {
 			if (index == 1) {
 				let me = this;
 				this.sendAddress.addressDetail = ""
-				uni.chooseLocation({
-					success: res => {
-						let that = res;
-						uni.request({
-							url:
-								'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' +
-								res.longitude +
-								',' +
-								res.latitude +
-								'&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。
-							success: res => {
-								if (that.name === '地图位置') {
-									that.name = res.data.regeocode.aois[0].name;
-								}
-								that.address = res.data.regeocode.formatted_address;
+				uni.navigateTo({
+					url:"../choose-location/choose-location",
+					animationType:"slide-in-bottom",
+				})
+				
+				// uni.chooseLocation({
+				// 	success: res => {
+				// 		let that = res;
+				// 		uni.request({
+				// 			url:
+				// 				'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' +
+				// 				res.longitude +
+				// 				',' +
+				// 				res.latitude +
+				// 				'&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。
+				// 			success: res => {
+				// 				me.sendAddressShow = false
+				// 				if (that.name === '地图位置') {
+				// 					that.name = res.data.regeocode.aois[0].name;
+				// 				}
+				// 				that.address = res.data.regeocode.formatted_address;
 
-								if (this.sendAddress.addressDetail instanceof Array) {
+				// 				if (this.sendAddress.addressDetail instanceof Array) {
 									
-									me.sendAddress.addressDetail[0] = that.address;
-									me.sendAddress.addressDetail[1] = '';
-									me.sendAddress.addressDetail[2] = that.name;
-									me.sendAddress.latitude = that.longitude + ',' + that.latitude;
+				// 					me.sendAddress.addressDetail[0] = that.address;
+				// 					me.sendAddress.addressDetail[1] = '';
+				// 					me.sendAddress.addressDetail[2] = that.name;
+				// 					me.sendAddress.latitude = that.longitude + ',' + that.latitude;
 									
 									
-								} else {
+				// 				} else {
 									
-									me.sendAddress.editAddress = that;
+				// 					me.sendAddress.editAddress = that;
 						
-									me.sendAddress.latitude =  me.sendAddress.editAddress.longitude + ',' + me.sendAddress.editAddress.latitude
+				// 					me.sendAddress.latitude =  me.sendAddress.editAddress.longitude + ',' + me.sendAddress.editAddress.latitude
 					
 									
-								}
+				// 				}
 								
-								// console.log(me.sendAddress)
-								uni.setStorageSync('sendAddress',JSON.stringify(me.sendAddress))
-								// this.sendAddress = me.sendAddress
-								this.isComputedDistanceFunc();
-								this.isInitOrderPriceAjax();
-							}
-						});
-					},
-					complete: () => {
-						this.isComputedDistanceFunc();
-						this.isInitOrderPriceAjax();
-					}
-				});
+				// 				console.log(JSON.stringify(me.sendAddress))
+				// 				uni.setStorageSync('sendAddress',JSON.stringify(me.sendAddress))
+				// 				this.isComputedDistanceFunc();
+				// 				this.isInitOrderPriceAjax();
+				// 			}
+				// 		});
+				// 	},
+				// 	complete: () => {
+				// 		this.isComputedDistanceFunc();
+				// 		this.isInitOrderPriceAjax();
+				// 	}
+				// });
 			}
-			this.isInitOrderPriceAjax();
+			// this.isInitOrderPriceAjax();
 		},
 		//更改scroll下标
 		handleScrollIndex(index) {
@@ -1196,7 +1296,7 @@ export default {
 		},
 		//保存帮买商品信息
 		setHelpBuyInfo () {
-			
+			console.log(this.appraisement)
 			if (this.appraisement <= 0 && uni.getStorageSync('shopInfo') == true) {
 								this.appraisement = 1				uni.showToast({					title: '商品预估价最低1元',					icon: 'none'				})							} else if (this.appraisement > 500) {				this.appraisement = 500				uni.showToast({					title: '商品预估价最高500元',					icon: 'none'				})			} 
 			this.shopInfo.pics = JSON.stringify(this.pics)
@@ -1223,12 +1323,13 @@ export default {
 				});
 				return;
 			}
-
+			
 			if (this.scrollIndex == 2) {
 				uni.navigateTo({
 					url: '../buyShopInfo/buyShopInfo'
 				});
 			} else {
+				this.qpInfo = {}
 				uni.navigateTo({
 					url: '../shopInfo/shopInfo'
 				});
@@ -1246,15 +1347,26 @@ export default {
 			this.giveGrant = this.grant[index];
 		},
 		//下单详情
-		async handleBilldetail() {			let latitude = this.sendAddress.latitude.split(',')[1];
-			let longitude = this.sendAddress.latitude.split(',')[0];			if (this.scrollIndex == 2 && this.assignIndex == 0) {				latitude = this.endAddress.latitude.split(',')[1];
-				longitude = this.endAddress.latitude.split(',')[0];			}
-			latitude = Number(latitude).toFixed(6);			longitude = Number(longitude).toFixed(5);				
+		async handleBilldetail() {
+			if (this.scrollIndex == 2 && this.assignIndex == 0) {
+				this.sendAddress = this.endAddress
+			}
+			console.log(this.sendAddress)
+			let latitude
+			let longitude		// let latitude = this.sendAddress.latitude.split(',')[1];
+		// let longitude = this.sendAddress.latitude.split(',')[0];			if (this.scrollIndex == 2 && this.assignIndex == 0) {				latitude = this.endAddress.latitude.split(',')[1];
+				longitude = this.endAddress.latitude.split(',')[0];			} else {
+				latitude = this.sendAddress.latitude.split(',')[1];
+				longitude = this.sendAddress.latitude.split(',')[0];
+			}
+			latitude = Number(latitude).toFixed(6);			longitude = Number(longitude).toFixed(5);						console.log(this.sendAddress)
 							uni.request({			   url:	'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' + longitude +',' + latitude +'&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。		
 		    success: async (res) => {				this.adcode = res.data.regeocode.addressComponent.adcode.substring(0, 4)				let msg = await this.$fetch(this.$api.testAdcode, {adcode: this.adcode}, 'POST', 'FORM')
 				console.log(msg)				if (msg.code != 0) {
 					return uni.showToast({							icon: 'none',
-							title: '该地区暂未开通服务，敬请期待'				})				} else {					
+							title: '该地区暂未开通服务，敬请期待'				})				} else {					console.log('***')
+					console.log(this.assignIndex)
+					console.log(this.scrollIndex)
 					if (this.shopInfo.main === undefined || this.shopInfo.price === undefined) {
 						uni.showToast({
 							title: '请检查您要下单的信息',
@@ -1263,7 +1375,11 @@ export default {
 						return
 					}
 					if(this.scrollIndex != 2) {
-						if (this.sendAddress.mobile.trim() == '' || this.sendAddress.name.trim() == '') {
+						if (this.sendAddress.mobile == undefined) return uni.showToast({
+							icon: 'none',
+							title: '请完善取货地址信息'
+						})
+						if (this.sendAddress.mobile.trim() == '' || this.sendAddress.name.trim() == '' ) {
 							uni.showToast({
 								icon: 'none',
 								title: '请完善取货地址信息'
@@ -1288,6 +1404,7 @@ export default {
 						})
 						return
 					}
+					
 					if (JSON.stringify(this.sendAddress.editAddress) === '{}' || JSON.stringify(this.endAddress.editAddress) === '{}') {
 						uni.showToast({
 							icon: 'none',
@@ -1305,7 +1422,8 @@ export default {
 							return;
 						}
 					}
-					
+			
+
 					if (JSON.stringify(this.sendAddress) == '{}' || JSON.stringify(this.endAddress) == '{}' || JSON.stringify(this.shopInfo) == '{}') {
 						uni.showToast({
 							icon: 'none',
@@ -1404,53 +1522,58 @@ export default {
 			}
 			if (this.scrollIndex === 2 && index === 0 && this.assignIndex === 1) {
 				let me = this
-				uni.chooseLocation({
-					success: res => {
-						let that = res;
-						uni.request({
-							url:
-								'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' +
-								res.longitude +
-								',' +
-								res.latitude +
-								'&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。
-							success: res => {
-								if (that.name === '地图位置') {
-									that.name = res.data.regeocode.aois[0].name;
-								}
-								that.address = res.data.regeocode.formatted_address;
+				uni.navigateTo({
+					url:"../choose-location/choose-location",
+					animationType:"slide-in-bottom",
+				})
 				
-								if (this.sendAddress.addressDetail instanceof Array) {
+				// uni.chooseLocation({
+				// 	success: res => {
+				// 		let that = res;
+				// 		uni.request({
+				// 			url:
+				// 				'https://restapi.amap.com/v3/geocode/regeo?output=JSON&location=' +
+				// 				res.longitude +
+				// 				',' +
+				// 				res.latitude +
+				// 				'&key=6223011d1e55de8ee9d00617ee5270c2&radius=1000&extensions=all', //仅为示例，并非真实接口地址。
+				// 			success: res => {
+				// 				if (that.name === '地图位置') {
+				// 					that.name = res.data.regeocode.aois[0].name;
+				// 				}
+				// 				that.address = res.data.regeocode.formatted_address;
+				
+				// 				if (this.sendAddress.addressDetail instanceof Array) {
 									
-									me.sendAddress.addressDetail[0] = that.address;
-									me.sendAddress.addressDetail[1] = '';
-									me.sendAddress.addressDetail[2] = that.name;
-									me.sendAddress.latitude = that.longitude + ',' + that.latitude;
+				// 					me.sendAddress.addressDetail[0] = that.address;
+				// 					me.sendAddress.addressDetail[1] = '';
+				// 					me.sendAddress.addressDetail[2] = that.name;
+				// 					me.sendAddress.latitude = that.longitude + ',' + that.latitude;
 									
 						
 									
-								} else {
+				// 				} else {
 									
-									me.sendAddress.editAddress = that;
+				// 					me.sendAddress.editAddress = that;
 						
-									me.sendAddress.latitude =  me.sendAddress.editAddress.longitude + ',' + me.sendAddress.editAddress.latitude
+				// 					me.sendAddress.latitude =  me.sendAddress.editAddress.longitude + ',' + me.sendAddress.editAddress.latitude
 					
 									
-								}
+				// 				}
 								
 								
-								uni.setStorageSync('sendAddress',JSON.stringify(me.sendAddress))
-								// this.sendAddress = me.sendAddress
-								this.isComputedDistanceFunc();
-								this.isInitOrderPriceAjax();
-							}
-						});
-					},
-					complete: () => {
-						this.isComputedDistanceFunc();
-						this.isInitOrderPriceAjax();
-					}
-				});
+				// 				uni.setStorageSync('sendAddress',JSON.stringify(me.sendAddress))
+				// 				// this.sendAddress = me.sendAddress
+				// 				this.isComputedDistanceFunc();
+				// 				this.isInitOrderPriceAjax();
+				// 			}
+				// 		});
+				// 	},
+				// 	complete: () => {
+				// 		this.isComputedDistanceFunc();
+				// 		this.isInitOrderPriceAjax();
+				// 	}
+				// });
 			} else {
 				uni.navigateTo({
 					url: '../editAddress/editAddress?addressInfo=' + JSON.stringify(addressInfo) + '&status=' + index + '&id=' + id
@@ -1548,26 +1671,32 @@ export default {
 			}
 
 			//格式化
-			if (JSON.stringify(this.sendAddress) != '{}' && JSON.stringify(this.endAddress) != '{}' && JSON.stringify(this.shopInfo) != '{}' && this.sendAddress.latitude !== "") {
-				let initsendress = null;
-				// if (this.sendAddress.addressDetail instanceof Array) {
-				// 	initsendress = this.sendAddress.addressDetail[0] + '' + this.sendAddress.addressDetail[2] + '' + this.sendAddress.addressDetail[1];
-				// } else {
-				// 	initsendress = this.sendAddress.editAddress.address + '' + this.sendAddress.editAddress.name + '' + this.sendAddress.addressDetail;
-				// }
-				
-				if (this.sendAddress.addressDetail instanceof Array) {
-					initsendress = this.sendAddress.addressDetail[0] + ''  + this.sendAddress.addressDetail[1];
-				} else {
-					initsendress = this.sendAddress.editAddress.address + ''  + this.sendAddress.addressDetail;
-				}
-
-				let startAddress = JSON.stringify(initsendress);
-				
-				// let endAddress = JSON.stringify(this.endAddress.editAddress.address + '' + this.endAddress.editAddress.name + '' + this.endAddress.addressDetail);
-				
-				let endAddress = JSON.stringify(this.endAddress.editAddress.address + ''  + this.endAddress.addressDetail);
+	// 		if (JSON.stringify(this.sendAddress) != '{}' && JSON.stringify(this.endAddress) != '{}' && JSON.stringify(this.shopInfo) != '{}' && this.sendAddress.latitude !== "") {
+	// 			let initsendress = null;
 			
+
+	// 			if (this.sendAddress.addressDetail instanceof Array) {
+	// 				initsendress = this.sendAddress.addressDetail[0] + ''  + this.sendAddress.addressDetail[1];
+	// 			} else {
+	// 				initsendress = this.sendAddress.editAddress.address + ''  + this.sendAddress.addressDetail;
+	// 			}
+
+	// 			let startAddress = JSON.stringify(initsendress);
+	
+	// 			let endAddress = JSON.stringify(this.endAddress.editAddress.address + ''  + this.endAddress.addressDetail);
+				
+				if (JSON.stringify(this.endAddress) != '{}' && JSON.stringify(this.shopInfo) != '{}' ) {
+					let initsendress = null;
+					if (this.sendAddress.addressDetail != undefined) {
+						if (this.sendAddress.addressDetail instanceof Array) {
+							initsendress = this.sendAddress.addressDetail[0] + ''  + this.sendAddress.addressDetail[1];
+						} else {
+							initsendress = this.sendAddress.editAddress.address + ''  + this.sendAddress.addressDetail;
+						}
+					}
+					let startAddress = JSON.stringify(initsendress) ? JSON.stringify(initsendress) : '';
+						
+					let endAddress = JSON.stringify(this.endAddress.editAddress.address + ''  + this.endAddress.addressDetail);
 						
 				//发送计算订单请求
 				//当是立即取件时
@@ -1604,7 +1733,7 @@ export default {
 									}, 
 									'POST'
 								);
-								
+								console.log(res)
 								
 								if (res.code == 0) {
 									this.orderComputed = res.data;
@@ -1633,7 +1762,7 @@ export default {
 									}, 
 									'POST'
 								);
-								
+								console.log(res)
 								
 								if (res.code == 0) {
 									this.orderComputed = res.data;
@@ -1993,7 +2122,7 @@ export default {
 							this.endAddress.latitude +
 							'&key=6223011d1e55de8ee9d00617ee5270c2', //仅为示例，并非真实接口地址。
 						success: res => { 
-							// console.log(res.data)  
+							console.log(res.data)  
 							this.distance = res.data.data.paths[0].distance / 1000;
 							// console.log(this.distance)
 						} 
@@ -2046,13 +2175,13 @@ export default {
 				let startAddress = initsendress;
 				let startIndex = initsendress.indexOf('市')
 				
-				startAddress = initsendress.substring(startIndex + 1,startIndex+initsendress.length)
-				
+				startAddress = initsendress.substring(startIndex + 1,startIndex+initsendress.length + 1)
+				console.log(startAddress)
 				// let endAddress = this.endAddress.editAddress.address + '' + this.endAddress.editAddress.name + '' + this.endAddress.addressDetail;
 				let endAddress = this.endAddress.editAddress.address + '' + this.endAddress.addressDetail;
 				let endIndex = endAddress.indexOf('市')
 
-				endAddress = endAddress.substring(endIndex + 1,endIndex+endAddress.length)
+				endAddress = endAddress.substring(endIndex + 1,endIndex+endAddress.length + 1)
 				
 				
 				
@@ -2756,6 +2885,8 @@ export default {
 							mobile: this.sendAddress.mobile,
 							extensionNumber: this.sendAddress.extensionNumber
 						}))
+						uni.setStorageSync('helpMeShopInfo', JSON.stringify(this.shopInfo))
+						console.log(JSON.stringify(this.shopInfo) + '*********')  
 					
 					} else if (this.scrollIndex == 1) {
 						console.log(this.endAddress)
@@ -2771,7 +2902,8 @@ export default {
 							editAddress: JSON.stringify(this.endAddress.editAddress),
 							extensionNumber: this.endAddress.extensionNumber
 						}))
-	
+						uni.setStorageSync('helpMeShopInfo', JSON.stringify(this.shopInfo))
+						console.log(JSON.stringify(this.shopInfo) + '----------')
 					}
 					setTimeout(() => {
 						// uni.redirectTo({
@@ -3268,6 +3400,30 @@ page {
 					font-size: 14px;
 					letter-spacing: 0;
 					text-align: right;
+				}
+				.qp-box{
+					background-image: url(../../static/img/qp.png);
+					background-repeat: no-repeat;
+					color: #FFFFFF;
+					background-size: 100% 100%;
+					width: 302rpx;
+					height: 88rpx; 
+					line-height: 88rpx;
+					position: absolute; 
+					top: -20rpx; 
+					left: 25%;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					padding: 0 20rpx;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					display: -webkit-box;    
+					-webkit-box-orient: vertical;    
+					-webkit-line-clamp: 1;    //控制行数
+					overflow: hidden;
+					font-size: 12px;
 				}
 				image {
 					width: 16rpx;
@@ -3771,9 +3927,10 @@ page {
 			padding: 20rpx 30rpx 30rpx 30rpx;
 			box-sizing: border-box;
 			display: flex;
-			justify-content: space-between;
+			// justify-content: space-between;
+			justify-content: center;
 			align-items: center;
-
+			
 			.popups-footer-left {
 				.footer-left-top {
 					display: flex;
@@ -3834,7 +3991,8 @@ page {
 				}
 			}
 			.popups-footer-right {
-				width: 280rpx;
+				// width: 280rpx;
+				width: 330rpx;
 				height: 90rpx;
 				line-height: 90rpx;
 				text-align: center;

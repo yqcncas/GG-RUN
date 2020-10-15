@@ -142,12 +142,25 @@
 			"style": {
 				"navigationBarTitleText": "订单详情",
 				"navigationBarBackgroundColor": "#FFFFFF"
+			
 			}
 		},{
 			"path": "pages/freightDeatail/freightDeatail",
 			"style": {
 				"navigationBarTitleText": "服务费明细",
-				"navigationBarBackgroundColor": "#FFFFFF"
+				"navigationBarBackgroundColor": "#FFFFFF",
+				"app-plus": {
+					"titleNView": {
+						"buttons": [
+							{
+								"type": "none",
+								"text": "价格规则",
+								"fontSize": "16px",
+								"width": "auto"
+							}
+						]
+					}
+				}
 			}
 		},{
 			"path": "pages/cancelOrder/cancelOrder",
@@ -311,6 +324,12 @@
 			"path": "pages/orderDetail/shopInfoImg",
 			"style": {
 				"navigationBarTitleText": "商品图片"
+			}
+		},
+		{
+			"path": "pages/choose-location/choose-location",
+			"style": {
+				"navigationStyle" : "custom"
 			}
 		}
 	],
